@@ -120,9 +120,74 @@
     .pr-table td:first-child{text-align:left;font-weight:500}
     .pr-footer{margin-top:24px;font-size:8px;color:#aaa;font-family:'IBM Plex Mono',monospace;border-top:1px solid #e0e0e0;padding-top:8px;display:flex;justify-content:space-between}
   }
-  @media(max-width:1024px){.grid{grid-template-columns:280px 1fr;gap:.75rem}body{padding:1.25rem}thead th{padding:8px 10px 6px;font-size:9px}tbody td{padding:8px 10px;font-size:12px}.bi{width:90px}}
-  @media(max-width:640px){.grid{grid-template-columns:1fr}body{padding:.75rem}header{flex-direction:column;gap:4px}.ph-row{display:none}#daily-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}.bi{width:75px}.btn{font-size:11px}.lp{max-height:160px}.fbtns{flex-wrap:wrap}}
-  @media(max-width:380px){body{padding:.5rem}tbody td{font-size:10px;padding:6px}}
+  @media(max-width:1024px){
+    .grid{grid-template-columns:260px 1fr;gap:.75rem}
+    body{padding:1.25rem}
+    thead th{padding:8px 8px 6px;font-size:9px}
+    tbody td{padding:8px 8px;font-size:11px}
+    .bi{width:80px;font-size:11px}
+    .kpi-card .kv{font-size:13px}
+  }
+
+  @media(max-width:768px){
+    /* Layout */
+    .grid{grid-template-columns:1fr}
+    body{padding:.75rem}
+    header{flex-direction:column;gap:4px;margin-bottom:1rem}
+    header h1{font-size:13px}
+    .ph-row{display:none}
+
+    /* Tabs */
+    .tab-btn{padding:7px 14px;font-size:10px}
+
+    /* Pipeline table: hide D+1 and D+2 columns */
+    .col-hide{display:none}
+
+    /* Daily table: stack as cards instead of table */
+    #daily-table thead{display:none}
+    #daily-table tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px}
+    #daily-table tbody tr td{padding:0;border:none;text-align:left!important}
+    #daily-table tbody tr td:first-child{grid-column:1/-1;font-size:11px;color:var(--text2);margin-bottom:2px}
+    #daily-table tbody tr td:nth-child(2){text-align:right!important}
+    #daily-table tbody tr td:nth-child(3){text-align:right!important}
+    #daily-table tbody tr td:nth-child(4){display:none}
+    #daily-table tbody tr td:nth-child(5){text-align:right!important}
+    #daily-table tbody .re-export td{background:rgba(251,191,36,.08)}
+
+    /* Balance input full width */
+    .bi{width:100%;font-size:12px}
+
+    /* Status KPI grids: 2 columns */
+    #kpi-top{grid-template-columns:1fr 1fr!important}
+    #kpi-mid{grid-template-columns:1fr 1fr!important}
+    #kpi-quarters,#kpi-weekdays{min-width:0}
+    #kpi-quarters .q-table th,#kpi-quarters .q-table td{padding:5px 6px;font-size:10px}
+
+    /* Status layout: stack */
+    #view-status>div:nth-child(3){grid-template-columns:1fr!important}
+
+    /* Buttons */
+    .btn{font-size:11px;padding:8px}
+    .bs{font-size:9px;padding:4px 6px}
+    .fbtns{flex-wrap:wrap;gap:3px}
+    .lp{max-height:140px}
+    .le{font-size:10px;padding:5px 10px}
+
+    /* Chart */
+    #chart-agg{width:100%}
+  }
+
+  @media(max-width:400px){
+    body{padding:.5rem}
+    .kpi-card{padding:8px 10px}
+    .kpi-card .kv{font-size:12px}
+    .kpi-card .kk{font-size:8px}
+    #kpi-top{grid-template-columns:1fr 1fr!important}
+    #kpi-mid{grid-template-columns:1fr 1fr!important}
+    .tab-btn{padding:6px 10px;font-size:9px}
+    thead th{font-size:8px;padding:6px 5px}
+    tbody td{font-size:10px;padding:5px}
+  }
 </style>
 </head>
 <body>
@@ -201,8 +266,8 @@
         <thead><tr>
           <th></th>
           <th>Subscrito<span class="sub">D</span></th>
-          <th>Cativo<span class="sub">D+1</span></th>
-          <th>Cativo+1<span class="sub">D+2</span></th>
+          <th class="col-hide">Cativo<span class="sub">D+1</span></th>
+          <th class="col-hide">Cativo+1<span class="sub">D+2</span></th>
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
@@ -368,7 +433,7 @@ function cv(v,avail) {
 function renderPipeline() {
   document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
     const r = state.rows[f];
-    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
+    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td class="col-hide">${cv(r.D1,0)}</td><td class="col-hide">${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
 }
 
