@@ -1,9 +1,11 @@
-<html lang="pt" __gcrremoteframetoken="4ff6d84b42209756879ff19b1cda32da"><head>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundos — Availability</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#0f0f10; --surface:#18181b; --surface2:#222226;
@@ -100,6 +102,7 @@
   .wd-bar{height:100%;border-radius:3px;background:var(--accent);transition:width .4s}
   .wd-bar.neg{background:var(--danger)}
   .wd-nums{font-size:10px;color:var(--text3);width:60px;text-align:right}
+  .wl-pos{color:var(--accent)} .wl-neg{color:var(--danger)} .wl-zero{color:var(--text3)}
   #print-report{display:none}
   @media print{
     body>*:not(#print-report){display:none!important}
@@ -188,7 +191,7 @@
   }
 </style>
 </head>
-<body data-__gcrweb-annotatedpagecontent-processed="1B6EEA19BD2A0D486D0FAF938D99A403">
+<body>
 <header>
   <h1>FUNDOS / AVAILABILITY</h1>
   <span>MACRO: AVANÇAR UM DIA</span>
@@ -197,6 +200,7 @@
 <div style="display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border);">
   <button class="tab-btn active" id="tab-diary" onclick="switchTab('diary')">Diary</button>
   <button class="tab-btn" id="tab-status" onclick="switchTab('status')">Status</button>
+  <button class="tab-btn" id="tab-analise" onclick="switchTab('analise')">Análise</button>
 </div>
 
 <div id="view-diary">
@@ -213,65 +217,20 @@
           </div>
           <div style="flex:1;">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Última exec.</div>
-            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="1">
+            <input type="text" id="last-run" readonly placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
           </div>
         </div>
         <div class="divider"></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital disponível para investir</div>
         <div style="margin-bottom:6px;">
-          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" __gcruniqueid="2">
-          <span id="capital-restante" style="display: none; color: var(--accent);">1&nbsp;000&nbsp;000,00</span>
+          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;">
+          <span id="capital-restante" style="display:none">0.00</span>
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
-        <div class="fblock" id="faj-Gold">
-      <div style="border:1px solid rgba(245,197,66,0.35);border-radius:6px;background:rgba(245,197,66,0.08);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#f5c542">●</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f5c542;letter-spacing:.06em">Gold</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Gold',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Gold',-1)">-10%</button>
-          <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()">
-        </div>
-      </div></div>
-        <div class="fblock" id="faj-Oil">
-      <div style="border:1px solid rgba(100,100,120,0.4);border-radius:6px;background:rgba(30,30,35,0.6);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#94a3b8">◆</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Oil',-1)">-10%</button>
-          <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()">
-        </div>
-      </div></div>
-        <div class="fblock" id="faj-Finance">
-      <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#4ade80">▲</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#4ade80;letter-spacing:.06em">Finance</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Finance',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Finance',-1)">-10%</button>
-          <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
-        </div>
-      </div></div>
+        <div class="fblock" id="faj-Gold"></div>
+        <div class="fblock" id="faj-Oil"></div>
+        <div class="fblock" id="faj-Finance"></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run">▶ Avançar um dia</button>
         <div class="divider" style="margin-top:14px"></div>
@@ -297,15 +256,15 @@
 
         <div style="margin-bottom:6px">
           <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Token</div>
-          <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="6">
+          <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
         </div>
         <div style="margin-bottom:6px">
           <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Repositório (user/repo)</div>
-          <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="7">
+          <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
         </div>
         <button class="btn" id="btn-gh-save" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0">☁ Guardar no GitHub</button>
 
-        <div class="sb warn" id="status-bar">A guardar...</div>
+        <div class="sb" id="status-bar"></div>
       </div>
     </div>
   </div>
@@ -328,7 +287,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"></tbody>
       </table>
     </div>
 
@@ -339,7 +298,7 @@
           <div class="dot" style="background:var(--accent)"></div>
           <span class="label">Registo diário</span>
         </div>
-        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"><button class="mt " onclick="selMonth('2026-01')">Jan 26</button><button class="mt " onclick="selMonth('2026-02')">Fev 26</button><button class="mt " onclick="selMonth('2026-03')">Mar 26</button><button class="mt " onclick="selMonth('2026-04')">Abr 26</button><button class="mt " onclick="selMonth('2026-05')">Mai 26</button><button class="mt active" onclick="selMonth('2026-06')">Jun 26</button><button class="mt " onclick="selMonth('2026-07')">Jul 26</button><button class="mt " onclick="selMonth('2026-08')">Ago 26</button><button class="mt " onclick="selMonth('2026-09')">Set 26</button><button class="mt " onclick="selMonth('2026-10')">Out 26</button><button class="mt " onclick="selMonth('2026-11')">Nov 26</button><button class="mt " onclick="selMonth('2026-12')">Dez 26</button></div>
+        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"></div>
       </div>
       <table id="daily-table">
         <thead><tr>
@@ -349,152 +308,16 @@
           <th>Agg SUM</th>
           <th>Interests</th>
         </tr></thead>
-        <tbody id="daily-body"><tr class="re-export">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
-      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-01-jun</td>
-      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-01',this.value)" onblur="setBalance('2026-06-01',this.value)"></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-02-jun</td>
-      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-02',this.value)" onblur="setBalance('2026-06-02',this.value)"></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-03-jun</td>
-      <td><input type="text" class="bi" value="277966" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
-      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
-      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">58,00</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-04-jun</td>
-      <td><input type="text" class="bi" value="279596" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
-      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,5864 %</span></td>
-      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,6074 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1630,00</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-05-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-05',this.value)" onblur="setBalance('2026-06-05',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-08-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-08',this.value)" onblur="setBalance('2026-06-08',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-09-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-09',this.value)" onblur="setBalance('2026-06-09',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-10-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-10',this.value)" onblur="setBalance('2026-06-10',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-11-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-11',this.value)" onblur="setBalance('2026-06-11',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-12-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-12',this.value)" onblur="setBalance('2026-06-12',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-15-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-15',this.value)" onblur="setBalance('2026-06-15',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-16-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-16',this.value)" onblur="setBalance('2026-06-16',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-17-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-17',this.value)" onblur="setBalance('2026-06-17',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-18-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-18',this.value)" onblur="setBalance('2026-06-18',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-19-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-19',this.value)" onblur="setBalance('2026-06-19',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-22-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-22',this.value)" onblur="setBalance('2026-06-22',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-23-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-23',this.value)" onblur="setBalance('2026-06-23',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-24-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-24',this.value)" onblur="setBalance('2026-06-24',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-25-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-25',this.value)" onblur="setBalance('2026-06-25',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-26-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-26',this.value)" onblur="setBalance('2026-06-26',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-29-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-29',this.value)" onblur="setBalance('2026-06-29',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr><tr class="">
-      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-30-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-30',this.value)" onblur="setBalance('2026-06-30',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
-    </tr></tbody>
+        <tbody id="daily-body"></tbody>
       </table>
     </div>
 
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel"><div class="le"><span class="lts">20:10:15</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">─── execução: 03/06/2026 ───</span></div></div>
+      <div class="lp" id="log-panel">
+        <div class="le"><span class="lts">—</span><span class="lm">aguarda primeira execução</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -514,7 +337,39 @@
     <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
   </div>
 </div>
-<!-- /grid -->
+</div><!-- /grid -->
+
+<!-- ANÁLISE VIEW -->
+<div id="view-analise" style="display:none">
+  <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;justify-content:space-between">
+    <div style="display:flex;gap:6px;flex-wrap:wrap" id="watchlist-tabs">
+      <button class="mt active" id="wl-tab-gold" onclick="selWatchlist('gold')">● Gold</button>
+      <button class="mt" id="wl-tab-oil" onclick="selWatchlist('oil')">◆ Oil</button>
+      <button class="mt" id="wl-tab-finance" onclick="selWatchlist('finance')">▲ Finance</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="wl-last-update" style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
+      <button class="btn" id="btn-wl-refresh" style="margin-top:0;padding:6px 14px;font-size:10px;width:auto">↻ Atualizar</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph">
+      <div class="dot" style="background:var(--accent)"></div>
+      <span class="label" id="wl-title">Gold</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="text-align:left">Ativo</th>
+        <th>Preço</th>
+        <th>Variação</th>
+        <th>Variação %</th>
+      </tr></thead>
+      <tbody id="wl-body">
+        <tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <div id="print-report"></div>
 
@@ -911,11 +766,14 @@ function exportPDF() {
 // ── Init ─────────────────────────────────────────────────────────
 // ── Tab switching ────────────────────────────────────────────────
 function switchTab(tab) {
-  document.getElementById('view-diary').style.display  = tab==='diary'  ? '' : 'none';
-  document.getElementById('view-status').style.display = tab==='status' ? '' : 'none';
-  document.getElementById('tab-diary').classList.toggle('active',  tab==='diary');
-  document.getElementById('tab-status').classList.toggle('active', tab==='status');
-  if (tab==='status') renderStatus();
+  document.getElementById('view-diary').style.display   = tab==='diary'   ? '' : 'none';
+  document.getElementById('view-status').style.display  = tab==='status'  ? '' : 'none';
+  document.getElementById('view-analise').style.display = tab==='analise' ? '' : 'none';
+  ['diary','status','analise'].forEach(t=>
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab)
+  );
+  if (tab==='status')  renderStatus();
+  if (tab==='analise') { selWatchlist(activeWatchlist); startWlAutoRefresh(); }
 }
 
 // ── Status calculations ──────────────────────────────────────────
@@ -1175,6 +1033,152 @@ function saveToGitHub() {
   .catch(e => setStatus('Erro de ligação: ' + e.message, 'err'));
 }
 
+// ── Watchlists ───────────────────────────────────────────────────
+const WATCHLISTS = {
+  gold: {
+    label: 'Gold',
+    color: '#f5c542',
+    items: [
+      {name:'EUR/USD',                    sym:'EUR/USD',    type:'forex'},
+      {name:'Jupiter Gold & Silver',      sym:'JUBGEUR',    exch:'LSE'},
+      {name:'Philadelphia Gold/Silver',   sym:'XAU',        exch:'INDEX'},
+      {name:'Ouro',                       sym:'XAU/USD',    type:'forex'},
+      {name:'Discovery Silver',           sym:'DSV',        exch:'TSX'},
+      {name:'Sprott Physical Silver',     sym:'PSLV',       exch:'NYSE'},
+      {name:'Sprott Gold & Silver Trust', sym:'CEF',        exch:'NYSE'},
+      {name:'Wheaton Precious Metals',    sym:'WPM',        exch:'NYSE'},
+      {name:'Lundin Gold',                sym:'LUG',        exch:'TSX'},
+      {name:'Sprott Physical Gold',       sym:'PHYS',       exch:'NYSE'},
+      {name:'First Majestic Silver',      sym:'AG',         exch:'NYSE'},
+      {name:'Agnico Eagle Mines',         sym:'AEM',        exch:'NYSE'},
+      {name:'Alamos Gold',                sym:'AGI',        exch:'NYSE'},
+    ]
+  },
+  oil: {
+    label: 'Oil',
+    color: '#94a3b8',
+    items: [
+      {name:'GS North America Energy',   sym:'GNR',        exch:'NYSE'},
+      {name:'DJ Oil & Gas',              sym:'IYE',        exch:'NYSE'},
+      {name:'Petróleo Bruto WTI',        sym:'WTI/USD',    type:'forex'},
+      {name:'Exxon Mobil',               sym:'XOM',        exch:'NYSE'},
+      {name:'Targa Resources',           sym:'TRGP',       exch:'NYSE'},
+      {name:'Chevron',                   sym:'CVX',        exch:'NYSE'},
+      {name:'Williams Companies',        sym:'WMB',        exch:'NYSE'},
+      {name:'Alerian MLP ETF',           sym:'AMLP',       exch:'NYSE'},
+      {name:'Kinder Morgan',             sym:'KMI',        exch:'NYSE'},
+      {name:'Plains GP Holdings',        sym:'PAGP',       exch:'NYSE'},
+      {name:'Enbridge',                  sym:'ENB',        exch:'NYSE'},
+      {name:'ONEOK',                     sym:'OKE',        exch:'NYSE'},
+    ]
+  },
+  finance: {
+    label: 'Finance',
+    color: '#4ade80',
+    items: [
+      {name:'Jupiter Global Fund',       sym:'JUPGEUR',    exch:'LSE'},
+      {name:'DJ Banks',                  sym:'DJUSBK',     exch:'INDEX'},
+      {name:'Santander',                 sym:'SAN',        exch:'NYSE'},
+      {name:'Barclays',                  sym:'BCS',        exch:'NYSE'},
+      {name:'UniCredit',                 sym:'UCG',        exch:'MIL'},
+      {name:'Bank of Cyprus',            sym:'BOCH',       exch:'CSE'},
+      {name:'HSBC',                      sym:'HSBC',       exch:'NYSE'},
+      {name:'Lloyds Banking',            sym:'LYG',        exch:'NYSE'},
+      {name:'Lion Finance / BGEO',       sym:'BGEO',       exch:'LSE'},
+    ]
+  }
+};
+
+let activeWatchlist = 'gold';
+let wlRefreshTimer  = null;
+
+function selWatchlist(key) {
+  activeWatchlist = key;
+  ['gold','oil','finance'].forEach(k => {
+    document.getElementById('wl-tab-'+k).classList.toggle('active', k===key);
+  });
+  const wl = WATCHLISTS[key];
+  document.getElementById('wl-title').textContent = wl.label;
+  document.getElementById('wl-tab-'+key).style.borderColor = wl.color;
+  document.getElementById('wl-tab-'+key).style.color = wl.color;
+  loadWatchlist(key);
+}
+
+async function loadWatchlist(key) {
+  const tbody = document.getElementById('wl-body');
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar...</td></tr>';
+  const wl   = WATCHLISTS[key];
+  const apiKey = localStorage.getItem('twelvedata-key') || '';
+
+  if (!apiKey) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;font-family:var(--mono);font-size:11px;color:var(--warn)">
+      Precisas de uma API key gratuita do Twelve Data.<br><br>
+      1. Vai a <b>twelvedata.com</b> → <b>Get free API key</b><br>
+      2. Regista com email e copia a key<br>
+      3. Cola abaixo e clica Guardar<br><br>
+      <input type="text" id="td-key-input" placeholder="API key Twelve Data..." style="width:240px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;font-family:monospace;font-size:11px;padding:6px 8px;outline:none">
+      <button onclick="saveTDKey()" style="margin-left:6px;padding:6px 12px;background:transparent;border:1px solid #4ade80;border-radius:4px;color:#4ade80;font-family:monospace;font-size:11px;cursor:pointer">Guardar</button>
+    </td></tr>`;
+    return;
+  }
+
+  try {
+    // Build batch request — Twelve Data supports up to 8 symbols per call
+    const batchSize = 8;
+    const allResults = {};
+
+    for (let i = 0; i < wl.items.length; i += batchSize) {
+      const batch = wl.items.slice(i, i + batchSize);
+      const syms  = batch.map(it => {
+        if (it.type === 'forex') return it.sym;
+        return it.exch ? `${it.sym}:${it.exch}` : it.sym;
+      }).join(',');
+
+      const url = `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(syms)}&apikey=${apiKey}`;
+      const r   = await fetch(url);
+      const d   = await r.json();
+
+      // Response is either single object or dict keyed by symbol
+      batch.forEach(it => {
+        const k   = it.type === 'forex' ? it.sym : (it.exch ? `${it.sym}:${it.exch}` : it.sym);
+        const q   = d[k] || d[it.sym] || (batch.length === 1 ? d : null);
+        allResults[it.sym] = q;
+      });
+    }
+
+    tbody.innerHTML = wl.items.map(item => {
+      const q   = allResults[item.sym];
+      const price = q?.close || q?.price || null;
+      const chg   = q?.change ? parseFloat(q.change) : null;
+      const pct   = q?.percent_change ? parseFloat(q.percent_change) : null;
+      const cls   = !chg ? 'wl-zero' : chg>0 ? 'wl-pos' : 'wl-neg';
+      const arrow = !chg ? '' : chg>0 ? '▲ ' : '▼ ';
+      const p     = price ? parseFloat(price) : null;
+      return `<tr>
+        <td style="text-align:left">${item.name}<br><span style="font-family:var(--mono);font-size:9px;color:var(--text3)">${item.sym}</span></td>
+        <td>${p ? p.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:4}) : '—'}</td>
+        <td class="${cls}">${chg!=null ? (chg>0?'+':'')+chg.toFixed(2) : '—'}</td>
+        <td class="${cls}">${pct!=null ? arrow+(pct>0?'+':'')+pct.toFixed(2)+'%' : '—'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('wl-last-update').textContent = 'Atualizado: '+new Date().toLocaleTimeString('pt-PT');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: ${e.message}</td></tr>`;
+  }
+}
+
+function saveTDKey() {
+  const k = document.getElementById('td-key-input')?.value?.trim();
+  if (!k) return;
+  localStorage.setItem('twelvedata-key', k);
+  loadWatchlist(activeWatchlist);
+}
+
+function startWlAutoRefresh() {
+  clearInterval(wlRefreshTimer);
+  wlRefreshTimer = setInterval(()=>{ if(activeWatchlist) loadWatchlist(activeWatchlist); }, 60000);
+}
+
 function init() {
   // Force clear any old localStorage keys from previous versions
   ['fundos.state','fundos.manualBalances','fundos.userEdits'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
@@ -1189,6 +1193,7 @@ function init() {
     renderTabs(); renderDailyTable();
   });
   document.getElementById('btn-run').addEventListener('click', avancarUmDia);
+  document.getElementById('btn-wl-refresh').addEventListener('click', ()=>loadWatchlist(activeWatchlist));
   document.getElementById('btn-gh-save').addEventListener('click', saveToGitHub);
   // Restore saved GitHub credentials
   try {
@@ -1213,6 +1218,5 @@ function init() {
 
 init();
 </script>
-
-
-</body></html>
+</body>
+</html>
