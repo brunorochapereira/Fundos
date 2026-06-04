@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
+<html lang="pt" __gcrremoteframetoken="b0caa60be3958f5b4a027c1aaa97a924"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundos — Availability</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#0f0f10; --surface:#18181b; --surface2:#222226;
@@ -226,20 +224,65 @@
           </div>
           <div style="flex:1;">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Última exec.</div>
-            <input type="text" id="last-run" readonly placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="1">
           </div>
         </div>
         <div class="divider"></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital disponível para investir</div>
         <div style="margin-bottom:6px;">
-          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;">
+          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" __gcruniqueid="2">
           <span id="capital-restante" style="display:none">0.00</span>
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
-        <div class="fblock" id="faj-Gold"></div>
-        <div class="fblock" id="faj-Oil"></div>
-        <div class="fblock" id="faj-Finance"></div>
+        <div class="fblock" id="faj-Gold">
+      <div style="border:1px solid rgba(245,197,66,0.35);border-radius:6px;background:rgba(245,197,66,0.08);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#f5c542">●</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f5c542;letter-spacing:.06em">Gold</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Gold',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Gold',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()" __gcruniqueid="3">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Oil">
+      <div style="border:1px solid rgba(100,100,120,0.4);border-radius:6px;background:rgba(30,30,35,0.6);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#94a3b8">◆</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Oil',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()" __gcruniqueid="4">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Finance">
+      <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#4ade80">▲</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#4ade80;letter-spacing:.06em">Finance</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Finance',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Finance',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()" __gcruniqueid="5">
+        </div>
+      </div></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run">▶ Avançar um dia</button>
         <div class="divider" style="margin-top:14px"></div>
@@ -265,20 +308,20 @@
 
         <div style="margin-bottom:6px">
           <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Token</div>
-          <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+          <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="6">
         </div>
         <div style="margin-bottom:6px">
           <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Repositório (user/repo)</div>
-          <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+          <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="7">
         </div>
         <button class="btn" id="btn-gh-save" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0">☁ Guardar no GitHub</button>
 
         <div class="divider" style="margin-top:14px"></div>
         <div class="slabel" style="margin-top:14px">Finnhub API (notícias)</div>
-        <input type="password" id="fh-key-ctrl" placeholder="Key Finnhub..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px">
+        <input type="password" id="fh-key-ctrl" placeholder="Key Finnhub..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px" __gcruniqueid="8">
         <button class="btn" id="btn-fh-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Finnhub</button>
 
-        <div class="sb" id="status-bar"></div>
+        <div class="sb warn" id="status-bar">A guardar...</div>
       </div>
     </div>
   </div>
@@ -301,7 +344,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -312,7 +355,7 @@
           <div class="dot" style="background:var(--accent)"></div>
           <span class="label">Registo diário</span>
         </div>
-        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"><button class="mt " onclick="selMonth('2026-01')">Jan 26</button><button class="mt " onclick="selMonth('2026-02')">Fev 26</button><button class="mt " onclick="selMonth('2026-03')">Mar 26</button><button class="mt " onclick="selMonth('2026-04')">Abr 26</button><button class="mt " onclick="selMonth('2026-05')">Mai 26</button><button class="mt active" onclick="selMonth('2026-06')">Jun 26</button><button class="mt " onclick="selMonth('2026-07')">Jul 26</button><button class="mt " onclick="selMonth('2026-08')">Ago 26</button><button class="mt " onclick="selMonth('2026-09')">Set 26</button><button class="mt " onclick="selMonth('2026-10')">Out 26</button><button class="mt " onclick="selMonth('2026-11')">Nov 26</button><button class="mt " onclick="selMonth('2026-12')">Dez 26</button></div>
       </div>
       <table id="daily-table">
         <thead><tr>
@@ -322,16 +365,152 @@
           <th>Agg SUM</th>
           <th>Interests</th>
         </tr></thead>
-        <tbody id="daily-body"></tbody>
+        <tbody id="daily-body"><tr class="re-export">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
+      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)" __gcruniqueid="32"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-01-jun</td>
+      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-01',this.value)" onblur="setBalance('2026-06-01',this.value)" __gcruniqueid="33"></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-02-jun</td>
+      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-02',this.value)" onblur="setBalance('2026-06-02',this.value)" __gcruniqueid="34"></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-03-jun</td>
+      <td><input type="text" class="bi" value="277966" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)" __gcruniqueid="35"></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">58,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-04-jun</td>
+      <td><input type="text" class="bi" value="279596" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)" __gcruniqueid="36"></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,5864 %</span></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,6074 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1630,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-05-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-05',this.value)" onblur="setBalance('2026-06-05',this.value)" __gcruniqueid="37"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-08-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-08',this.value)" onblur="setBalance('2026-06-08',this.value)" __gcruniqueid="38"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-09-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-09',this.value)" onblur="setBalance('2026-06-09',this.value)" __gcruniqueid="39"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-10-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-10',this.value)" onblur="setBalance('2026-06-10',this.value)" __gcruniqueid="40"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-11-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-11',this.value)" onblur="setBalance('2026-06-11',this.value)" __gcruniqueid="41"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-12-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-12',this.value)" onblur="setBalance('2026-06-12',this.value)" __gcruniqueid="42"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-15-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-15',this.value)" onblur="setBalance('2026-06-15',this.value)" __gcruniqueid="43"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-16-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-16',this.value)" onblur="setBalance('2026-06-16',this.value)" __gcruniqueid="44"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-17-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-17',this.value)" onblur="setBalance('2026-06-17',this.value)" __gcruniqueid="45"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-18-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-18',this.value)" onblur="setBalance('2026-06-18',this.value)" __gcruniqueid="46"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-19-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-19',this.value)" onblur="setBalance('2026-06-19',this.value)" __gcruniqueid="47"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-22-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-22',this.value)" onblur="setBalance('2026-06-22',this.value)" __gcruniqueid="48"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-23-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-23',this.value)" onblur="setBalance('2026-06-23',this.value)" __gcruniqueid="49"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-24-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-24',this.value)" onblur="setBalance('2026-06-24',this.value)" __gcruniqueid="50"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-25-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-25',this.value)" onblur="setBalance('2026-06-25',this.value)" __gcruniqueid="51"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-26-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-26',this.value)" onblur="setBalance('2026-06-26',this.value)" __gcruniqueid="52"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-29-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-29',this.value)" onblur="setBalance('2026-06-29',this.value)" __gcruniqueid="53"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-30-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-30',this.value)" onblur="setBalance('2026-06-30',this.value)" __gcruniqueid="54"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr></tbody>
       </table>
     </div>
 
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel">
-        <div class="le"><span class="lts">—</span><span class="lm">aguarda primeira execução</span></div>
-      </div>
+      <div class="lp" id="log-panel"><div class="le"><span class="lts">20:20:27</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">─── execução: 03/06/2026 ───</span></div></div>
     </div>
   </div>
 </div>
@@ -351,7 +530,7 @@
     <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
   </div>
 </div>
-</div><!-- /grid -->
+<!-- /grid -->
 
 <!-- ANÁLISE VIEW -->
 <div id="view-analise" style="display:none">
@@ -1440,5 +1619,6 @@ function init() {
 
 init();
 </script>
-</body>
-</html>
+
+
+</body></html>
