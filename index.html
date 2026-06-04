@@ -1,4 +1,4 @@
-<html lang="pt" __gcrremoteframetoken="53ac016d708d6185c486d8bf7760fb8c"><head>
+<html lang="pt"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundos — Availability</title>
@@ -224,14 +224,14 @@
           </div>
           <div style="flex:1;">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Última exec.</div>
-            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="1">
+            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
           </div>
         </div>
         <div class="divider"></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital disponível para investir</div>
         <div style="margin-bottom:6px;">
-          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" __gcruniqueid="2">
-          <span id="capital-restante" style="display: none; color: var(--accent);">1&nbsp;000&nbsp;000,00</span>
+          <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;">
+          <span id="capital-restante" style="display:none">0.00</span>
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
@@ -258,7 +258,7 @@
             <span style="font-size:14px;color:#94a3b8">◆</span>
             <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
           </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">100&nbsp;000,00</span></span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
         </div>
         <div class="fbtns">
           <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
@@ -289,37 +289,49 @@
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:14px">
           <div style="position:relative;width:36px;height:20px;flex-shrink:0">
             <input type="checkbox" id="flag-test" style="opacity:0;width:0;height:0;position:absolute">
-            <span id="ttrack" style="position: absolute; inset: 0px; background: var(--border2); border-radius: 10px; transition: background 0.2s;"></span>
-            <span id="tthumb" style="position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; background: var(--text3); border-radius: 50%; transition: left 0.2s, background 0.2s;"></span>
+            <span id="ttrack" style="position:absolute;inset:0;background:var(--border2);border-radius:10px;transition:background .2s"></span>
+            <span id="tthumb" style="position:absolute;left:3px;top:3px;width:14px;height:14px;background:var(--text3);border-radius:50%;transition:left .2s,background .2s"></span>
           </div>
           <span style="font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;user-select:none">Modo teste</span>
         </label>
         <div class="divider" style="margin-top:14px"></div>
-        <div style="display:flex;gap:6px;margin-top:14px">
-          <button class="btn" id="btn-export" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1">↓ Export</button>
-          <label class="btn" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;cursor:pointer;text-align:center">
-            ↑ Import<input type="file" id="btn-import" accept=".json" style="display:none">
-          </label>
-        </div>
-        <button class="btn" id="btn-pdf" style="border-color:#1e3a5f;color:#60a5fa;margin-top:6px">⎙ Relatório do dia PDF</button>
+        <button id="btn-toggle-config" style="width:100%;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:7px;cursor:pointer;margin-top:14px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between" onclick="toggleConfig()">
+          <span>Configurações</span>
+          <span id="config-arrow">▲</span>
+        </button>
 
-        <div class="divider" style="margin-top:14px"></div>
-        <div class="slabel" style="margin-top:14px">GitHub Auto-save</div>
+        <div id="config-section" style="display: block;">
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <button class="btn" id="btn-export" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1">↓ Export</button>
+            <label class="btn" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;cursor:pointer;text-align:center">
+              ↑ Import<input type="file" id="btn-import" accept=".json" style="display:none">
+            </label>
+          </div>
+          <button class="btn" id="btn-pdf" style="border-color:#1e3a5f;color:#60a5fa;margin-top:6px">⎙ Relatório do dia PDF</button>
 
-        <div style="margin-bottom:6px">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Token</div>
-          <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="6">
-        </div>
-        <div style="margin-bottom:6px">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Repositório (user/repo)</div>
-          <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none" __gcruniqueid="7">
-        </div>
-        <button class="btn" id="btn-gh-save" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0">☁ Guardar no GitHub</button>
+          <div class="divider" style="margin-top:14px"></div>
+          <div class="slabel" style="margin-top:14px">GitHub Auto-save</div>
 
-        <div class="divider" style="margin-top:14px"></div>
-        <div class="slabel" style="margin-top:14px">Finnhub API (notícias)</div>
-        <input type="password" id="fh-key-ctrl" placeholder="Key Finnhub..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px" __gcruniqueid="8">
-        <button class="btn" id="btn-fh-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Finnhub</button>
+          <div style="margin-bottom:6px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Token</div>
+            <input type="password" id="gh-token" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+          </div>
+          <div style="margin-bottom:6px">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">Repositório (user/repo)</div>
+            <input type="text" id="gh-repo" placeholder="username/fundos" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+          </div>
+          <button class="btn" id="btn-gh-save" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0">☁ Guardar no GitHub</button>
+
+          <div class="divider" style="margin-top:14px"></div>
+          <div class="slabel" style="margin-top:14px">Twelve Data (cotações)</div>
+          <input type="password" id="td-key-ctrl" placeholder="Key Twelve Data..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px">
+          <button class="btn" id="btn-td-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Twelve Data</button>
+
+          <div class="divider" style="margin-top:14px"></div>
+          <div class="slabel" style="margin-top:14px">Finnhub API (notícias)</div>
+          <input type="password" id="fh-key-ctrl" placeholder="Key Finnhub..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px">
+          <button class="btn" id="btn-fh-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Finnhub</button>
+        </div>
 
         <div class="sb warn" id="status-bar">A guardar...</div>
       </div>
@@ -344,7 +356,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="va">100&nbsp;000,00</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -367,16 +379,16 @@
         </tr></thead>
         <tbody id="daily-body"><tr class="re-export">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
-      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
       <td class="pc"><span class="pv">—</span></td>
       <td class="pc"><span class="pv">—</span></td>
       <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-01-jun</td>
       <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-01',this.value)" onblur="setBalance('2026-06-01',this.value)"></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-02-jun</td>
       <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-02',this.value)" onblur="setBalance('2026-06-02',this.value)"></td>
@@ -385,16 +397,16 @@
       <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-03-jun</td>
-      <td><input type="text" class="bi" value="277966" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
-      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
-      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">58,00</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-04-jun</td>
-      <td><input type="text" class="bi" value="279597" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
-      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,5868 %</span></td>
-      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,6078 %</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1631,00</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-05-jun</td>
       <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-05',this.value)" onblur="setBalance('2026-06-05',this.value)"></td>
@@ -510,7 +522,9 @@
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel"><div class="le"><span class="lts">09:54:25</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm hi">Oil: shift ok | disp: 100&nbsp;000,00</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">09:54:21</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">09:54:13</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">09:53:46</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">─── execução: 04/06/2026 ───</span></div></div>
+      <div class="lp" id="log-panel">
+        <div class="le"><span class="lts">—</span><span class="lm">aguarda primeira execução</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -597,7 +611,7 @@
   </div>
   <div class="panel">
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Agg SUM — todos os dias</span></div>
-    <div style="padding:12px 16px"><canvas id="chart-agg" height="120" width="740"></canvas></div>
+    <div style="padding:12px 16px"><canvas id="chart-agg" height="120" width="1506"></canvas></div>
   </div>
 </div>
 <!-- /grid -->
@@ -606,7 +620,7 @@
 <div id="view-analise" style="display: none;">
 
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <span id="wl-last-update" style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
+    <span id="wl-last-update" style="font-family:var(--mono);font-size:9px;color:var(--text3)">Atualizado: 17:42:35</span>
     <button class="btn" id="btn-wl-refresh" style="margin-top:0;padding:6px 14px;font-size:10px;width:auto">↻ Atualizar tudo</button>
   </div>
 
@@ -625,14 +639,7 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-gold"><tr><td colspan="4" style="text-align:center;padding:20px;font-family:var(--mono);font-size:11px;color:var(--warn)">
-      Precisas de uma API key gratuita do Twelve Data.<br><br>
-      1. Vai a <b>twelvedata.com</b> → <b>Get free API key</b><br>
-      2. Regista com email e copia a key<br>
-      3. Cola abaixo e clica Guardar<br><br>
-      <input type="text" id="td-key-input" placeholder="API key Twelve Data..." style="width:240px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;font-family:monospace;font-size:11px;padding:6px 8px;outline:none">
-      <button onclick="saveTDKey()" style="margin-left:6px;padding:6px 12px;background:transparent;border:1px solid #4ade80;border-radius:4px;color:#4ade80;font-family:monospace;font-size:11px;cursor:pointer">Guardar</button>
-    </td></tr></tbody>
+          <tbody id="wl-body-gold"><tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: HTTP 429</td></tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -648,7 +655,7 @@
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
               <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Gold rises on softer dollar, oil as markets weigh US-Iran peace optimism - Reuters</div>
+              <div class="news-headline">Gold climbs as Middle East ceasefire hopes pressure dollar, bond yields - Reuters</div>
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
@@ -688,14 +695,7 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-oil"><tr><td colspan="4" style="text-align:center;padding:20px;font-family:var(--mono);font-size:11px;color:var(--warn)">
-      Precisas de uma API key gratuita do Twelve Data.<br><br>
-      1. Vai a <b>twelvedata.com</b> → <b>Get free API key</b><br>
-      2. Regista com email e copia a key<br>
-      3. Cola abaixo e clica Guardar<br><br>
-      <input type="text" id="td-key-input" placeholder="API key Twelve Data..." style="width:240px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;font-family:monospace;font-size:11px;padding:6px 8px;outline:none">
-      <button onclick="saveTDKey()" style="margin-left:6px;padding:6px 12px;background:transparent;border:1px solid #4ade80;border-radius:4px;color:#4ade80;font-family:monospace;font-size:11px;cursor:pointer">Guardar</button>
-    </td></tr></tbody>
+          <tbody id="wl-body-oil"><tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: HTTP 429</td></tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -706,21 +706,7 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxOc1MxVmxxOVpxN1RDa08zQXM1TjdWOGJQZmZZUldMcFhHeVVjUGw5NC05cmM5U1dqX2xUcHVoenpaX1Y3bGdmemRHcVk0QUlvemRYSTl0eXluVjBTZnJTc2dIT0RnQS1YZlZCeVFDRDhxT2l2UFRBME1INzBoaUdaMEhtZV8yWHg0c2VwNjNoM1Y5S3hfYzh5Q1dqSTlrSm5aRlc2b1RMQW15aWg1ZzhIYl9NRW53YmpRWFl3ODZB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Iranian oil slips to discount on poor Chinese demand despite tighter supply - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>04/06, 08:41</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxQelotcDcwaGJYTDNsc0lKX2gtc1F5dVl0SUdZdWZqZ1ZBUGdLQmJHTWZ5WGxjUmxjZlJEa1VtaTdsX2V3Y0ptYmtwSkZhaExjQVdBTjBPTEM1bVp4dkt4MDlwTW5pTDhkN0ZvVFp0S2c2NkhDZ3IxTF9NVXAxbVlHcjdvanlVZGRxUDgzWjRlVUFtanVadF83MUxtOGFHNi15SUg0V2hXNEpKaHRpMm1kZGFfTGc2OWE2?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxQelotcDcwaGJYTDNsc0lKX2gtc1F5dVl0SUdZdWZqZ1ZBUGdLQmJHTWZ5WGxjUmxjZlJEa1VtaTdsX2V3Y0ptYmtwSkZhaExjQVdBTjBPTEM1bVp4dkt4MDlwTW5pTDhkN0ZvVFp0S2c2NkhDZ3IxTF9NVXAxbVlHcjdvanlVZGRxUDgzWjRlVUFtanVadF83MUxtOGFHNi15SUg0V2hXNEpKaHRpMm1kZGFfTGc2OWE2?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
@@ -729,21 +715,21 @@
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
-              <span>04/06, 07:07</span>
+              <span>04/06, 11:01</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
         </div>
-      </a><a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNSjhKMVBpMWNDenNvOHdVMjYtaTN3NEZLeWVsR0MyLWtxNGY0WjV2Z1libmZLOFRscU5RaUhtWnZka0JHRWpYbDZpNTJIUzJzRkdpV2Z0YVRyTUctMEVqUWtHVG1VMVlPMmhNWlJNMGNRUlQ4eWtiYlhQVkhWdFE5dnJkdzR6STlEakQ5bTRHUFlHbXUyYVNfSnRKTFltSE53eU9QZ1E0X0pHUHJMNXlB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+      </a><a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxOc1MxVmxxOVpxN1RDa08zQXM1TjdWOGJQZmZZUldMcFhHeVVjUGw5NC05cmM5U1dqX2xUcHVoenpaX1Y3bGdmemRHcVk0QUlvemRYSTl0eXluVjBTZnJTc2dIT0RnQS1YZlZCeVFDRDhxT2l2UFRBME1INzBoaUdaMEhtZV8yWHg0c2VwNjNoM1Y5S3hfYzh5Q1dqSTlrSm5aRlc2b1RMQW15aWg1ZzhIYl9NRW53YmpRWFl3ODZB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
               <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Gold rises on softer dollar, oil as markets weigh US-Iran peace optimism - Reuters</div>
+              <div class="news-headline">Iranian oil slips to discount on poor Chinese demand despite tighter supply - Reuters</div>
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
-              <span>04/06, 02:24</span>
+              <span>04/06, 10:03</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
@@ -753,7 +739,7 @@
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
               <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Stocks slide on flare-up in Middle East fighting; oil eases off highs - Reuters</div>
+              <div class="news-headline">Stocks struggle after Broadcom dive; oil drops off highs - Reuters</div>
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
@@ -767,39 +753,11 @@
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
               <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Oil falls as Lebanon and Israel agree to implement ceasefire - Reuters</div>
+              <div class="news-headline">Oil falls after Lebanon and Israel agree ceasefire - Reuters</div>
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
               <span>04/06, 01:43</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQeVllVU5TSEVpajhKb3hSRUx6NDY3bWU2cDJpaUtOMllscG9lckFqZzJrMEowQ0IxSENhamFtNjZuOXVGb2Ywd0VfSUhlTnUzRkR5dlJlNHI1ME02YnhJV1RWRk5PZml5QlRIRlRQWEZIMzNUYlBmQ183aGEzNXFZU3V3ZFFXb0dw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">World shares drop, oil jumps as Middle East unrest deepens - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>03/06, 21:49</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQRktPRENWZHRDVGluSHgybDl4djZHUEhxNDJOdzVFRjR0NzFNV3BlemJvLUxCSTBfeElPN0lBQ2FWVnNra1owTi0tR05NM3JaVnhDQzBxMDVUTVJhQ2ZPQUY5QldBa3hfbnJRLTlINk5BQkN3djFuVWlUVTFSUFJjd0Y4eWpCbXFmZ2k4b0xoRFhjcVAzLXd1MFZlSXJ0b0kxOUppUEwtN0JSdU91ZWVzM1RtMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Oil gains as Middle East hostilities flare - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>03/06, 20:12</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
@@ -827,7 +785,21 @@
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
-              <span>03/06, 12:58</span>
+              <span>03/06, 12:42</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiwAFBVV95cUxPTmpQdnJpZVM0UjFuSmtjSHhiYzdRRmhGTEhhM2NFVUFTUGh3MmdEY01abW1yUi05bjVHMzd4N2xlb200MjBweFN0N2ZxZU82N2p3UnR5ZFRDUnI4aFRCZ1QxQ1FnRTFLQ3dXUHhEYVJFSVBqbWZzdm8zb0F1MTROdXA2dnpKS3VscG5pNGhRU1pqWU5NX0plUjNFMmVyTXVLdk81Y01DVW9vdFl6cDNsNFJIZzEwdEFha3dORjd0UDQ?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Rouble's strength squeezes Russian exporters despite Iran war oil gains - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 09:55</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
@@ -902,6 +874,34 @@
             </div>
           </div>
         </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQeVllVU5TSEVpajhKb3hSRUx6NDY3bWU2cDJpaUtOMllscG9lckFqZzJrMEowQ0IxSENhamFtNjZuOXVGb2Ywd0VfSUhlTnUzRkR5dlJlNHI1ME02YnhJV1RWRk5PZml5QlRIRlRQWEZIMzNUYlBmQ183aGEzNXFZU3V3ZFFXb0dw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">World shares drop, oil jumps as Middle East unrest deepens - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 03:14</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQRktPRENWZHRDVGluSHgybDl4djZHUEhxNDJOdzVFRjR0NzFNV3BlemJvLUxCSTBfeElPN0lBQ2FWVnNra1owTi0tR05NM3JaVnhDQzBxMDVUTVJhQ2ZPQUY5QldBa3hfbnJRLTlINk5BQkN3djFuVWlUVTFSUFJjd0Y4eWpCbXFmZ2k4b0xoRFhjcVAzLXd1MFZlSXJ0b0kxOUppUEwtN0JSdU91ZWVzM1RtMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil gains as Middle East hostilities flare - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 01:36</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
       </a><a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxPZ092UV9OdWRIX2c1Yk9BM0V5dllqa0RIS1lmZHRBMnlZZE5FN0VJUC03R3p1WjEwcGdnRnNDQkNqT1JXVkRvbzllU185NzhRUzhsMEJpeS02Y2RCT3cwOHNDa3NQUkZKYi1iV1VKbWJtYktiWXR3RU5zUHZ3SGFjOUlqX3ZvaGRtMnZyMGs0eHFpTTJzM2VGcVhhMzF3MG9uQzN5Ng?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
@@ -933,14 +933,7 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-finance"><tr><td colspan="4" style="text-align:center;padding:20px;font-family:var(--mono);font-size:11px;color:var(--warn)">
-      Precisas de uma API key gratuita do Twelve Data.<br><br>
-      1. Vai a <b>twelvedata.com</b> → <b>Get free API key</b><br>
-      2. Regista com email e copia a key<br>
-      3. Cola abaixo e clica Guardar<br><br>
-      <input type="text" id="td-key-input" placeholder="API key Twelve Data..." style="width:240px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;font-family:monospace;font-size:11px;padding:6px 8px;outline:none">
-      <button onclick="saveTDKey()" style="margin-left:6px;padding:6px 12px;background:transparent;border:1px solid #4ade80;border-radius:4px;color:#4ade80;font-family:monospace;font-size:11px;cursor:pointer">Guardar</button>
-    </td></tr></tbody>
+          <tbody id="wl-body-finance"><tr><td colspan="4" style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: HTTP 429</td></tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -951,7 +944,217 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-finance" style="max-height:400px;overflow-y:auto"><div style="padding:24px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: undefined is not an object (evaluating 'NEWS_QUERIES[tab].map')</div></div>
+        <div id="news-body-finance" style="max-height:400px;overflow-y:auto"><a href="https://www.globenewswire.com/news-release/2026/06/04/3306944/0/en/Benedict-Roth-joins-SEDA-s-Risk-Management-Regulatory-Compliance-Practice.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Benedict Roth joins SEDA’s Risk Management &amp; Regulatory Compliance Practice</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>04/06, 16:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/04/3306903/0/en/ISG-Technology-Announces-Strategic-Acquisition-of-Taylored-Systems.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">ISG Technology Announces Strategic Acquisition of Taylored Systems</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>04/06, 15:05</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/04/3306654/0/en/US-Capital-Global-Announces-1-05-Billion-in-Recently-Closed-Financing-and-Advisory-Transactions.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">US Capital Global Announces $1.05 Billion in Recently Closed Financing and Advisory Transactions</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>04/06, 12:13</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/04/3306590/0/en/Auddia-Announces-First-Build-Milestones-for-McCarthy-Finney-Operating-System-MCFN-OS-Ahead-of-Proposed-Merger-Close.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Auddia Announces First Build Milestones for McCarthy Finney Operating System (MCFN-OS) Ahead of Proposed Merger Close</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>04/06, 11:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/04/3306505/0/en/gategroup-expands-European-network-with-acquisition-of-LSG-assets-in-Latvia-and-Estonia.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">gategroup expands European network with acquisition of LSG assets in Latvia and Estonia</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>04/06, 06:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3306447/0/en/News-Release-for-Early-Warning-Report-Regarding-Galantas-Gold-Corporation.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">News Release for Early Warning Report Regarding Galantas Gold Corporation</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 22:47</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://seekingalpha.com/news/4600393-destination-xl-gains-after-pausing-merger-with-fullbeauty-brands?utm_source=feed_news_m_a&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Destination XL gains after pausing merger with FullBeauty Brands</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">SeekingAlpha</span>
+              <span>03/06, 18:53</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3306334/0/fr/LEXIBOOK-Achat-d-un-bloc-d-actions-et-projet-d-OPAS.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">LEXIBOOK : Achat d'un bloc d'actions et projet d'OPAS</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 18:45</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3306072/0/en/Asyad-Group-Expands-Its-Global-Footprint-with-the-Acquisition-of-a-Controlling-Stake-in-Uzbekistan-s-Logistics-Platforms-Advancing-Trade-Corridors-Regional-Connectivity-Across-Cent.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neg" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">▼</span>
+              <div class="news-headline">Asyad Group Expands Its Global Footprint with the Acquisition of a Controlling Stake in Uzbekistan’s Logistics Platforms, Advancing Trade Corridors &amp; Regional Connectivity Across Central Asia</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 13:51</span>
+              <span class="news-sentiment-neg" style="font-weight:500">Potencial descida</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3306065/0/en/Manchester-based-Kool-It-joins-Nordic-Climate-Group.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Manchester-based Kool It joins Nordic Climate Group</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 13:39</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3306031/0/en/CORA-Group-Acquires-Finastra-s-Phoenix-Core-System-Malauzai-Digital-Banking-and-Fusion-Analytics-Businesses.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">CORA Group Acquires Finastra’s Phoenix Core System, Malauzai Digital Banking and Fusion Analytics Businesses</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 13:30</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3305999/0/en/Diginex-Provides-Update-on-Proposed-Resulticks-Acquisition.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Diginex Provides Update on Proposed Resulticks Acquisition</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 13:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3305969/0/en/1606-Corp-Advances-Power-Acquisition-as-Financing-Discussions-Accelerate.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">1606 Corp. Advances Power Acquisition as Financing Discussions Accelerate</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 13:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3305949/0/en/Angelini-Ventures-Marks-First-Portfolio-Company-Exit-as-ResMed-Acquires-Noctrix-Health-for-340-million.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Angelini Ventures Marks First Portfolio Company Exit as ResMed Acquires Noctrix Health for $340 million</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 12:40</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.globenewswire.com/news-release/2026/06/03/3305928/0/en/Destination-XL-Group-Provides-Update-on-Pending-Merger-with-FullBeauty-Brands.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Destination XL Group Provides Update on Pending Merger with FullBeauty Brands</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">GlobalNewswire</span>
+              <span>03/06, 12:02</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a></div>
       </div>
     </div>
 
@@ -1360,7 +1563,7 @@ function switchTab(tab) {
   );
   if (tab==='status')  renderStatus();
   if (tab==='analise') {
-    selWatchlist('gold');
+    loadWatchlistsSequential();
     startWlAutoRefresh();
     loadAllNews();
   }
@@ -1696,6 +1899,11 @@ async function loadWatchlist(key) {
   const wl   = WATCHLISTS[key];
   const apiKey = localStorage.getItem('twelvedata-key') || '';
 
+  if (IS_LOCAL) {
+    showLocalWarning('wl-body-'+key);
+    return;
+  }
+
   if (!apiKey) {
     tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;font-family:var(--mono);font-size:11px;color:var(--warn)">
       Precisas de uma API key gratuita do Twelve Data.<br><br>
@@ -1710,7 +1918,7 @@ async function loadWatchlist(key) {
 
   try {
     // Build batch request — Twelve Data supports up to 8 symbols per call
-    const batchSize = 8;
+    const batchSize = 32; // Twelve Data free: up to 800/day, batch all at once
     const allResults = {};
 
     for (let i = 0; i < wl.items.length; i += batchSize) {
@@ -1730,6 +1938,7 @@ async function loadWatchlist(key) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const d   = await r.json();
       if (d?.code === 401 || d?.status === 'error') throw new Error(d?.message || 'API key inválida');
+      if (d?.code === 429) throw new Error('Limite de chamadas atingido (429) — aguarda 1 minuto');
 
       console.log('TD response for', syms, ':', JSON.stringify(d).slice(0,300));
       validBatch.forEach(it => {
@@ -1775,9 +1984,9 @@ function saveTDKey() {
 function startWlAutoRefresh() {
   clearInterval(wlRefreshTimer);
   wlRefreshTimer = setInterval(()=>{
-    selWatchlist('gold');
+    loadWatchlistsSequential();
     loadAllNews();
-  }, 60000);
+  }, 300000); // 5 min to respect rate limits
 }
 
 // ── News ────────────────────────────────────────────────────────
@@ -1787,6 +1996,7 @@ let newsRefreshTimer = null;
 const NEWS_QUERIES = {
   gold:    ['gold','silver','precious metals','XAU','mining'],
   oil:     ['oil','crude','petroleum','energy','OPEC'],
+  finance: ['bank','finance','financial','merger','acquisition','rate','ECB','Fed'],
   general: ['stock market','economy','fed','interest rates','inflation']
 };
 
@@ -1807,6 +2017,11 @@ async function loadNews(tab) {
   body.innerHTML = '<div style="padding:24px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar notícias...</div>';
 
   const fhKey = localStorage.getItem('finnhub-key') || '';
+  if (IS_LOCAL) {
+    body.innerHTML = '<div style="padding:12px 16px;font-family:var(--mono);font-size:10px;color:var(--warn)">⚠ Notícias indisponíveis em modo local — usa o GitHub Pages.</div>';
+    return;
+  }
+
   if (!fhKey) {
     body.innerHTML = `<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--warn)">
       Cola a tua key do Finnhub no campo em baixo para ver notícias.<br><br>
@@ -1838,13 +2053,18 @@ async function loadNews(tab) {
     }
 
     // Filter by keywords
-    const kws = NEWS_QUERIES[tab].map(k=>k.toLowerCase());
-    const filtered = all.filter(n => {
+    const kws = (NEWS_QUERIES[tab] || NEWS_QUERIES['general']).map(k=>k.toLowerCase());
+    const safeAll = Array.isArray(all) ? all : [];
+    const filtered = safeAll.filter(n => {
       const text = ((n.headline||'')+(n.summary||'')).toLowerCase();
       return kws.some(k=>text.includes(k));
     }).slice(0,15);
 
-    const items = filtered.length ? filtered : all.slice(0,15);
+    const items = filtered.length ? filtered : safeAll.slice(0,15);
+    if (!items.length) {
+      body.innerHTML = '<div style="padding:16px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3)">Sem notícias de momento</div>';
+      return;
+    }
 
     // Classify sentiment per topic
     function classifySentiment(n, topicKws) {
@@ -1900,12 +2120,56 @@ function saveFHKey() {
   loadNews(activeNewsTab);
 }
 
+// ── Environment detection ────────────────────────────────────────
+const IS_LOCAL = location.protocol === 'file:';
+
+function mockQuoteRow(name) {
+  return `<tr>
+    <td style="text-align:left;font-size:11px">${name}</td>
+    <td style="font-size:11px;color:var(--text3)">—</td>
+    <td style="font-size:11px;color:var(--text3)">API indisponível localmente</td>
+  </tr>`;
+}
+
+function showLocalWarning(bodyId) {
+  const el = document.getElementById(bodyId);
+  if (!el) return;
+  el.innerHTML = `<tr><td colspan="3" style="padding:12px 14px;font-family:var(--mono);font-size:10px;color:var(--warn)">
+    ⚠ APIs bloqueadas em modo local (file://)<br>
+    <span style="color:var(--text3)">Abre pelo GitHub Pages para ver cotações e notícias em tempo real.</span>
+  </td></tr>`;
+}
+
+function toggleConfig() {
+  const sec = document.getElementById('config-section');
+  const arrow = document.getElementById('config-arrow');
+  const visible = sec.style.display !== 'none';
+  sec.style.display = visible ? 'none' : 'block';
+  arrow.textContent = visible ? '▼' : '▲';
+  try { localStorage.setItem('config-open', !visible); } catch(e) {}
+}
+
+async function loadWatchlistsSequential() {
+  const btn = document.getElementById('btn-wl-refresh');
+  if (btn) btn.disabled = true;
+
+  await loadWatchlist('gold');
+  await new Promise(r => setTimeout(r, 8000)); // wait 8s between calls
+  await loadWatchlist('oil');
+  await new Promise(r => setTimeout(r, 8000));
+  await loadWatchlist('finance');
+
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Atualizar tudo'; }
+  const upd = document.getElementById('wl-last-update');
+  if (upd) upd.textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-PT');
+}
+
 function init() {
   // Force clear any old localStorage keys from previous versions
   ['fundos.state','fundos.manualBalances','fundos.userEdits'].forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} });
   loadLS();
-  // Always default activeMonth to Jan 2026 (first month with data) on load
-  state.activeMonth = '2026-01';
+  // Always default activeMonth to current month on load
+  state.activeMonth = new Date().toISOString().slice(0,7);
   document.getElementById('today-date').value = state.today;
   document.getElementById('today-date').addEventListener('change', e=>{
     state.today=e.target.value;
@@ -1915,10 +2179,14 @@ function init() {
   });
   document.getElementById('btn-run').addEventListener('click', avancarUmDia);
   document.getElementById('btn-wl-refresh').addEventListener('click', ()=>{
-    selWatchlist('gold');
+    loadWatchlistsSequential();
     loadAllNews();
   });
   document.getElementById('btn-gh-save').addEventListener('click', saveToGitHub);
+  document.getElementById('btn-td-save').addEventListener('click', ()=>{
+    const k = document.getElementById('td-key-ctrl').value.trim();
+    if (k) { localStorage.setItem('twelvedata-key', k); setStatus('Key Twelve Data guardada','ok'); }
+  });
   document.getElementById('btn-fh-save').addEventListener('click', ()=>{
     const k = document.getElementById('fh-key-ctrl').value.trim();
     if (k) { localStorage.setItem('finnhub-key', k); setStatus('Key Finnhub guardada','ok'); }
@@ -1929,6 +2197,14 @@ function init() {
   try {
     const t = localStorage.getItem('gh-token'); if(t) document.getElementById('gh-token').value = t;
     const r = localStorage.getItem('gh-repo');  if(r) document.getElementById('gh-repo').value  = r;
+    // Restore Twelve Data key
+  try { const tk = localStorage.getItem('twelvedata-key'); if(tk) document.getElementById('td-key-ctrl').value=tk; } catch(e){}
+  // Restore config panel state
+    const open = localStorage.getItem('config-open');
+    if (open === 'true') {
+      document.getElementById('config-section').style.display = 'block';
+      document.getElementById('config-arrow').textContent = '▲';
+    }
   } catch(e){}
   document.getElementById('btn-export').addEventListener('click', exportData);
   document.getElementById('btn-import').addEventListener('change', e=>importData(e.target.files[0]));
