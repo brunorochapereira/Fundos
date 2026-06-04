@@ -231,7 +231,7 @@
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital disponível para investir</div>
         <div style="margin-bottom:6px;">
           <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" __gcruniqueid="2">
-          <span id="capital-restante" style="display:none">0.00</span>
+          <span id="capital-restante" style="display: none; color: var(--accent);">1&nbsp;000&nbsp;000,00</span>
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
@@ -289,8 +289,8 @@
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:14px">
           <div style="position:relative;width:36px;height:20px;flex-shrink:0">
             <input type="checkbox" id="flag-test" style="opacity:0;width:0;height:0;position:absolute">
-            <span id="ttrack" style="position:absolute;inset:0;background:var(--border2);border-radius:10px;transition:background .2s"></span>
-            <span id="tthumb" style="position:absolute;left:3px;top:3px;width:14px;height:14px;background:var(--text3);border-radius:50%;transition:left .2s,background .2s"></span>
+            <span id="ttrack" style="position: absolute; inset: 0px; background: var(--warn-dim); border-radius: 10px; transition: background 0.2s;"></span>
+            <span id="tthumb" style="position: absolute; left: 19px; top: 3px; width: 14px; height: 14px; background: var(--warn); border-radius: 50%; transition: left 0.2s, background 0.2s;"></span>
           </div>
           <span style="font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;user-select:none">Modo teste</span>
         </label>
@@ -344,7 +344,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -367,16 +367,16 @@
         </tr></thead>
         <tbody id="daily-body"><tr class="re-export">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
+      <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
       <td class="pc"><span class="pv">—</span></td>
       <td class="pc"><span class="pv">—</span></td>
       <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-01-jun</td>
       <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-01',this.value)" onblur="setBalance('2026-06-01',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-02-jun</td>
       <td><input type="text" class="bi" value="277908" inputmode="decimal" onchange="setBalance('2026-06-02',this.value)" onblur="setBalance('2026-06-02',this.value)"></td>
@@ -510,7 +510,7 @@
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel"><div class="le"><span class="lts">20:20:27</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:27</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:24</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:20:17</span><span class="lm ">─── execução: 03/06/2026 ───</span></div></div>
+      <div class="lp" id="log-panel"><div class="le"><span class="lts">02:52:06</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">─── execução: 04/06/2026 ───</span></div></div>
     </div>
   </div>
 </div>
@@ -518,16 +518,86 @@
 </div><!-- /view-diary -->
 
 <!-- STATUS VIEW -->
-<div id="view-status" style="display:none">
-  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-top"></div>
-  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-mid"></div>
+<div id="view-status" style="display: none;">
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-top"><div class="kpi-card"><div class="kk">Avg Daily Return</div><div class="kv pos">0,2524 %</div></div><div class="kpi-card"><div class="kk">Max Daily Return</div><div class="kv pos">9,1150 %</div><div class="kv2">22&nbsp;797,00 €</div></div><div class="kpi-card"><div class="kk">Max Daily Loss</div><div class="kv neg">-6,2577 %</div><div class="kv2">-17&nbsp;772,00 €</div></div><div class="kpi-card"><div class="kk">Cumulative Return</div><div class="kv pos">28,1568 %</div></div><div class="kpi-card"><div class="kk">Losing Trades</div><div class="kv neg">42</div></div><div class="kpi-card"><div class="kk">Winning Trades</div><div class="kv pos">51</div></div></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-mid"><div class="kpi-card"><div class="kk">YTD PnL</div><div class="kv pos">61&nbsp;058,00 €</div></div><div class="kpi-card"><div class="kk">Current Equity</div><div class="kv ">277&nbsp;908,00 €</div></div><div class="kpi-card"><div class="kk">Peak Equity</div><div class="kv pos">293&nbsp;092,00 €</div></div><div class="kpi-card"><div class="kk">Peak Equity Date</div><div class="kv ">seg-26-jan</div></div><div class="kpi-card"><div class="kk">Gross Profit</div><div class="kv pos">213&nbsp;485,00 €</div></div><div class="kpi-card"><div class="kk">Gross Loss</div><div class="kv neg">-152&nbsp;427,00 €</div></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
-    <div id="kpi-quarters"></div>
-    <div id="kpi-weekdays"></div>
+    <div id="kpi-quarters"><div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Quarterly breakdown</span></div>
+    <table class="q-table">
+      <thead><tr><th></th><th>Gross</th><th>Fee (10%)</th><th>PT Tax (28%)</th><th>All taxes</th><th>Net result</th></tr></thead>
+      <tbody><tr>
+        <td>Q1</td>
+        <td class="pos">56&nbsp;663 €</td>
+        <td>5666 €</td>
+        <td>14&nbsp;279 €</td>
+        <td>19&nbsp;945 €</td>
+        <td class="pos">36&nbsp;718 €</td>
+      </tr><tr>
+        <td>Q2</td>
+        <td class="pos">4395 €</td>
+        <td>440 €</td>
+        <td>1108 €</td>
+        <td>1547 €</td>
+        <td class="pos">2848 €</td>
+      </tr><tr>
+        <td>Q3</td>
+        <td class="pos">0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td class="pos">0 €</td>
+      </tr><tr>
+        <td>Q4</td>
+        <td class="pos">0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td class="pos">0 €</td>
+      </tr></tbody>
+    </table></div></div>
+    <div id="kpi-weekdays"><div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--warn)"></div><span class="label">Wins / Losses por dia</span></div>
+    <div style="padding:12px 16px"><div class="wd-row">
+        <span class="wd-label">Mon</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:68%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">15W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:32%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">7L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">68%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Tue</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:59%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">13W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:41%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">9L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">59%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Wed</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:64%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">14W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:32%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">7L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">67%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Thu</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:55%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">12W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:41%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">9L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">57%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Fri</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:55%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">12W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:45%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">10L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">55%</span>
+      </div></div></div></div>
   </div>
   <div class="panel">
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Agg SUM — todos os dias</span></div>
-    <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
+    <div style="padding:12px 16px"><canvas id="chart-agg" height="120" width="740"></canvas></div>
   </div>
 </div>
 <!-- /grid -->
