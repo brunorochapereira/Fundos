@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
+<html lang="pt"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundos — Availability</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#0f0f10; --surface:#18181b; --surface2:#222226;
@@ -212,7 +210,7 @@
   <button class="tab-btn" id="tab-analise" onclick="switchTab('analise')">Análise</button>
 </div>
 
-<div id="view-diary">
+<div id="view-diary" style="">
 <div class="grid">
   <!-- LEFT: CONTROLO -->
   <div>
@@ -226,7 +224,7 @@
           </div>
           <div style="flex:1;">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Última exec.</div>
-            <input type="text" id="last-run" readonly placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
           </div>
         </div>
         <div class="divider"></div>
@@ -237,9 +235,54 @@
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
-        <div class="fblock" id="faj-Gold"></div>
-        <div class="fblock" id="faj-Oil"></div>
-        <div class="fblock" id="faj-Finance"></div>
+        <div class="fblock" id="faj-Gold">
+      <div style="border:1px solid rgba(245,197,66,0.35);border-radius:6px;background:rgba(245,197,66,0.08);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#f5c542">●</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f5c542;letter-spacing:.06em">Gold</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Gold',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Gold',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Oil">
+      <div style="border:1px solid rgba(100,100,120,0.4);border-radius:6px;background:rgba(30,30,35,0.6);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#94a3b8">◆</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Oil',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Finance">
+      <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#4ade80">▲</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#4ade80;letter-spacing:.06em">Finance</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Finance',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Finance',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
+        </div>
+      </div></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run">▶ Avançar um dia</button>
         <div class="divider" style="margin-top:14px"></div>
@@ -278,7 +321,7 @@
         <input type="password" id="fh-key-ctrl" placeholder="Key Finnhub..." style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;margin-bottom:6px">
         <button class="btn" id="btn-fh-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Finnhub</button>
 
-        <div class="sb" id="status-bar"></div>
+        <div class="sb warn" id="status-bar">A guardar...</div>
       </div>
     </div>
   </div>
@@ -301,7 +344,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -312,7 +355,7 @@
           <div class="dot" style="background:var(--accent)"></div>
           <span class="label">Registo diário</span>
         </div>
-        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"><button class="mt active" onclick="selMonth('2026-01')">Jan 26</button><button class="mt " onclick="selMonth('2026-02')">Fev 26</button><button class="mt " onclick="selMonth('2026-03')">Mar 26</button><button class="mt " onclick="selMonth('2026-04')">Abr 26</button><button class="mt " onclick="selMonth('2026-05')">Mai 26</button><button class="mt " onclick="selMonth('2026-06')">Jun 26</button><button class="mt " onclick="selMonth('2026-07')">Jul 26</button><button class="mt " onclick="selMonth('2026-08')">Ago 26</button><button class="mt " onclick="selMonth('2026-09')">Set 26</button><button class="mt " onclick="selMonth('2026-10')">Out 26</button><button class="mt " onclick="selMonth('2026-11')">Nov 26</button><button class="mt " onclick="selMonth('2026-12')">Dez 26</button></div>
       </div>
       <table id="daily-table">
         <thead><tr>
@@ -322,16 +365,152 @@
           <th>Agg SUM</th>
           <th>Interests</th>
         </tr></thead>
-        <tbody id="daily-body"></tbody>
+        <tbody id="daily-body"><tr class="re-export">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
+      <td><input type="text" class="bi" value="216850" inputmode="decimal" onchange="setBalance('2026-01-EXPORT',this.value)" onblur="setBalance('2026-01-EXPORT',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-01-jan</td>
+      <td><input type="text" class="bi" value="216850" inputmode="decimal" onchange="setBalance('2026-01-01',this.value)" onblur="setBalance('2026-01-01',this.value)"></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-02-jan</td>
+      <td><input type="text" class="bi" value="216850" inputmode="decimal" onchange="setBalance('2026-01-02',this.value)" onblur="setBalance('2026-01-02',this.value)"></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-05-jan</td>
+      <td><input type="text" class="bi" value="215483" inputmode="decimal" onchange="setBalance('2026-01-05',this.value)" onblur="setBalance('2026-01-05',this.value)"></td>
+      <td class="pc neg" style="--bw:6.9%"><span class="pv">-0,6304 %</span></td>
+      <td class="pc neg" style="--bw:4.0%"><span class="pv">-0,6304 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-1367,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-06-jan</td>
+      <td><input type="text" class="bi" value="216367" inputmode="decimal" onchange="setBalance('2026-01-06',this.value)" onblur="setBalance('2026-01-06',this.value)"></td>
+      <td class="pc pos" style="--bw:4.5%"><span class="pv">0,4102 %</span></td>
+      <td class="pc neg" style="--bw:4.0%"><span class="pv">-0,2227 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">884,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-07-jan</td>
+      <td><input type="text" class="bi" value="230153" inputmode="decimal" onchange="setBalance('2026-01-07',this.value)" onblur="setBalance('2026-01-07',this.value)"></td>
+      <td class="pc pos" style="--bw:69.9%"><span class="pv">6,3716 %</span></td>
+      <td class="pc pos" style="--bw:17.4%"><span class="pv">6,1347 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">13&nbsp;786,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-08-jan</td>
+      <td><input type="text" class="bi" value="223795" inputmode="decimal" onchange="setBalance('2026-01-08',this.value)" onblur="setBalance('2026-01-08',this.value)"></td>
+      <td class="pc neg" style="--bw:30.3%"><span class="pv">-2,7625 %</span></td>
+      <td class="pc pos" style="--bw:9.1%"><span class="pv">3,2027 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-6358,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-09-jan</td>
+      <td><input type="text" class="bi" value="224148" inputmode="decimal" onchange="setBalance('2026-01-09',this.value)" onblur="setBalance('2026-01-09',this.value)"></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,1577 %</span></td>
+      <td class="pc pos" style="--bw:9.6%"><span class="pv">3,3655 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">353,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-12-jan</td>
+      <td><input type="text" class="bi" value="228466" inputmode="decimal" onchange="setBalance('2026-01-12',this.value)" onblur="setBalance('2026-01-12',this.value)"></td>
+      <td class="pc pos" style="--bw:21.1%"><span class="pv">1,9264 %</span></td>
+      <td class="pc pos" style="--bw:15.2%"><span class="pv">5,3567 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">4318,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-13-jan</td>
+      <td><input type="text" class="bi" value="235000" inputmode="decimal" onchange="setBalance('2026-01-13',this.value)" onblur="setBalance('2026-01-13',this.value)"></td>
+      <td class="pc pos" style="--bw:31.4%"><span class="pv">2,8599 %</span></td>
+      <td class="pc pos" style="--bw:23.8%"><span class="pv">8,3698 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">6534,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-14-jan</td>
+      <td><input type="text" class="bi" value="242727" inputmode="decimal" onchange="setBalance('2026-01-14',this.value)" onblur="setBalance('2026-01-14',this.value)"></td>
+      <td class="pc pos" style="--bw:36.1%"><span class="pv">3,2881 %</span></td>
+      <td class="pc pos" style="--bw:33.9%"><span class="pv">11,9331 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">7727,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-15-jan</td>
+      <td><input type="text" class="bi" value="248973" inputmode="decimal" onchange="setBalance('2026-01-15',this.value)" onblur="setBalance('2026-01-15',this.value)"></td>
+      <td class="pc pos" style="--bw:28.2%"><span class="pv">2,5733 %</span></td>
+      <td class="pc pos" style="--bw:42.1%"><span class="pv">14,8135 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">6246,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-16-jan</td>
+      <td><input type="text" class="bi" value="250125" inputmode="decimal" onchange="setBalance('2026-01-16',this.value)" onblur="setBalance('2026-01-16',this.value)"></td>
+      <td class="pc pos" style="--bw:5.1%"><span class="pv">0,4627 %</span></td>
+      <td class="pc pos" style="--bw:43.6%"><span class="pv">15,3447 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1152,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-19-jan</td>
+      <td><input type="text" class="bi" value="250125" inputmode="decimal" onchange="setBalance('2026-01-19',this.value)" onblur="setBalance('2026-01-19',this.value)"></td>
+      <td class="pc " style="--bw:0.0%"><span class="pv">0,0000 %</span></td>
+      <td class="pc pos" style="--bw:43.6%"><span class="pv">15,3447 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-20-jan</td>
+      <td><input type="text" class="bi" value="249766" inputmode="decimal" onchange="setBalance('2026-01-20',this.value)" onblur="setBalance('2026-01-20',this.value)"></td>
+      <td class="pc neg" style="--bw:4.0%"><span class="pv">-0,1435 %</span></td>
+      <td class="pc pos" style="--bw:43.2%"><span class="pv">15,1792 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-359,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-21-jan</td>
+      <td><input type="text" class="bi" value="258015" inputmode="decimal" onchange="setBalance('2026-01-21',this.value)" onblur="setBalance('2026-01-21',this.value)"></td>
+      <td class="pc pos" style="--bw:36.2%"><span class="pv">3,3027 %</span></td>
+      <td class="pc pos" style="--bw:54.0%"><span class="pv">18,9832 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">8249,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-22-jan</td>
+      <td><input type="text" class="bi" value="250103" inputmode="decimal" onchange="setBalance('2026-01-22',this.value)" onblur="setBalance('2026-01-22',this.value)"></td>
+      <td class="pc neg" style="--bw:33.6%"><span class="pv">-3,0665 %</span></td>
+      <td class="pc pos" style="--bw:43.6%"><span class="pv">15,3346 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-7912,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-23-jan</td>
+      <td><input type="text" class="bi" value="272900" inputmode="decimal" onchange="setBalance('2026-01-23',this.value)" onblur="setBalance('2026-01-23',this.value)"></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">9,1150 %</span></td>
+      <td class="pc pos" style="--bw:73.5%"><span class="pv">25,8474 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">22&nbsp;797,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-26-jan</td>
+      <td><input type="text" class="bi" value="293092" inputmode="decimal" onchange="setBalance('2026-01-26',this.value)" onblur="setBalance('2026-01-26',this.value)"></td>
+      <td class="pc pos" style="--bw:81.2%"><span class="pv">7,3990 %</span></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">35,1589 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">20&nbsp;192,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-27-jan</td>
+      <td><input type="text" class="bi" value="280000" inputmode="decimal" onchange="setBalance('2026-01-27',this.value)" onblur="setBalance('2026-01-27',this.value)"></td>
+      <td class="pc neg" style="--bw:49.0%"><span class="pv">-4,4669 %</span></td>
+      <td class="pc pos" style="--bw:82.8%"><span class="pv">29,1215 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-13&nbsp;092,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-28-jan</td>
+      <td><input type="text" class="bi" value="282244" inputmode="decimal" onchange="setBalance('2026-01-28',this.value)" onblur="setBalance('2026-01-28',this.value)"></td>
+      <td class="pc pos" style="--bw:8.8%"><span class="pv">0,8014 %</span></td>
+      <td class="pc pos" style="--bw:85.8%"><span class="pv">30,1563 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">2244,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-29-jan</td>
+      <td><input type="text" class="bi" value="283070" inputmode="decimal" onchange="setBalance('2026-01-29',this.value)" onblur="setBalance('2026-01-29',this.value)"></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,2927 %</span></td>
+      <td class="pc pos" style="--bw:86.9%"><span class="pv">30,5372 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">826,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-30-jan</td>
+      <td><input type="text" class="bi" value="284000" inputmode="decimal" onchange="setBalance('2026-01-30',this.value)" onblur="setBalance('2026-01-30',this.value)"></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,3285 %</span></td>
+      <td class="pc pos" style="--bw:88.1%"><span class="pv">30,9661 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">930,00</td>
+    </tr></tbody>
       </table>
     </div>
 
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel">
-        <div class="le"><span class="lts">—</span><span class="lm">aguarda primeira execução</span></div>
-      </div>
+      <div class="lp" id="log-panel"><div class="le"><span class="lts">20:10:15</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:15</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:13</span><span class="lm ">─── execução: 03/06/2026 ───</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">20:10:11</span><span class="lm ">─── execução: 03/06/2026 ───</span></div></div>
     </div>
   </div>
 </div>
@@ -351,13 +530,13 @@
     <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
   </div>
 </div>
-</div><!-- /grid -->
+<!-- /grid -->
 
 <!-- ANÁLISE VIEW -->
-<div id="view-analise" style="display:none">
+<div id="view-analise" style="display: none;">
 
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <span id="wl-last-update" style="font-family:var(--mono);font-size:9px;color:var(--text3)">—</span>
+    <span id="wl-last-update" style="font-family:var(--mono);font-size:9px;color:var(--text3)">Atualizado: 02:34:40</span>
     <button class="btn" id="btn-wl-refresh" style="margin-top:0;padding:6px 14px;font-size:10px;width:auto">↻ Atualizar tudo</button>
   </div>
 
@@ -376,7 +555,59 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-gold"></tbody>
+          <tbody id="wl-body-gold"><tr>
+        <td style="text-align:left;font-size:11px">EUR/USD</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Jupiter Gold &amp; Silver Fund</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Philadelphia Gold/Silver</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Ouro (Gold)</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Discovery Silver</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Sprott Physical Silver</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Sprott Gold &amp; Silver Trust</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Wheaton Precious Metals</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Lundin Gold</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Sprott Physical Gold</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">First Majestic Silver</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Agnico Eagle Mines</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Alamos Gold</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -387,7 +618,49 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-gold" style="max-height:400px;overflow-y:auto"></div>
+        <div id="news-body-gold" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOZWktXzNXcDhfMDBUY0x6UVFFcE8xX090ZC1xY3BHN0ZZaUhCNUxvS0FFaDFOTHAxUTFjTHpmdmhnN1pBaXhxVUkyX0JubHBXQVlXQ2NFM0x6M19hZWFEVkxncVhkOTNsanY4SHBHTnE5VWQycWd0NlV6WWJwaGVhTkU4UjRGb3FRNnA5a2pFSWxOb3Bwa2NZM3BCYTFhcEQwaXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold falls on stronger dollar, oil amid renewed Middle East hostilities - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 02:27</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.bloomberg.com/news/articles/2026-06-02/rbi-may-have-sold-gold-to-save-foreign-reserves-be-report-shows" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">RBI may have sold gold to save foreign reserves, BE report shows</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Bloomberg</span>
+              <span>02/06, 08:14</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxPWVVWNVNodVFSeXdsWW9GZ1o4WnJKc0pqbkN4NGhBVkVOV3RqcXRQMDJfZHVHUUk4YWpGZFB5TGhCNmxBdXE0U20tRW0zMlNjYlBuenpIcVdoa0txQjNzb3lCNnZhWGpfOWZPUTM0WFBMVTdxM0dRUWVacnJzNjJsc3Fhb3hNWXZRLVUySkg2eHU2U3VEVG9zY3BLQXFva1lFeVhqLVhHQnFJZUhO?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold steadies with focus on Middle East developments, US economic data - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 02:12</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a></div>
       </div>
     </div>
 
@@ -404,7 +677,55 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-oil"></tbody>
+          <tbody id="wl-body-oil"><tr>
+        <td style="text-align:left;font-size:11px">GS North America Energy</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">DJ Oil &amp; Gas</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Petróleo Bruto WTI</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Exxon Mobil</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Targa Resources</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Chevron</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Williams Companies</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Alerian MLP ETF</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Kinder Morgan</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Plains GP Holdings</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Enbridge</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">ONEOK</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -415,7 +736,203 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"></div>
+        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOWXp5amEyQkJobk50XzU5VjVwZkpVa2pPb2JGNy1RZmIyWXc5VzN4amlrci1fZHd2aFZmSDBxRU5SSXl1S0c0ZG9aSHRPYTJtNjRpTXpmZGZCLXFVMzNoSGluTTR1NXNRSjhIeGk3cHVnMVdZRllXUHFiVFFubm9aR1N3TGdtVV9UWVVTaC15VFJyaTQ2RHpCYkc1X0NYUl9DNHNSc3NWak5LZDVCcVNVblk5SjdZb0VYY3c?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">US crude stocks fall on strong export, refining demand, EIA says, as Iran war continues - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 16:48</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMi1AFBVV95cUxNd2d6OElSLW9aQzVoaTVmZUFjSVhkUzB6bWxVcHpiQ2JyYnNmRUFjWmhsUDFfczFNalkwMERzbnNpSXFBQjhjRnFHV242RElYdDFZdFBDemUzc1hsSU40WmloSkxCRDFwWTh6OTcwa1pNblQyanh5UDNPQUk0TWZVV3BVSDZMODlXQnhqU1FvclRlcHJUclYtY3RmenN1OTRKM3JoNEFWYkt2SVQxdHR1aDZqeGxUSDZlU0hZWWNTTFp6MDFMWUxuQ1VqYzB6Y3I2dnRsbg?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">EU could lose 1.3 million jobs due to energy price surge linked to Iran war, Commission says - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 12:58</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.cnbc.com/2026/06/03/cbs-fires-scott-pelley-amid-turmoil-over-direction-of-60-minutes.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">CBS fires veteran correspondent Scott Pelley amid turmoil over direction of '60 Minutes'</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">CNBC</span>
+              <span>03/06, 06:39</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxQVHNaaWpvUFFyM0NmalRYSERwYlVOUlQyT1dZc2JYclFNUjdMVXdTUi1hMm9fR1dobVVwQ2NXbjRYNE8xeDA3THA4LVFBZWYxWWdUY1k1S21yX3U3Z1pOSU9JMi1reThBSWpTeGNyazFoaklBZVhKUlowVEJ2clJQbHIxQXd5OTY3U2JCNHlVRTRLR2pnTUp1ekJBN2d6WTVicGhqOEVLQXd5VGRqUlo0amJhd3BZNGtQSE9r?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Rupee dented by oil price jump, equity weakness; likely RBI intervention caps losses - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 03:47</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxOZ3NXSTV1QkRlSEVDSlZ2eFB1NmZZWjcwN0lXMGJSWms1SDlIWWFrNjRJVDc2SHIzYjBpQVhvY3ZzMUZtbkRjMGNMNlRrVklPeEY1OERjNnRKRTZ0OUJBU1FuYkNQU08waHNoRUxRQnV6TUQ0WGZKV2FBdDhScWgya0prdVdfaktzZDBNa09ta2xKaGxRbldNTHZyM0JKcHJaNG1leG9YUS0tWURTOTd2NW05OHBpb183S0JV?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Indian shares trim losses on foreign inflow hopes; IT sinks, oil surges - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 03:33</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQeVllVU5TSEVpajhKb3hSRUx6NDY3bWU2cDJpaUtOMllscG9lckFqZzJrMEowQ0IxSENhamFtNjZuOXVGb2Ywd0VfSUhlTnUzRkR5dlJlNHI1ME02YnhJV1RWRk5PZml5QlRIRlRQWEZIMzNUYlBmQ183aGEzNXFZU3V3ZFFXb0dw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">World shares drop, oil jumps as Middle East unrest deepens - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 03:14</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOZWktXzNXcDhfMDBUY0x6UVFFcE8xX090ZC1xY3BHN0ZZaUhCNUxvS0FFaDFOTHAxUTFjTHpmdmhnN1pBaXhxVUkyX0JubHBXQVlXQ2NFM0x6M19hZWFEVkxncVhkOTNsanY4SHBHTnE5VWQycWd0NlV6WWJwaGVhTkU4UjRGb3FRNnA5a2pFSWxOb3Bwa2NZM3BCYTFhcEQwaXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold falls on stronger dollar, oil amid renewed Middle East hostilities - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 02:27</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQRktPRENWZHRDVGluSHgybDl4djZHUEhxNDJOdzVFRjR0NzFNV3BlemJvLUxCSTBfeElPN0lBQ2FWVnNra1owTi0tR05NM3JaVnhDQzBxMDVUTVJhQ2ZPQUY5QldBa3hfbnJRLTlINk5BQkN3djFuVWlUVTFSUFJjd0Y4eWpCbXFmZ2k4b0xoRFhjcVAzLXd1MFZlSXJ0b0kxOUppUEwtN0JSdU91ZWVzM1RtMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil gains as Middle East hostilities flare - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 01:36</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxPZ092UV9OdWRIX2c1Yk9BM0V5dllqa0RIS1lmZHRBMnlZZE5FN0VJUC03R3p1WjEwcGdnRnNDQkNqT1JXVkRvbzllU185NzhRUzhsMEJpeS02Y2RCT3cwOHNDa3NQUkZKYi1iV1VKbWJtYktiWXR3RU5zUHZ3SGFjOUlqX3ZvaGRtMnZyMGs0eHFpTTJzM2VGcVhhMzF3MG9uQzN5Ng?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Hostilities flare in Iran war, oil jumps with talks at a stalemate - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 00:24</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMitAFBVV95cUxPMkZaWGJPbHBSQnUxdWZ6U3l6a3otSGFQSVNoTmpQNWJORWEtZ1dXeE42NGp2c2s4anV6UVFYenhsNHcycHh5UnhYUTJLRFlIbS1ONElzNzBCT2RsX0ROZVh4RXk3SmhKQmc0UXlFa1l4Sm5admU2LUNkdWxaZENkSmN3ZHJnbU1UYTJDbHZUdUJiNFFJZ3lfOTJmTnFKV21LQXZxcE1sWUF3TGZ5N3A4ZFROTTU?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-pos" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">▲</span>
+              <div class="news-headline">Oil prices rise to one-week high as Iran reviews US proposal to halt war - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 20:55</span>
+              <span class="news-sentiment-pos" style="font-weight:500">Potencial subida</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMirgFBVV95cUxNMmQ5LU1ZWmd4RjRzSXpBUXhHWWZfcmxNN2RVeWduSkJZX0VnZ0t6eHRBVUpFLWVoVUlINmVTTlJfOW9fVmVsM3N2QWg1dmtiNDhIZVJibm9qbjc3SGJpMzhfTWhHR05oWUpaLWtFUno5SWdZanAyeUZLOVpQVEdna1hpaHA5S19DOWcxV2hHeVAwamdvR1JmVV9PYXZpMzF3OWRyTUwyUy05ZThoT0E?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">ADNOC trading chief flags August as tipping point for oil prices - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 11:46</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMivAFBVV95cUxOSHJFdk1BZk0xSmdacWlHSzBuNmk2MWtuRmgwTnB3RFVoOEppcVlVQmoteWFpaHlibEpubFp3eWlfc2MxS2ZMNENWcktTTk9hN3pNMmxvSnRYOVVkWmtSNXp5X0dabGwtT3RqVkxHU2hOVXJNTEs5dW5sTTdEa3VKQW5ValFPeGdPczRaTkNWVVRJZXU0UnY0bjRGVXIzTHZkbXNmQnRBN1l0bE5VVV9yZFY3U2REMDJ6dFZTXw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">China seen tapping deeper into oil stockpiles as imports hit decade-low - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 10:23</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMirgFBVV95cUxQLWdEUWljM0MwWXJVUGZSTGlVdlc5MEpOMzBYOEQ2dG1SNmtIUUJUaXk0TWhyMUFuWE02cEJLM1MyallBQlVYd3lXdWM3ZWtUU1ltOWI1SzdfZUwxUFpxMjExNWpibF9fRGgzT215SDFRU1VqbUJDV0VhWXV4Skk5LU9qb0l1aDFNaFltaGMzdElCeFoxZzdMMVU2RmJoWlFwS25FUGU0VUluQld0NHc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil products shipments exit Hormuz, LNG tanker loads at UAE - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 10:12</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxQRVRBMG5hd0lkV1NwQUpSWWtfdWF3WU5DR0xSblF2T01qdzlOTmI1MDFzczdzRXVfTVRzX2Y5TUVxamJqNlExUGVodEFnR3NNemxkMndGalZjQUlTeEVLeFhYdGpuNFYwekFBWEVPc3FTQTFpVEJvcFlIaGkzOTZEYmRBVWRWRUYyeUpFZzFCMVhReWQtb0NqR1VmQWx2UnNCcXpfR3BIbTdxX09qU3ZV?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Indian shares snap losing run on IT boost; oil dips after Trump comments - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>02/06, 03:27</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a></div>
       </div>
     </div>
 
@@ -432,7 +949,43 @@
             <th>Preço</th>
             <th>Var %</th>
           </tr></thead>
-          <tbody id="wl-body-finance"></tbody>
+          <tbody id="wl-body-finance"><tr>
+        <td style="text-align:left;font-size:11px">Jupiter Global Fund</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">DJ Banks</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Santander</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Barclays</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">UniCredit</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Bank of Cyprus</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">HSBC</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Lloyds Banking</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr><tr>
+        <td style="text-align:left;font-size:11px">Lion Finance / BGEO</td>
+        <td style="font-size:11px">—</td>
+        <td class="wl-zero" style="font-size:11px">—</td>
+      </tr></tbody>
         </table>
       </div>
       <div class="panel">
@@ -443,7 +996,7 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-finance" style="max-height:400px;overflow-y:auto"></div>
+        <div id="news-body-finance" style="max-height:400px;overflow-y:auto"><div style="padding:24px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--danger)">Erro: Cannot read properties of undefined (reading 'map')</div></div>
       </div>
     </div>
 
@@ -1427,5 +1980,6 @@ function init() {
 
 init();
 </script>
-</body>
-</html>
+
+
+</body></html>
