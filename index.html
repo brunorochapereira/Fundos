@@ -258,7 +258,7 @@
             <span style="font-size:14px;color:#94a3b8">◆</span>
             <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
           </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">100&nbsp;000,00</span></span>
         </div>
         <div class="fbtns">
           <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
@@ -289,8 +289,8 @@
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:14px">
           <div style="position:relative;width:36px;height:20px;flex-shrink:0">
             <input type="checkbox" id="flag-test" style="opacity:0;width:0;height:0;position:absolute">
-            <span id="ttrack" style="position: absolute; inset: 0px; background: var(--warn-dim); border-radius: 10px; transition: background 0.2s;"></span>
-            <span id="tthumb" style="position: absolute; left: 19px; top: 3px; width: 14px; height: 14px; background: var(--warn); border-radius: 50%; transition: left 0.2s, background 0.2s;"></span>
+            <span id="ttrack" style="position: absolute; inset: 0px; background: var(--border2); border-radius: 10px; transition: background 0.2s;"></span>
+            <span id="tthumb" style="position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; background: var(--text3); border-radius: 50%; transition: left 0.2s, background 0.2s;"></span>
           </div>
           <span style="font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;user-select:none">Modo teste</span>
         </label>
@@ -344,7 +344,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td class="col-hide"><span class="vp">100&nbsp;000,00</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="va">100&nbsp;000,00</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -385,16 +385,16 @@
       <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">0,00</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-03-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+      <td><input type="text" class="bi" value="277966" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
+      <td class="pc pos" style="--bw:4.0%"><span class="pv">0,0209 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">58,00</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-04-jun</td>
-      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td class="pc"><span class="pv">—</span></td>
-      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+      <td><input type="text" class="bi" value="279597" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,5868 %</span></td>
+      <td class="pc pos" style="--bw:100.0%"><span class="pv">0,6078 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1631,00</td>
     </tr><tr class="">
       <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-05-jun</td>
       <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-05',this.value)" onblur="setBalance('2026-06-05',this.value)"></td>
@@ -510,7 +510,7 @@
     <!-- Log -->
     <div class="panel">
       <div class="ph"><div class="dot"></div><span class="label">Log de execuções</span></div>
-      <div class="lp" id="log-panel"><div class="le"><span class="lts">02:52:06</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">─── execução: 04/06/2026 ───</span></div></div>
+      <div class="lp" id="log-panel"><div class="le"><span class="lts">09:54:25</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm hi">Oil: shift ok | disp: 100&nbsp;000,00</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">09:54:25</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">09:54:21</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">09:54:13</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">09:53:46</span><span class="lm ">Bloqueada — já executada hoje.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:06</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:52:01</span><span class="lm ">─── execução: 04/06/2026 ───</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Concluída.</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Finance: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Oil: investimento 100&nbsp;000,00 → Subscrito</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">Gold: shift ok</span></div><div class="le"><span class="lts">02:51:58</span><span class="lm ">─── execução: 04/06/2026 ───</span></div></div>
     </div>
   </div>
 </div>
@@ -643,44 +643,30 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-gold" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOZWktXzNXcDhfMDBUY0x6UVFFcE8xX090ZC1xY3BHN0ZZaUhCNUxvS0FFaDFOTHAxUTFjTHpmdmhnN1pBaXhxVUkyX0JubHBXQVlXQ2NFM0x6M19hZWFEVkxncVhkOTNsanY4SHBHTnE5VWQycWd0NlV6WWJwaGVhTkU4UjRGb3FRNnA5a2pFSWxOb3Bwa2NZM3BCYTFhcEQwaXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div id="news-body-gold" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNSjhKMVBpMWNDenNvOHdVMjYtaTN3NEZLeWVsR0MyLWtxNGY0WjV2Z1libmZLOFRscU5RaUhtWnZka0JHRWpYbDZpNTJIUzJzRkdpV2Z0YVRyTUctMEVqUWtHVG1VMVlPMmhNWlJNMGNRUlQ4eWtiYlhQVkhWdFE5dnJkdzR6STlEakQ5bTRHUFlHbXUyYVNfSnRKTFltSE53eU9QZ1E0X0pHUHJMNXlB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
               <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Gold falls on stronger dollar, oil amid renewed Middle East hostilities - Reuters</div>
+              <div class="news-headline">Gold rises on softer dollar, oil as markets weigh US-Iran peace optimism - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 02:24</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOZWktXzNXcDhfMDBUY0x6UVFFcE8xX090ZC1xY3BHN0ZZaUhCNUxvS0FFaDFOTHAxUTFjTHpmdmhnN1pBaXhxVUkyX0JubHBXQVlXQ2NFM0x6M19hZWFEVkxncVhkOTNsanY4SHBHTnE5VWQycWd0NlV6WWJwaGVhTkU4UjRGb3FRNnA5a2pFSWxOb3Bwa2NZM3BCYTFhcEQwaXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold slips on bets of higher rates as war fuels inflation fears - Reuters</div>
             </div>
             <div class="news-meta">
               <span class="news-source">Reuters</span>
               <span>03/06, 02:27</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://www.bloomberg.com/news/articles/2026-06-02/rbi-may-have-sold-gold-to-save-foreign-reserves-be-report-shows" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">RBI may have sold gold to save foreign reserves, BE report shows</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Bloomberg</span>
-              <span>02/06, 08:14</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMirAFBVV95cUxPWVVWNVNodVFSeXdsWW9GZ1o4WnJKc0pqbkN4NGhBVkVOV3RqcXRQMDJfZHVHUUk4YWpGZFB5TGhCNmxBdXE0U20tRW0zMlNjYlBuenpIcVdoa0txQjNzb3lCNnZhWGpfOWZPUTM0WFBMVTdxM0dRUWVacnJzNjJsc3Fhb3hNWXZRLVUySkg2eHU2U3VEVG9zY3BLQXFva1lFeVhqLVhHQnFJZUhO?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Gold steadies with focus on Middle East developments, US economic data - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 02:12</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
@@ -720,7 +706,105 @@
           </div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
         </div>
-        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOWXp5amEyQkJobk50XzU5VjVwZkpVa2pPb2JGNy1RZmIyWXc5VzN4amlrci1fZHd2aFZmSDBxRU5SSXl1S0c0ZG9aSHRPYTJtNjRpTXpmZGZCLXFVMzNoSGluTTR1NXNRSjhIeGk3cHVnMVdZRllXUHFiVFFubm9aR1N3TGdtVV9UWVVTaC15VFJyaTQ2RHpCYkc1X0NYUl9DNHNSc3NWak5LZDVCcVNVblk5SjdZb0VYY3c?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div id="news-body-oil" style="max-height:400px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxOc1MxVmxxOVpxN1RDa08zQXM1TjdWOGJQZmZZUldMcFhHeVVjUGw5NC05cmM5U1dqX2xUcHVoenpaX1Y3bGdmemRHcVk0QUlvemRYSTl0eXluVjBTZnJTc2dIT0RnQS1YZlZCeVFDRDhxT2l2UFRBME1INzBoaUdaMEhtZV8yWHg0c2VwNjNoM1Y5S3hfYzh5Q1dqSTlrSm5aRlc2b1RMQW15aWg1ZzhIYl9NRW53YmpRWFl3ODZB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Iranian oil slips to discount on poor Chinese demand despite tighter supply - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 08:41</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiuAFBVV95cUxQelotcDcwaGJYTDNsc0lKX2gtc1F5dVl0SUdZdWZqZ1ZBUGdLQmJHTWZ5WGxjUmxjZlJEa1VtaTdsX2V3Y0ptYmtwSkZhaExjQVdBTjBPTEM1bVp4dkt4MDlwTW5pTDhkN0ZvVFp0S2c2NkhDZ3IxTF9NVXAxbVlHcjdvanlVZGRxUDgzWjRlVUFtanVadF83MUxtOGFHNi15SUg0V2hXNEpKaHRpMm1kZGFfTGc2OWE2?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">More oil escapes Hormuz, keeping traders guessing - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 07:07</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxNSjhKMVBpMWNDenNvOHdVMjYtaTN3NEZLeWVsR0MyLWtxNGY0WjV2Z1libmZLOFRscU5RaUhtWnZka0JHRWpYbDZpNTJIUzJzRkdpV2Z0YVRyTUctMEVqUWtHVG1VMVlPMmhNWlJNMGNRUlQ4eWtiYlhQVkhWdFE5dnJkdzR6STlEakQ5bTRHUFlHbXUyYVNfSnRKTFltSE53eU9QZ1E0X0pHUHJMNXlB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold rises on softer dollar, oil as markets weigh US-Iran peace optimism - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 02:24</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMigwFBVV95cUxPMGphS3NPLVBWc1FHMDZFdklTMS1VQ2tzOE5zQnlOaXJaUTdwcW13VjNfUkowNnljUmhDTUhuNy0xS05sdVNkTmZqS1F0dDVCYkoyR053M05IR1c5QWFyR0RrY3BDcEtFS0NaRFZxTkhER0N6eHByMlJLTzdBeW8yOFFYSQ?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Stocks slide on flare-up in Middle East fighting; oil eases off highs - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 01:43</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxOVjFnWWJPa2JCQmk0aWtNQ0VrdVdDellpTDRJLUk2ckpvcV9GZGdxVEJkNEJmZ25BU3Rwd3NXV0ZmNkNjOEZSdVllSTl1cWx2bVFjVUV0bXBST3RXU01pSGxWb19qVGpsdjFzRHdBYUxablpCZXg2WGdnOUFVN21zRjlzZVBWeUh3YlFzVUdEZEhTanBTNDdFdFZZSV9ubG9qemN1TQ?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil falls as Lebanon and Israel agree to implement ceasefire - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>04/06, 01:43</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQeVllVU5TSEVpajhKb3hSRUx6NDY3bWU2cDJpaUtOMllscG9lckFqZzJrMEowQ0IxSENhamFtNjZuOXVGb2Ywd0VfSUhlTnUzRkR5dlJlNHI1ME02YnhJV1RWRk5PZml5QlRIRlRQWEZIMzNUYlBmQ183aGEzNXFZU3V3ZFFXb0dw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">World shares drop, oil jumps as Middle East unrest deepens - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 21:49</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQRktPRENWZHRDVGluSHgybDl4djZHUEhxNDJOdzVFRjR0NzFNV3BlemJvLUxCSTBfeElPN0lBQ2FWVnNra1owTi0tR05NM3JaVnhDQzBxMDVUTVJhQ2ZPQUY5QldBa3hfbnJRLTlINk5BQkN3djFuVWlUVTFSUFJjd0Y4eWpCbXFmZ2k4b0xoRFhjcVAzLXd1MFZlSXJ0b0kxOUppUEwtN0JSdU91ZWVzM1RtMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil gains as Middle East hostilities flare - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 20:12</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiugFBVV95cUxOWXp5amEyQkJobk50XzU5VjVwZkpVa2pPb2JGNy1RZmIyWXc5VzN4amlrci1fZHd2aFZmSDBxRU5SSXl1S0c0ZG9aSHRPYTJtNjRpTXpmZGZCLXFVMzNoSGluTTR1NXNRSjhIeGk3cHVnMVdZRllXUHFiVFFubm9aR1N3TGdtVV9UWVVTaC15VFJyaTQ2RHpCYkc1X0NYUl9DNHNSc3NWak5LZDVCcVNVblk5SjdZb0VYY3c?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
             <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
@@ -762,6 +846,34 @@
             </div>
           </div>
         </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiygFBVV95cUxPcDFFaDBlQjhXbE11S3hsMVBaX1ZEeFpNVDRIUkh1Mm1sUkNqbml5c2Zab2ptVEs1bWdEd1hBNk5vY2t3Q1VidmhxNjIzNUtHWGExQXVFVHI5cHJxOE1VbUdnT0FlQTNoSG8zTU5jd0syM2d6emZyR1UzQzdMMWxvQW5RMjhTcjMwN19PRVRGNmpnVnVwU2QtZmQ1ZUtxYS1yaHpKTUFzbTVNd2dJOUlzODNHMWxmdnhxREdfbVpvZGFEN1pYeE9Vd01B?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">UAE non-oil business growth picks up in May but war and Hormuz standoff weigh, PMI shows - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>03/06, 05:21</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.bloomberg.com/news/articles/2026-06-03/india-s-oil-demand-growth-set-for-pandemic-low-on-war-crunch" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">India’s oil demand growth set for pandemic low on war crunch</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Bloomberg</span>
+              <span>03/06, 04:55</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
       </a><a href="https://news.google.com/rss/articles/CBMiuwFBVV95cUxQVHNaaWpvUFFyM0NmalRYSERwYlVOUlQyT1dZc2JYclFNUjdMVXdTUi1hMm9fR1dobVVwQ2NXbjRYNE8xeDA3THA4LVFBZWYxWWdUY1k1S21yX3U3Z1pOSU9JMi1reThBSWpTeGNyazFoaklBZVhKUlowVEJ2clJQbHIxQXd5OTY3U2JCNHlVRTRLR2pnTUp1ekJBN2d6WTVicGhqOEVLQXd5VGRqUlo0amJhd3BZNGtQSE9r?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
@@ -790,48 +902,6 @@
             </div>
           </div>
         </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxQeVllVU5TSEVpajhKb3hSRUx6NDY3bWU2cDJpaUtOMllscG9lckFqZzJrMEowQ0IxSENhamFtNjZuOXVGb2Ywd0VfSUhlTnUzRkR5dlJlNHI1ME02YnhJV1RWRk5PZml5QlRIRlRQWEZIMzNUYlBmQ183aGEzNXFZU3V3ZFFXb0dw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">World shares drop, oil jumps as Middle East unrest deepens - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>03/06, 03:14</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiogFBVV95cUxOZWktXzNXcDhfMDBUY0x6UVFFcE8xX090ZC1xY3BHN0ZZaUhCNUxvS0FFaDFOTHAxUTFjTHpmdmhnN1pBaXhxVUkyX0JubHBXQVlXQ2NFM0x6M19hZWFEVkxncVhkOTNsanY4SHBHTnE5VWQycWd0NlV6WWJwaGVhTkU4UjRGb3FRNnA5a2pFSWxOb3Bwa2NZM3BCYTFhcEQwaXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Gold falls on stronger dollar, oil amid renewed Middle East hostilities - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>03/06, 02:27</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQRktPRENWZHRDVGluSHgybDl4djZHUEhxNDJOdzVFRjR0NzFNV3BlemJvLUxCSTBfeElPN0lBQ2FWVnNra1owTi0tR05NM3JaVnhDQzBxMDVUTVJhQ2ZPQUY5QldBa3hfbnJRLTlINk5BQkN3djFuVWlUVTFSUFJjd0Y4eWpCbXFmZ2k4b0xoRFhjcVAzLXd1MFZlSXJ0b0kxOUppUEwtN0JSdU91ZWVzM1RtMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Oil gains as Middle East hostilities flare - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>03/06, 01:36</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
       </a><a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxPZ092UV9OdWRIX2c1Yk9BM0V5dllqa0RIS1lmZHRBMnlZZE5FN0VJUC03R3p1WjEwcGdnRnNDQkNqT1JXVkRvbzllU185NzhRUzhsMEJpeS02Y2RCT3cwOHNDa3NQUkZKYi1iV1VKbWJtYktiWXR3RU5zUHZ3SGFjOUlqX3ZvaGRtMnZyMGs0eHFpTTJzM2VGcVhhMzF3MG9uQzN5Ng?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
         <div class="news-item">
           <div class="news-content">
@@ -842,76 +912,6 @@
             <div class="news-meta">
               <span class="news-source">Reuters</span>
               <span>03/06, 00:24</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMitAFBVV95cUxPMkZaWGJPbHBSQnUxdWZ6U3l6a3otSGFQSVNoTmpQNWJORWEtZ1dXeE42NGp2c2s4anV6UVFYenhsNHcycHh5UnhYUTJLRFlIbS1ONElzNzBCT2RsX0ROZVh4RXk3SmhKQmc0UXlFa1l4Sm5admU2LUNkdWxaZENkSmN3ZHJnbU1UYTJDbHZUdUJiNFFJZ3lfOTJmTnFKV21LQXZxcE1sWUF3TGZ5N3A4ZFROTTU?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-pos" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">▲</span>
-              <div class="news-headline">Oil prices rise to one-week high as Iran reviews US proposal to halt war - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 20:55</span>
-              <span class="news-sentiment-pos" style="font-weight:500">Potencial subida</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMirgFBVV95cUxNMmQ5LU1ZWmd4RjRzSXpBUXhHWWZfcmxNN2RVeWduSkJZX0VnZ0t6eHRBVUpFLWVoVUlINmVTTlJfOW9fVmVsM3N2QWg1dmtiNDhIZVJibm9qbjc3SGJpMzhfTWhHR05oWUpaLWtFUno5SWdZanAyeUZLOVpQVEdna1hpaHA5S19DOWcxV2hHeVAwamdvR1JmVV9PYXZpMzF3OWRyTUwyUy05ZThoT0E?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">ADNOC trading chief flags August as tipping point for oil prices - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 11:46</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMivAFBVV95cUxOSHJFdk1BZk0xSmdacWlHSzBuNmk2MWtuRmgwTnB3RFVoOEppcVlVQmoteWFpaHlibEpubFp3eWlfc2MxS2ZMNENWcktTTk9hN3pNMmxvSnRYOVVkWmtSNXp5X0dabGwtT3RqVkxHU2hOVXJNTEs5dW5sTTdEa3VKQW5ValFPeGdPczRaTkNWVVRJZXU0UnY0bjRGVXIzTHZkbXNmQnRBN1l0bE5VVV9yZFY3U2REMDJ6dFZTXw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">China seen tapping deeper into oil stockpiles as imports hit decade-low - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 10:23</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMirgFBVV95cUxQLWdEUWljM0MwWXJVUGZSTGlVdlc5MEpOMzBYOEQ2dG1SNmtIUUJUaXk0TWhyMUFuWE02cEJLM1MyallBQlVYd3lXdWM3ZWtUU1ltOWI1SzdfZUwxUFpxMjExNWpibF9fRGgzT215SDFRU1VqbUJDV0VhWXV4Skk5LU9qb0l1aDFNaFltaGMzdElCeFoxZzdMMVU2RmJoWlFwS25FUGU0VUluQld0NHc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Oil products shipments exit Hormuz, LNG tanker loads at UAE - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 10:12</span>
-              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
-            </div>
-          </div>
-        </div>
-      </a><a href="https://news.google.com/rss/articles/CBMirwFBVV95cUxQRVRBMG5hd0lkV1NwQUpSWWtfdWF3WU5DR0xSblF2T01qdzlOTmI1MDFzczdzRXVfTVRzX2Y5TUVxamJqNlExUGVodEFnR3NNemxkMndGalZjQUlTeEVLeFhYdGpuNFYwekFBWEVPc3FTQTFpVEJvcFlIaGkzOTZEYmRBVWRWRUYyeUpFZzFCMVhReWQtb0NqR1VmQWx2UnNCcXpfR3BIbTdxX09qU3ZV?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
-        <div class="news-item">
-          <div class="news-content">
-            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
-              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
-              <div class="news-headline">Indian shares snap losing run on IT boost; oil dips after Trump comments - Reuters</div>
-            </div>
-            <div class="news-meta">
-              <span class="news-source">Reuters</span>
-              <span>02/06, 03:27</span>
               <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
             </div>
           </div>
