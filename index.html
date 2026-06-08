@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
+<html lang="pt"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundos — Availability</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:#0f0f10; --surface:#18181b; --surface2:#222226;
@@ -219,21 +217,21 @@
     tbody td{font-size:10px;padding:5px}
   }
 </style>
-</head>
-<body>
+<style>undefined</style><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="use-credentials"><link rel="preconnect" href="https://fonts.gstatic.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&amp;display=swa"></head>
+<body data-new-gr-c-s-check-loaded="14.1299.0" data-gr-ext-installed="">
 <header>
   <h1>FUNDOS / AVAILABILITY</h1>
   <span>MACRO: AVANÇAR UM DIA</span>
 </header>
 
 <div style="display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid var(--border);">
-  <button class="tab-btn active" id="tab-advisor" onclick="switchTab('advisor')">Advisor</button>
-  <button class="tab-btn" id="tab-diary" onclick="switchTab('diary')">Diary</button>
+  <button class="tab-btn" id="tab-advisor" onclick="switchTab('advisor')">Advisor</button>
+  <button class="tab-btn active" id="tab-diary" onclick="switchTab('diary')">Diary</button>
   <button class="tab-btn" id="tab-status" onclick="switchTab('status')">Status</button>
   <button class="tab-btn" id="tab-log" onclick="switchTab('log')">Log</button>
 </div>
 
-<div id="view-diary">
+<div id="view-diary" style="">
 <div class="grid">
   <!-- LEFT: CONTROLO -->
   <div>
@@ -247,7 +245,7 @@
           </div>
           <div style="flex:1;">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Última exec.</div>
-            <input type="text" id="last-run" readonly placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+            <input type="text" id="last-run" readonly="" placeholder="—" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
           </div>
         </div>
         <div class="divider"></div>
@@ -258,9 +256,54 @@
         </div>
         <div class="divider"></div>
         <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
-        <div class="fblock" id="faj-Gold"></div>
-        <div class="fblock" id="faj-Oil"></div>
-        <div class="fblock" id="faj-Finance"></div>
+        <div class="fblock" id="faj-Gold">
+      <div style="border:1px solid rgba(245,197,66,0.35);border-radius:6px;background:rgba(245,197,66,0.08);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#f5c542">●</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f5c542;letter-spacing:.06em">Gold</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Gold',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Gold',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Oil">
+      <div style="border:1px solid rgba(100,100,120,0.4);border-radius:6px;background:rgba(30,30,35,0.6);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#94a3b8">◆</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Oil',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()">
+        </div>
+      </div></div>
+        <div class="fblock" id="faj-Finance">
+      <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#4ade80">▲</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#4ade80;letter-spacing:.06em">Finance</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Finance',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Finance',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
+        </div>
+      </div></div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run">▶ Avançar um dia</button>
         <div class="divider" style="margin-top:14px"></div>
@@ -275,10 +318,10 @@
         <div class="divider" style="margin-top:14px"></div>
         <button id="btn-toggle-config" style="width:100%;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:7px;cursor:pointer;margin-top:14px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between" onclick="toggleConfig()">
           <span>Configurações</span>
-          <span id="config-arrow">▼</span>
+          <span id="config-arrow">▲</span>
         </button>
 
-        <div id="config-section" style="display:none">
+        <div id="config-section" style="display: block;">
           <div style="display:flex;gap:6px;margin-top:10px">
             <button class="btn" id="btn-export" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1">↓ Export</button>
             <label class="btn" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;cursor:pointer;text-align:center">
@@ -316,7 +359,7 @@
           <button class="btn" id="btn-fh-save" style="border-color:var(--border2);color:var(--text2);margin-top:0;font-size:10px;padding:7px">Guardar key Finnhub</button>
         </div>
 
-        <div class="sb" id="status-bar"></div>
+        <div class="sb warn" id="status-bar">A guardar...</div>
       </div>
     </div>
   </div>
@@ -339,7 +382,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td class="col-hide"><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -350,7 +393,7 @@
           <div class="dot" style="background:var(--accent)"></div>
           <span class="label">Registo diário</span>
         </div>
-        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"></div>
+        <div id="month-tabs" style="display:flex;gap:4px;flex-wrap:wrap"><button class="mt " onclick="selMonth('2026-01')">Jan 26</button><button class="mt " onclick="selMonth('2026-02')">Fev 26</button><button class="mt " onclick="selMonth('2026-03')">Mar 26</button><button class="mt " onclick="selMonth('2026-04')">Abr 26</button><button class="mt " onclick="selMonth('2026-05')">Mai 26</button><button class="mt active" onclick="selMonth('2026-06')">Jun 26</button><button class="mt " onclick="selMonth('2026-07')">Jul 26</button><button class="mt " onclick="selMonth('2026-08')">Ago 26</button><button class="mt " onclick="selMonth('2026-09')">Set 26</button><button class="mt " onclick="selMonth('2026-10')">Out 26</button><button class="mt " onclick="selMonth('2026-11')">Nov 26</button><button class="mt " onclick="selMonth('2026-12')">Dez 26</button></div>
       </div>
       <table id="daily-table">
         <thead><tr>
@@ -360,7 +403,145 @@
           <th>Agg SUM</th>
           <th>Interests</th>
         </tr></thead>
-        <tbody id="daily-body"></tbody>
+        <tbody id="daily-body"><tr class="re-export">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">Export mês anterior</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-EXPORT',this.value)" onblur="setBalance('2026-06-EXPORT',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-01-jun</td>
+      <td><input type="text" class="bi" value="250034" inputmode="decimal" onchange="setBalance('2026-06-01',this.value)" onblur="setBalance('2026-06-01',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-02-jun</td>
+      <td><input type="text" class="bi" value="245532" inputmode="decimal" onchange="setBalance('2026-06-02',this.value)" onblur="setBalance('2026-06-02',this.value)"></td>
+      <td class="pc neg" style="--bw:100.0%"><span class="pv">-1,8006 %</span></td>
+      <td class="pc neg" style="--bw:100.0%"><span class="pv">-1,8006 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-4502,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-03-jun</td>
+      <td><input type="text" class="bi" value="247174" inputmode="decimal" onchange="setBalance('2026-06-03',this.value)" onblur="setBalance('2026-06-03',this.value)"></td>
+      <td class="pc pos" style="--bw:37.1%"><span class="pv">0,6688 %</span></td>
+      <td class="pc neg" style="--bw:63.5%"><span class="pv">-1,1438 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1642,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-04-jun</td>
+      <td><input type="text" class="bi" value="248520" inputmode="decimal" onchange="setBalance('2026-06-04',this.value)" onblur="setBalance('2026-06-04',this.value)"></td>
+      <td class="pc pos" style="--bw:30.2%"><span class="pv">0,5446 %</span></td>
+      <td class="pc neg" style="--bw:33.6%"><span class="pv">-0,6055 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--accent)">1346,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-05-jun</td>
+      <td><input type="text" class="bi" value="247675" inputmode="decimal" onchange="setBalance('2026-06-05',this.value)" onblur="setBalance('2026-06-05',this.value)"></td>
+      <td class="pc neg" style="--bw:18.9%"><span class="pv">-0,3400 %</span></td>
+      <td class="pc neg" style="--bw:52.4%"><span class="pv">-0,9435 %</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--danger)">-845,00</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-08-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-08',this.value)" onblur="setBalance('2026-06-08',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-09-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-09',this.value)" onblur="setBalance('2026-06-09',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-10-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-10',this.value)" onblur="setBalance('2026-06-10',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-11-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-11',this.value)" onblur="setBalance('2026-06-11',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-12-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-12',this.value)" onblur="setBalance('2026-06-12',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-15-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-15',this.value)" onblur="setBalance('2026-06-15',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-16-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-16',this.value)" onblur="setBalance('2026-06-16',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-17-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-17',this.value)" onblur="setBalance('2026-06-17',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-18-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-18',this.value)" onblur="setBalance('2026-06-18',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-19-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-19',this.value)" onblur="setBalance('2026-06-19',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-22-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-22',this.value)" onblur="setBalance('2026-06-22',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-23-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-23',this.value)" onblur="setBalance('2026-06-23',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qua-24-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-24',this.value)" onblur="setBalance('2026-06-24',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">qui-25-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-25',this.value)" onblur="setBalance('2026-06-25',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">sex-26-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-26',this.value)" onblur="setBalance('2026-06-26',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">seg-29-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-29',this.value)" onblur="setBalance('2026-06-29',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr><tr class="">
+      <td style="text-align:left;font-family:var(--mono);font-size:12px">ter-30-jun</td>
+      <td><input type="text" class="bi" value="" inputmode="decimal" onchange="setBalance('2026-06-30',this.value)" onblur="setBalance('2026-06-30',this.value)"></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td class="pc"><span class="pv">—</span></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:13px;color:var(--text3)">—</td>
+    </tr></tbody>
       </table>
     </div>
 
@@ -377,38 +558,108 @@
 </div><!-- /view-diary -->
 
 <!-- STATUS VIEW -->
-<div id="view-status" style="display:none">
-  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-top"></div>
-  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-mid"></div>
+<div id="view-status" style="display: none;">
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-top"><div class="kpi-card"><div class="kk">Avg Daily Return</div><div class="kv pos">0,1515 %</div></div><div class="kpi-card"><div class="kk">Max Daily Return</div><div class="kv pos">1,9685 %</div><div class="kv2">4247,00 €</div></div><div class="kpi-card"><div class="kk">Max Daily Loss</div><div class="kv neg">-1,9960 %</div><div class="kv2">-4317,00 €</div></div><div class="kpi-card"><div class="kk">Cumulative Return</div><div class="kv pos">17,9585 %</div></div><div class="kpi-card"><div class="kk">Losing Trades</div><div class="kv neg">44</div></div><div class="kpi-card"><div class="kk">Winning Trades</div><div class="kv pos">67</div></div></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem" id="kpi-mid"><div class="kpi-card"><div class="kk">YTD PnL</div><div class="kv pos">37&nbsp;707,00 €</div></div><div class="kpi-card"><div class="kk">Current Equity</div><div class="kv ">247&nbsp;675,00 €</div></div><div class="kpi-card"><div class="kk">Peak Equity</div><div class="kv pos">250&nbsp;034,00 €</div></div><div class="kpi-card"><div class="kk">Peak Equity Date</div><div class="kv ">seg-01-jun</div></div><div class="kpi-card"><div class="kk">Gross Profit</div><div class="kv pos">92&nbsp;856,00 €</div></div><div class="kpi-card"><div class="kk">Gross Loss</div><div class="kv neg">-55&nbsp;149,00 €</div></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
-    <div id="kpi-quarters"></div>
-    <div id="kpi-weekdays"></div>
+    <div id="kpi-quarters"><div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Quarterly breakdown</span></div>
+    <table class="q-table">
+      <thead><tr><th></th><th>Gross</th><th>Fee (10%)</th><th>PT Tax (28%)</th><th>All taxes</th><th>Net result</th></tr></thead>
+      <tbody><tr>
+        <td>Q1</td>
+        <td class="pos">13&nbsp;933 €</td>
+        <td>1393 €</td>
+        <td>3511 €</td>
+        <td>4904 €</td>
+        <td class="pos">9029 €</td>
+      </tr><tr>
+        <td>Q2</td>
+        <td class="pos">23&nbsp;774 €</td>
+        <td>2377 €</td>
+        <td>5991 €</td>
+        <td>8368 €</td>
+        <td class="pos">15&nbsp;406 €</td>
+      </tr><tr>
+        <td>Q3</td>
+        <td class="pos">0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td class="pos">0 €</td>
+      </tr><tr>
+        <td>Q4</td>
+        <td class="pos">0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td>0 €</td>
+        <td class="pos">0 €</td>
+      </tr></tbody>
+    </table></div></div>
+    <div id="kpi-weekdays"><div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--warn)"></div><span class="label">Wins / Losses por dia</span></div>
+    <div style="padding:12px 16px"><div class="wd-row">
+        <span class="wd-label">Mon</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:57%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">13W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:39%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">9L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">59%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Tue</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:52%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">12W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:43%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">10L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">55%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Wed</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:48%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">11W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:48%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">11L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">50%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Thu</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:61%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">14W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:35%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">8L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">64%</span>
+      </div><div class="wd-row">
+        <span class="wd-label">Fri</span>
+        <div class="wd-bar-wrap"><div class="wd-bar" style="width:74%"></div></div>
+        <span class="wd-nums" style="color:var(--accent)">17W</span>
+        <div class="wd-bar-wrap"><div class="wd-bar neg" style="width:26%"></div></div>
+        <span class="wd-nums" style="color:var(--danger)">6L</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text3);width:36px;text-align:right">74%</span>
+      </div></div></div></div>
   </div>
   <div class="panel">
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Agg SUM — todos os dias</span></div>
-    <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
+    <div style="padding:12px 16px"><canvas id="chart-agg" height="120" width="1822"></canvas></div>
   </div>
 </div>
-</div><!-- /grid -->
+<!-- /grid -->
 
 <!-- ADVISOR VIEW -->
-<div id="view-advisor" style="display:none">
+<div id="view-advisor" style="display: none;">
 
   <!-- Header bar -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-    <div id="advisor-data-ts" style="font-family:var(--mono);font-size:10px;color:var(--text3)">—</div>
+    <div id="advisor-data-ts" style="font-family:var(--mono);font-size:10px;color:var(--text3)">Análise: segunda, 08/06, 19:00</div>
     <div style="display:flex;gap:8px;align-items:center">
       <div id="advisor-mockup-flag" style="display:none;font-family:var(--mono);font-size:10px;color:var(--warn);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:3px 10px;letter-spacing:.06em">⚠ DADOS DE TESTE</div>
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;user-select:none">
         <span>Dados de teste</span>
         <div style="position:relative;width:34px;height:18px;flex-shrink:0">
           <input type="checkbox" id="flag-test-data" style="opacity:0;width:0;height:0;position:absolute">
-          <span id="test-data-track" style="position:absolute;inset:0;background:var(--border2);border-radius:10px;transition:background .2s"></span>
-          <span id="test-data-thumb" style="position:absolute;left:3px;top:3px;width:12px;height:12px;background:var(--text3);border-radius:50%;transition:left .2s,background .2s"></span>
+          <span id="test-data-track" style="position: absolute; inset: 0px; background: var(--border2); border-radius: 10px; transition: background 0.2s;"></span>
+          <span id="test-data-thumb" style="position: absolute; left: 3px; top: 3px; width: 12px; height: 12px; background: var(--text3); border-radius: 50%; transition: left 0.2s, background 0.2s;"></span>
         </div>
-        <span id="test-data-state">OFF</span>
+        <span id="test-data-state" style="color: var(--text3);">OFF</span>
       </label>
-      <button id="btn-load-test-data" onclick="loadTestData()" disabled style="font-family:var(--mono);font-size:10px;color:var(--text3);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:3px 10px;cursor:not-allowed;opacity:.45">⚗ Carregar dados teste</button>
+      <button id="btn-load-test-data" onclick="loadTestData()" style="font-family: var(--mono); font-size: 10px; color: var(--text3); background: transparent; border-color: var(--border2); border-top-style: ; border-top-width: ; border-right-style: ; border-right-width: ; border-bottom-style: ; border-bottom-width: ; border-left-style: ; border-left-width: ; border-image-source: ; border-image-slice: ; border-image-width: ; border-image-outset: ; border-image-repeat: ; border-radius: 4px; padding: 3px 10px; cursor: not-allowed; opacity: 0.45;" disabled="">⚗ Carregar dados teste</button>
       <button id="btn-clear-test-data" onclick="clearTestData()" style="font-family:var(--mono);font-size:10px;color:var(--danger);background:transparent;border:1px solid rgba(248,113,113,0.3);border-radius:4px;padding:3px 10px;cursor:pointer">✕ Limpar dados teste</button>
     </div>
   </div>
@@ -417,12 +668,12 @@
   <div style="display:flex;gap:8px;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
     <button onclick="fetchFromServer()" id="btn-server-fetch" style="font-family:var(--mono);font-size:10px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);color:var(--accent);border-radius:4px;padding:6px 14px;cursor:pointer">🔄 Actualizar dados (localhost:3004)</button>
     <input type="text" id="server-url-input" value="http://localhost:3004/all" style="font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text2);padding:5px 8px;width:220px;outline:none">
-    <span id="server-fetch-status" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+    <span id="server-fetch-status" style="font-family: var(--mono); font-size: 9px; color: var(--accent);">✓ 4 valores injectados às 18:59</span>
   </div>
 
   <!-- Image slots per fund -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch">
-    <div class="panel" style="min-height:160px">
+    <div class="panel" style="min-height: 142px;">
       <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2)">
         <div class="dot" style="background:#f5c542"></div>
         <span class="label" style="color:#f5c542">📷 Imagem Gold</span>
@@ -435,7 +686,7 @@
         <button class="btn" style="margin-top:6px;font-size:10px;padding:6px;border-color:rgba(245,197,66,0.3);color:#f5c542" onclick="advExtractSlot('gold')">✦ Extrair → Advisor</button>
       </div>
     </div>
-    <div class="panel" style="min-height:160px">
+    <div class="panel" style="min-height: 142px;">
       <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2)">
         <div class="dot" style="background:#94a3b8"></div>
         <span class="label" style="color:#94a3b8">📷 Imagem Oil</span>
@@ -455,7 +706,7 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch" id="advisor-grid">
 
     <!-- GOLD -->
-    <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel" style="display: flex; flex-direction: column; min-height: 384px;">
       <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f5c542"></div>
@@ -463,11 +714,55 @@
         </div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 09:00</span>
       </div>
-      <div style="padding:16px;height:100%;box-sizing:border-box" id="advisor-gold"></div>
+      <div style="padding:16px;height:100%;box-sizing:border-box" id="advisor-gold">
+    <div class="signal-box signal-neutral">
+      <div class="signal-title">→ NEUTRO</div>
+      <div class="signal-sub">Aguardar — sinal inconclusivo</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px">⚠ Passou das 09:00 — cotação de amanhã</div>
+      
+      
+      
+        <div class="score-bar-wrap"><div class="score-bar" style="width:50%;background:var(--warn)"></div></div>
+        <div style="font-family:var(--mono);font-size:10px;opacity:.7">Score: 50 · Compra≥60 · Venda≤40</div>
+    </div>
+    <div>
+      <div class="factor-row">
+      <span class="factor-label">Commodity/Benchmark <span class="factor-weight">(40%)</span></span>
+      <span class="factor-val"><span style="color:var(--warn)">50</span> <span style="font-size:9px;color:var(--text3)">-0.11%</span></span>
+    </div>
+      <div class="factor-row">
+      <span class="factor-label">Holdings ponderadas <span class="factor-weight">(40%)</span></span>
+      <span class="factor-val"><span style="color:var(--warn)">50</span> <span style="font-size:9px;color:var(--text3)">1/10 · 12% peso · +0.09%</span></span>
+    </div>
+      <div class="factor-row">
+      <span class="factor-label">Notícias <span class="factor-weight">(20%)</span></span>
+      <span class="factor-val"><span style="color:var(--text3)">sem dados</span></span>
+    </div>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">O sinal está correto?</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button onclick="recordFeedback('gold','yes')" id="fb-yes-gold" style="font-family:var(--mono);font-size:10px;color:var(--accent);background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">✓ Sim</button>
+        <button onclick="showFeedbackReason('gold','no')" id="fb-no-gold" style="font-family:var(--mono);font-size:10px;color:var(--danger);background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">✗ Não</button>
+        <button onclick="showFeedbackReason('gold','partial')" id="fb-partial-gold" style="font-family:var(--mono);font-size:10px;color:var(--warn);background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">≈ Parcial</button>
+        <span id="fb-result-gold" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div id="fb-reason-box-gold" style="display:none;margin-top:8px">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">O que estava errado? (opcional)</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="fb-reason-gold" placeholder="ex: commodity negativa mas holdings muito positivas..." style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 8px;outline:none">
+          <button onclick="recordFeedbackWithReason('gold')" style="font-family:var(--mono);font-size:10px;color:var(--text2);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:5px 10px;cursor:pointer">Guardar</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px;text-align:right">
+      <button onclick="toggleAdvisorConfig('gold')" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:3px 8px;cursor:pointer">⚙ Config</button>
+    </div>
+    <div id="advisor-config-gold" style="display:none;margin-top:10px"></div></div>
     </div>
 
     <!-- OIL -->
-    <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel" style="display: flex; flex-direction: column; min-height: 384px;">
       <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#94a3b8"></div>
@@ -475,7 +770,51 @@
         </div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 11:00</span>
       </div>
-      <div style="padding:16px;height:100%;box-sizing:border-box" id="advisor-oil"></div>
+      <div style="padding:16px;height:100%;box-sizing:border-box" id="advisor-oil">
+    <div class="signal-box signal-neutral">
+      <div class="signal-title">→ NEUTRO</div>
+      <div class="signal-sub">Aguardar — sinal inconclusivo</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px">⚠ Passou das 11:00 — cotação de amanhã</div>
+      
+      
+      
+        <div class="score-bar-wrap"><div class="score-bar" style="width:50%;background:var(--warn)"></div></div>
+        <div style="font-family:var(--mono);font-size:10px;opacity:.7">Score: 50 · Compra≥60 · Venda≤40</div>
+    </div>
+    <div>
+      <div class="factor-row">
+      <span class="factor-label">Commodity/Benchmark <span class="factor-weight">(40%)</span></span>
+      <span class="factor-val"><span style="color:var(--accent)">80</span> <span style="font-size:9px;color:var(--text3)">+0.51%</span></span>
+    </div>
+      <div class="factor-row">
+      <span class="factor-label">Holdings ponderadas <span class="factor-weight">(40%)</span></span>
+      <span class="factor-val"><span style="color:var(--danger)">20</span> <span style="font-size:9px;color:var(--text3)">1/9 · 11% peso · -1.10%</span></span>
+    </div>
+      <div class="factor-row">
+      <span class="factor-label">Notícias <span class="factor-weight">(20%)</span></span>
+      <span class="factor-val"><span style="color:var(--text3)">sem dados</span></span>
+    </div>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">O sinal está correto?</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button onclick="recordFeedback('oil','yes')" id="fb-yes-oil" style="font-family:var(--mono);font-size:10px;color:var(--accent);background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">✓ Sim</button>
+        <button onclick="showFeedbackReason('oil','no')" id="fb-no-oil" style="font-family:var(--mono);font-size:10px;color:var(--danger);background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">✗ Não</button>
+        <button onclick="showFeedbackReason('oil','partial')" id="fb-partial-oil" style="font-family:var(--mono);font-size:10px;color:var(--warn);background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:4px 12px;cursor:pointer">≈ Parcial</button>
+        <span id="fb-result-oil" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div id="fb-reason-box-oil" style="display:none;margin-top:8px">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px">O que estava errado? (opcional)</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="fb-reason-oil" placeholder="ex: commodity negativa mas holdings muito positivas..." style="flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 8px;outline:none">
+          <button onclick="recordFeedbackWithReason('oil')" style="font-family:var(--mono);font-size:10px;color:var(--text2);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:5px 10px;cursor:pointer">Guardar</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px;text-align:right">
+      <button onclick="toggleAdvisorConfig('oil')" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:3px 8px;cursor:pointer">⚙ Config</button>
+    </div>
+    <div id="advisor-config-oil" style="display:none;margin-top:10px"></div></div>
     </div>
 
 
@@ -485,20 +824,254 @@
   <!-- Pre-market inputs -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch">
 
-    <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel" style="display: flex; flex-direction: column; height: 782px; min-height: 782px;">
       <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2)">
         <div class="dot" style="background:#f5c542"></div>
         <span class="label" style="color:#f5c542">Pré-mercado Gold</span>
       </div>
-      <div style="padding:12px;flex:1" id="pm-inputs-gold"></div>
+      <div style="padding:12px;flex:1" id="pm-inputs-gold"><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px">Cutoff: 09:00</div><div class="pm-field" style="margin-bottom:8px">
+        <label style="color:#f5c542">Ouro (XAU/USD)</label>
+        <input type="number" step="0.01" class="pm-input " style="width:100%;border-color:#f5c54244" value="-0.11" placeholder="0,00" data-key="gold_commodity" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+      </div><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">Holdings</div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Discovery Silver (10.33%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Discovery Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Discovery Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Sprott Physical Silver (6.6%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="0.09" placeholder="—" data-key="gold_h_Sprott Physical Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Sprott Physical Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Sprott Physical Gold and Silver Trust (6.19%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Sprott Physical Gold and Silver Trust" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Sprott Physical Gold and Silver Trust" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Wheaton Precious Metals (5.91%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Wheaton Precious Metals" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Wheaton Precious Metals" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Lundin Gold (5.66%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Lundin Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Lundin Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">MAG Silver Corp (5.09%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_MAG Silver Corp" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_MAG Silver Corp" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Sprott Physical Gold (4.4%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Sprott Physical Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Sprott Physical Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">First Majestic Silver (4.33%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_First Majestic Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_First Majestic Silver" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Agnico Eagle Mines (4.31%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Agnico Eagle Mines" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Agnico Eagle Mines" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Alamos Gold (3.51%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_h_Alamos Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="gold_ac_Alamos Gold" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div></div>
     </div>
 
-    <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel" style="display: flex; flex-direction: column; height: 782px; min-height: 782px;">
       <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2)">
         <div class="dot" style="background:#94a3b8"></div>
         <span class="label" style="color:#94a3b8">Pré-mercado Oil</span>
       </div>
-      <div style="padding:12px;flex:1" id="pm-inputs-oil"></div>
+      <div style="padding:12px;flex:1" id="pm-inputs-oil"><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px">Cutoff: 11:00</div><div class="pm-field" style="margin-bottom:8px">
+        <label style="color:#94a3b8">WTI (Petróleo)</label>
+        <input type="number" step="0.01" class="pm-input pos" style="width:100%;border-color:#94a3b844" value="0.51" placeholder="0,00" data-key="oil_commodity" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+      </div><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">Holdings</div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Exxon Mobil (9.28%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Exxon Mobil" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Exxon Mobil" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Targa Resources (6.39%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Targa Resources" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Targa Resources" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Chevron (6.39%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Chevron" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Chevron" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Williams Companies (5.66%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Williams Companies" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Williams Companies" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Alerian MLP Index ETN (5.47%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input neg" style="width:100%;font-size:11px;padding:4px 6px" value="-1.1" placeholder="—" data-key="oil_h_Alerian MLP Index ETN" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Alerian MLP Index ETN" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Kinder Morgan (4.71%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Kinder Morgan" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Kinder Morgan" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Plains GP Holdings (4.61%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Plains GP Holdings" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Plains GP Holdings" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">Enbridge (4.31%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_Enbridge" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_Enbridge" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div><div style="margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px">ONEOK (4.22%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Var.%</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_h_ONEOK" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+            <div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pós-fecho %</div>
+    <input type="number" step="0.01" class="pm-input " style="width:100%;font-size:11px;padding:4px 6px" value="" placeholder="—" data-key="oil_ac_ONEOK" oninput="pmValues[this.dataset.key]=this.value;this.className='pm-input '+(parseFloat(this.value)&gt;=0.2?'pos':parseFloat(this.value)&lt;=-0.2?'neg':'')">
+  </div>
+          </div>
+        </div></div>
     </div>
 
 
@@ -528,14 +1101,30 @@
           <th style="text-align:left;padding:6px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);border-bottom:1px solid var(--border)">COMMODITY</th>
           <th style="text-align:left;padding:6px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);border-bottom:1px solid var(--border)">AÇÃO</th>
         </tr></thead>
-        <tbody id="signal-log-body"></tbody>
+        <tbody id="signal-log-body"><tr>
+      <td style="font-family:var(--mono);font-size:10px">2026-06-08</td>
+      <td style="font-family:var(--mono);font-size:10px">18:59</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">OIL</td>
+      <td class="wl-zero" style="font-family:var(--mono);font-size:10px;font-weight:500">→ NEUTRO</td>
+      <td style="font-family:var(--mono);font-size:10px">50</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">+0.51%</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aguardar — sinal inconclusivo</td>
+    </tr><tr>
+      <td style="font-family:var(--mono);font-size:10px">2026-06-08</td>
+      <td style="font-family:var(--mono);font-size:10px">18:59</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">GOLD</td>
+      <td class="wl-zero" style="font-family:var(--mono);font-size:10px;font-weight:500">→ NEUTRO</td>
+      <td style="font-family:var(--mono);font-size:10px">50</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">-0.11%</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aguardar — sinal inconclusivo</td>
+    </tr></tbody>
       </table>
     </div>
   </div>
 
   <!-- News -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-    <div class="panel">
+    <div class="panel" style="min-height: 172px;">
       <div class="ph" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f5c542"></div>
@@ -544,9 +1133,37 @@
         </div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
       </div>
-      <div id="news-body-gold" style="max-height:300px;overflow-y:auto"></div>
+      <div id="news-body-gold" style="max-height:300px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPVjd4bHo0Sk1fN3U4OWtieHFoRkgxT0Y4OGxpa3lyc1RGb0MtaVNXVFlmRW1OQlNPaEZpVGFvUEtxUlFhUDJnMVNhNkpOOE52YmJQTUZNYjktTGk2R0FMc0VNTHpmNTFDbUk0RC1iUzVLMzR4eElLQk9icU1nWGRRRU8wYlgwMEpoQ1VKSTdyd185cWJ2cUlXdFpvOA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold erases losses despite strong US jobs data after ceasefire hopes emerge - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>08/06, 17:00</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.bloomberg.com/news/articles/2026-06-04/gold-steadies-as-uncertainty-surrounds-progress-in-us-iran-talks" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Gold falls most in two months as jobs fuel Fed rate-hike bets</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Bloomberg</span>
+              <span>06/06, 04:30</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a></div>
     </div>
-    <div class="panel">
+    <div class="panel" style="min-height: 172px;">
       <div class="ph" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#94a3b8"></div>
@@ -555,7 +1172,147 @@
         </div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
       </div>
-      <div id="news-body-oil" style="max-height:300px;overflow-y:auto"></div>
+      <div id="news-body-oil" style="max-height:300px;overflow-y:auto"><a href="https://news.google.com/rss/articles/CBMixgFBVV95cUxOZndSZ05Ec0xibk5xQ0JPWjFrM2ZzOGhyTDgtR01HOVhuY3J6THhKMVU3UXZxbnlKOUJma041dUJmcTlTNlJ2Q19PREcxWmc3b2pyV2dXVGFNSTJ5aXVTMG9RdDVEUk5CU0luTE9Hc19ESnBBMm5KWVZOblR6NzU0ejdJX1JPSzNQS0tlUzZLYXh3c1FRMjdYbUZ2dmJ5ajE0UU16eTBtYW9vQm9pQXJvM213RWVhLWpURkxPSDNkd1lmUEE1TXc?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Why the Iran-aligned Houthis threatening Red Sea shipping could mean more for the oil market this time - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>08/06, 15:33</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxOY3Q3T2xKWFI3bFdfMUZtUTBjVmlKT3B3elNTaWlpNGtfUFFQWW92RDBsRjh2NndOMjhBVWc2TGZHeTlQNkR4Z0FHMDlIWVVVd2w4eEJ2RUFMVjAzV0RGV3FBdVpXUjdacFc5UHdWaVdPTExIN3hfeHZVdl92ektkbGY2YmtINFltQ0s1NE9ZWjNDVmxJbjc1YVJIWmZRQ0pVdng4dV9uMA?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil market calm masks a host of unknowns - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>08/06, 07:03</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMisAFBVV95cUxNRVc2R0NiNjh6dTIxSmR0OFdMaE1MRXAteVZWRVRRWXo2M1RnVHZRSFRPTEh5aXhreHlHZmdGeWRCRThLTUs1MWhGcUhJSmQxYjU2dWlGcmtzNEVxU1lDRVZlNUNHdG9VTDBFTEJkYkdpU2ZiZGdmUnhRYy1RNnN6U2lYMkFyOVYxdVpqWkFOQjFydFgzRi1ZTmNoLXFzUWpVTUJjNU1wU01VUVpPc0JaTw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Rupee slumps as elevated crude, Treasury yields support dollar - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>08/06, 03:53</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMipAFBVV95cUxPNTlEbEFKMHpFNlgyeTJmTXIzWlNLWEI2aTV1OTFkTHgzejlqM2ZpQUM1NjZVaGo1WXk2UHV1TW9xMVhvWDVwcXVOdTBuaWp6aVBRMjBFSHRBUVBNREpHblcwNFNILW52TmhRT1gtaFVaZTJJWjdWQmwyV1A1SDBFY05RRzZxQkRQV3YzbVZEX2tWQ1haMW9CLTBRVko5YWx5VHUwSw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil prices pare gains after Iran and Israel say they have halted attacks - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>07/06, 23:31</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiygFBVV95cUxNc3FvTkdEREtLeURERnlZVDBVT0JwTFV1TWhGNnNmUVFmSzcwUW9uU2YyQVQxdjI1bWFEMzA0aEh0dS05UlhuS1AxX2VGZEFVZ2pHRURCOFVUdlc4a0VtMkVhRDd5ZlBGWkhLNmxaaFBRTERTR3l0SU9OekxXWkRHSExYVFNLR3h2dURSVkc2MnV6dVRrWjg3d3lqT0luNVI3bU5vYkRSTW9xWlNWc0hsbmNXV3h5SGNiZVEyd0draGJyNDVYZnYxZkRB?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">US energy secretary says lower gas prices will ultimately take resolution with Iran - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>06/06, 00:51</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMigwFBVV95cUxPSDZvYjZiMW9PTFBnYWRFYVRVa0hDanhaTmdoRTFtSVJvY1NXMHR0LXMzdm9VZlJXcUVwbkdEbWd2UG9Tb1FCQk1Rdkl5YkNYWEJ6MkhxU1ZaS3A1eUhiOGxiSzZlbkNCUklYLUJhQmFzUFBmY0dPdGU0aEFTa0tDVmpLVQ?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Stocks fall sharply as strong jobs data fuels rate hike bets; oil set for weekly gain - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>05/06, 19:50</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://www.cnbc.com/2026/06/05/trump-bill-pulte-fire-intelligence-dni.html" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Trump wants Bill Pulte to fire big chunk of national intelligence office staff: WSJ</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">CNBC</span>
+              <span>05/06, 18:25</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMixwFBVV95cUxQaHpYQTF1NUhqZXRSZE9UTEd2Rm11ZkhXUTJTeXA0NjNJbGFhZFZLdk4zWlNRMmhZVWdvNFlYNU96ajNhdE00RWxlbVVtcW1reE52Y0szNVZnSm1YMHJnZFRXMHZNMERpYmlqTnBHcExIbUVPemtKZEE0bnZSOEZHbk5VS3lGaUwxdjZla1Z3ekd3dXRNRmQ4WmFzYUVudm1aeXdpLTk5YlNHOUIxSEVLOTFVTTZQdGgzNWFpN3V4TU80eHBkRDJv?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Companies to add 40 mln barrels of oil to US SPR after Iran war ends, energy secretary says - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>05/06, 17:41</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiiwFBVV95cUxQV01INndjOU8xWVM2Z1hYdU16cy1qQU85c0tLb0N6RDhaeG5Oa0J0YWQ4Yzh4TmRUUUJUTDBoVEdWUE5Kc2Y3NXFveG1NZHN6aVZpMHh5RV9waE96a3Z6ckxscHBVajJITGowdVFSeEV2cTVUaHhKcEFBSmxtdmFTU3Jpd1VMbzVyZnBN?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Global oil inventories depleted, next price spike could roil economies, markets - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>05/06, 17:26</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a><a href="https://news.google.com/rss/articles/CBMiqgFBVV95cUxOTlEyVHU4OGhfS1RSaDItak5sQTZxNEptRjdDemtZdGs1aG5YMjEtV2tnTG1OM2ZxQl9pZGo1cnIyMFNmWElfUmpXcEJJSDRkTHZqdmRWRks4MG5GYUNMNDFaS3RKNUtwYTQtdjNEZGM4eVZjd3FqYlpRSGZHbl9vYTRPTkxWNVF5b0pBV2M1dzgwdk1tOEZHVTRBcEZnX0ZncWZSVWtuOWNrdw?oc=5" target="_blank" rel="noopener" style="text-decoration:none;display:block">
+        <div class="news-item">
+          <div class="news-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+              <span class="news-sentiment-neu" style="font-size:16px;line-height:1;flex-shrink:0;margin-top:1px">→</span>
+              <div class="news-headline">Oil prices fall on mounting hopes for de-escalation in US-Iran War - Reuters</div>
+            </div>
+            <div class="news-meta">
+              <span class="news-source">Reuters</span>
+              <span>05/06, 17:08</span>
+              <span class="news-sentiment-neu" style="font-weight:500">Impacto neutro</span>
+            </div>
+          </div>
+        </div>
+      </a></div>
     </div>
   </div>
 
@@ -564,10 +1321,31 @@
 </div>
 
 <!-- LOG VIEW -->
-<div id="view-log" style="display:none">
+<div id="view-log" style="display: none;">
 
   <!-- Stats cards -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1rem" id="log-stats"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1rem" id="log-stats"><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Total feedbacks</div>
+      <div class="" style="font-family:var(--mono);font-size:22px;font-weight:600">0</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Taxa de acerto geral</div>
+      <div class="wl-neg" style="font-family:var(--mono);font-size:22px;font-weight:600">—</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Acerto Gold</div>
+      <div class="wl-neg" style="font-family:var(--mono);font-size:22px;font-weight:600">—</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Acerto Oil</div>
+      <div class="wl-neg" style="font-family:var(--mono);font-size:22px;font-weight:600">—</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Corretos ✓</div>
+      <div class="wl-pos" style="font-family:var(--mono);font-size:22px;font-weight:600">0</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Errados ✗</div>
+      <div class="wl-neg" style="font-family:var(--mono);font-size:22px;font-weight:600">0</div>
+    </div><div class="panel" style="padding:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Parciais ≈</div>
+      <div class="wl-zero" style="font-family:var(--mono);font-size:22px;font-weight:600">0</div>
+    </div></div>
 
   <!-- Feedback table -->
   <div class="panel" style="margin-bottom:1rem">
@@ -593,7 +1371,7 @@
           <th style="text-align:left;padding:6px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);border-bottom:1px solid var(--border)">PESOS C/H/N</th>
           <th style="text-align:left;padding:6px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);border-bottom:1px solid var(--border)">OBSERVAÇÃO</th>
         </tr></thead>
-        <tbody id="log-feedback-body"></tbody>
+        <tbody id="log-feedback-body"><tr><td colspan="8" style="text-align:center;padding:24px;font-family:var(--mono);font-size:10px;color:var(--text3)">Sem feedbacks ainda — usa os botões ✓/✗/≈ no Advisor</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -604,7 +1382,7 @@
       <div class="dot" style="background:var(--warn)"></div>
       <span class="label">Análise de padrões</span>
     </div>
-    <div id="log-patterns" style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.8"></div>
+    <div id="log-patterns" style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.8"><div style="color:var(--text3)">Precisas de pelo menos 3 feedbacks para gerar análise de padrões.</div></div>
   </div>
 
 </div>
@@ -3356,4 +4134,5 @@ function init() {
 
 init();
 </script>
-</body>
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration></html>
