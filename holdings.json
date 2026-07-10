@@ -1,0 +1,174 @@
+{
+  "_comment": "Referência de holdings (top 10) dos fundos. Usado pelo verificador semanal do dashboard. Atualiza quando confirmares uma alteração real no investing.com.",
+  "_updated": "2026-07-10",
+  "gold": [
+    {
+      "name": "Discovery Silver",
+      "weight": 10.67,
+      "aliases": [
+        "Discovery Silver",
+        "DSV"
+      ]
+    },
+    {
+      "name": "Coeur Mining",
+      "weight": 7.12,
+      "aliases": [
+        "Coeur Mining",
+        "CDE"
+      ]
+    },
+    {
+      "name": "Sprott Physical Silver",
+      "weight": 7.08,
+      "aliases": [
+        "Sprott Physical Silver",
+        "PSLV"
+      ]
+    },
+    {
+      "name": "Sprott Physical Gold and Silver Trust",
+      "weight": 5.85,
+      "aliases": [
+        "Sprott Physical Gold and Silver Trust",
+        "Sprott Gold Silver",
+        "CEF"
+      ]
+    },
+    {
+      "name": "Lundin Gold",
+      "weight": 5.2,
+      "aliases": [
+        "Lundin Gold",
+        "LUG",
+        "Lundin Gold Inc"
+      ]
+    },
+    {
+      "name": "First Majestic Silver",
+      "weight": 4.94,
+      "aliases": [
+        "First Majestic Silver",
+        "AG"
+      ]
+    },
+    {
+      "name": "Sprott Physical Gold",
+      "weight": 4.34,
+      "aliases": [
+        "Sprott Physical Gold",
+        "PHYS"
+      ]
+    },
+    {
+      "name": "Fresnillo",
+      "weight": 4.1,
+      "aliases": [
+        "Fresnillo",
+        "FRES"
+      ]
+    },
+    {
+      "name": "Endeavour Silver Corp",
+      "weight": 3.77,
+      "aliases": [
+        "Endeavour Silver Corp",
+        "Endeavour Silver",
+        "EXK"
+      ]
+    },
+    {
+      "name": "Northern Star Resources",
+      "weight": 3.47,
+      "aliases": [
+        "Northern Star Resources",
+        "Northern Star",
+        "NST"
+      ]
+    }
+  ],
+  "oil": [
+    {
+      "name": "Exxon Mobil",
+      "weight": 9.68,
+      "aliases": [
+        "Exxon Mobil",
+        "XOM"
+      ]
+    },
+    {
+      "name": "Chevron",
+      "weight": 9.62,
+      "aliases": [
+        "Chevron",
+        "CVX"
+      ]
+    },
+    {
+      "name": "Targa Resources",
+      "weight": 5.43,
+      "aliases": [
+        "Targa Resources",
+        "TRGP"
+      ]
+    },
+    {
+      "name": "Williams Companies",
+      "weight": 5.36,
+      "aliases": [
+        "Williams",
+        "Williams Companies",
+        "WMB"
+      ]
+    },
+    {
+      "name": "Alerian MLP Index ETN",
+      "weight": 4.88,
+      "aliases": [
+        "Alerian MLP",
+        "Alerian MLP Ind",
+        "AMLP"
+      ]
+    },
+    {
+      "name": "Enbridge",
+      "weight": 4.72,
+      "aliases": [
+        "Enbridge",
+        "ENB"
+      ]
+    },
+    {
+      "name": "ONEOK",
+      "weight": 4.69,
+      "aliases": [
+        "ONEOK",
+        "OKE"
+      ]
+    },
+    {
+      "name": "ConocoPhillips",
+      "weight": 4.63,
+      "aliases": [
+        "ConocoPhillips",
+        "COP"
+      ]
+    },
+    {
+      "name": "DT Midstream",
+      "weight": 3.81,
+      "aliases": [
+        "DT Midstream",
+        "DTM"
+      ]
+    },
+    {
+      "name": "Plains GP Holdings",
+      "weight": 3.47,
+      "aliases": [
+        "Plains GP Holdings",
+        "PAGP"
+      ]
+    }
+  ]
+}
