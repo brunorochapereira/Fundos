@@ -1,6 +1,6 @@
 {
-  "_comment": "Referência de holdings (top 10) dos fundos. Usado pelo verificador semanal do dashboard. Atualiza quando confirmares uma alteração real no investing.com.",
-  "_updated": "2026-07-10",
+  "_comment": "Referência de holdings (top 10) dos fundos. Atualizado pelo dashboard quando o utilizador aceita uma alteração detetada.",
+  "_updated": "2026-07-12",
   "gold": [
     {
       "name": "Discovery Silver",
@@ -89,32 +89,24 @@
   ],
   "oil": [
     {
-      "name": "Exxon Mobil",
-      "weight": 9.68,
-      "aliases": [
-        "Exxon Mobil",
-        "XOM"
-      ]
-    },
-    {
       "name": "Chevron",
-      "weight": 9.62,
+      "weight": 9.37,
       "aliases": [
         "Chevron",
         "CVX"
       ]
     },
     {
-      "name": "Targa Resources",
-      "weight": 5.43,
+      "name": "Exxon Mobil",
+      "weight": 9.23,
       "aliases": [
-        "Targa Resources",
-        "TRGP"
+        "Exxon Mobil",
+        "XOM"
       ]
     },
     {
       "name": "Williams Companies",
-      "weight": 5.36,
+      "weight": 5.55,
       "aliases": [
         "Williams",
         "Williams Companies",
@@ -123,7 +115,7 @@
     },
     {
       "name": "Alerian MLP Index ETN",
-      "weight": 4.88,
+      "weight": 5.43,
       "aliases": [
         "Alerian MLP",
         "Alerian MLP Ind",
@@ -131,8 +123,16 @@
       ]
     },
     {
+      "name": "Targa Resources",
+      "weight": 5.38,
+      "aliases": [
+        "Targa Resources",
+        "TRGP"
+      ]
+    },
+    {
       "name": "Enbridge",
-      "weight": 4.72,
+      "weight": 4.85,
       "aliases": [
         "Enbridge",
         "ENB"
@@ -140,31 +140,31 @@
     },
     {
       "name": "ONEOK",
-      "weight": 4.69,
+      "weight": 4.56,
       "aliases": [
         "ONEOK",
         "OKE"
       ]
     },
     {
-      "name": "ConocoPhillips",
-      "weight": 4.63,
-      "aliases": [
-        "ConocoPhillips",
-        "COP"
-      ]
-    },
-    {
       "name": "DT Midstream",
-      "weight": 3.81,
+      "weight": 4.2,
       "aliases": [
         "DT Midstream",
         "DTM"
       ]
     },
     {
+      "name": "ConocoPhillips",
+      "weight": 4.19,
+      "aliases": [
+        "ConocoPhillips",
+        "COP"
+      ]
+    },
+    {
       "name": "Plains GP Holdings",
-      "weight": 3.47,
+      "weight": 3.5,
       "aliases": [
         "Plains GP Holdings",
         "PAGP"
