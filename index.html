@@ -770,9 +770,9 @@
           <button class="btn" onclick="enviarAdvisorWhatsApp()" style="border-color:rgba(74,222,128,0.3);color:var(--accent);margin-top:0;font-size:10px;padding:7px;width:100%">📲 Enviar Advisor por WhatsApp</button>
           <div id="cmb-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
-            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Hora de cutoff por fundo — até esta hora, a ordem confirmada usa a cotação de hoje; depois, a de amanhã. Um por fundo.</div>
-            <div id="cutoffs-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
-            <div id="cutoffs-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Dias de cativação por fundo — quantos dias úteis o dinheiro subscrito fica cativo antes de ficar disponível para resgate. Um por fundo.</div>
+            <div id="settlement-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            <div id="settlement-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
           </div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:6px">Verificação de holdings (semanal, automática no PC ligado). Deteta mudanças no top 10 de cada fundo e avisa por WhatsApp — não altera nada sozinho.</div>
@@ -877,10 +877,18 @@
 
   <!-- (Imagem Gold/Oil movida para o final do separador) -->
 
+  <!-- Sub-abas por fundo: mostra um fundo de cada vez -->
+  <div id="advisor-fund-tabs" style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
+    <button onclick="selAdvisorFund('gold')"    data-advtab="gold"    class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:rgba(245,197,66,0.12);border:1px solid #f5c542;color:#f5c542">● Gold</button>
+    <button onclick="selAdvisorFund('oil')"     data-advtab="oil"     class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">◆ Oil</button>
+    <button onclick="selAdvisorFund('finance')" data-advtab="finance" class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">▲ Finance</button>
+    <button onclick="selAdvisorFund('saude')"   data-advtab="saude"   class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">✚ Saúde</button>
+  </div>
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch" id="advisor-grid">
 
     <!-- GOLD -->
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="gold" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f5c542"></div>
@@ -936,7 +944,7 @@
     </div>
 
     <!-- OIL -->
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="oil" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#94a3b8"></div>
@@ -992,7 +1000,7 @@
     </div>
 
     <!-- FINANCE -->
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="finance" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(74,222,128,0.06);border-bottom-color:rgba(74,222,128,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#4ade80"></div>
@@ -1006,7 +1014,7 @@
     </div>
 
     <!-- SAUDE -->
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="saude" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(244,114,182,0.06);border-bottom-color:rgba(244,114,182,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f472b6"></div>
@@ -1024,9 +1032,9 @@
   </div>
 
   <!-- Pre-market inputs -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch">
+  <div style="display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem;align-items:stretch" id="advisor-pm-grid">
 
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="gold" data-adv-pm="1" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f5c542"></div>
@@ -1163,7 +1171,7 @@
         </div></div>
     </div>
 
-    <div class="panel" style="display: flex; flex-direction: column;">
+    <div class="panel" data-adv-fund="oil" data-adv-pm="1" style="display: flex; flex-direction: column;">
       <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2);justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#94a3b8"></div>
@@ -1288,6 +1296,30 @@
         </div></div>
     </div>
 
+    <!-- PRE-MERCADO FINANCE -->
+    <div class="panel" data-adv-fund="finance" data-adv-pm="1" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(74,222,128,0.06);border-bottom-color:rgba(74,222,128,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#4ade80"></div>
+          <span class="label" style="color:#4ade80">Pré-mercado Finance</span>
+        </div>
+        <span id="pm-inject-ts-finance" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div style="padding:12px;flex:1" id="pm-inputs-finance"></div>
+    </div>
+
+    <!-- PRE-MERCADO SAUDE -->
+    <div class="panel" data-adv-fund="saude" data-adv-pm="1" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(244,114,182,0.06);border-bottom-color:rgba(244,114,182,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#f472b6"></div>
+          <span class="label" style="color:#f472b6">Pré-mercado Saúde</span>
+        </div>
+        <span id="pm-inject-ts-saude" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div style="padding:12px;flex:1" id="pm-inputs-saude"></div>
+    </div>
+
 
 
   </div>
@@ -1295,8 +1327,8 @@
 
 
   <!-- News -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:stretch">
-    <div class="panel" style="display:flex;flex-direction:column">
+  <div style="display:grid;grid-template-columns:1fr;gap:1rem;align-items:stretch" id="advisor-news-grid">
+    <div class="panel" data-adv-fund="gold" data-adv-news="1" style="display:flex;flex-direction:column">
       <div class="ph" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#f5c542"></div>
@@ -1435,7 +1467,7 @@
           </div>
         </a></div>
     </div>
-    <div class="panel" style="display:flex;flex-direction:column">
+    <div class="panel" data-adv-fund="oil" data-adv-news="1" style="display:flex;flex-direction:column">
       <div class="ph" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="dot" style="background:#94a3b8"></div>
@@ -1693,6 +1725,44 @@
             </div>
           </div>
         </a></div>
+    </div>
+    <div class="panel" data-adv-fund="finance" data-adv-news="1" style="display:flex;flex-direction:column">
+      <div class="ph" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#4ade80"></div>
+          <span class="label" style="color:var(--text3)">Notícias Finance</span>
+          <span id="news-ts-finance" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="atualizarNoticias('finance')" style="background:rgba(245,197,66,0.1);border:1px solid rgba(245,197,66,0.4);border-radius:4px;color:#f5c542;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">↻ Buscar notícias</button>
+          <button onclick="recalcularSinal('finance')" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.4);border-radius:4px;color:#4ade80;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">⟳ Recalcular sinal</button>
+          <button onclick="reanalisarNoticias('finance')" style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.4);border-radius:4px;color:#60a5fa;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">🔄 Reanalisar com Claude</button>
+        </div>
+        <span id="news-analysis-status-finance" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div id="news-body-finance" style="flex:1;min-height:0;max-height:520px;overflow-y:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">Carrega as notícias com "↻ Buscar notícias"</div></div>
+    </div>
+    <div class="panel" data-adv-fund="saude" data-adv-news="1" style="display:flex;flex-direction:column">
+      <div class="ph" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#f472b6"></div>
+          <span class="label" style="color:var(--text3)">Notícias Saúde</span>
+          <span id="news-ts-saude" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="atualizarNoticias('saude')" style="background:rgba(245,197,66,0.1);border:1px solid rgba(245,197,66,0.4);border-radius:4px;color:#f5c542;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">↻ Buscar notícias</button>
+          <button onclick="recalcularSinal('saude')" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.4);border-radius:4px;color:#4ade80;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">⟳ Recalcular sinal</button>
+          <button onclick="reanalisarNoticias('saude')" style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.4);border-radius:4px;color:#60a5fa;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">🔄 Reanalisar com Claude</button>
+        </div>
+        <span id="news-analysis-status-saude" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div id="news-body-saude" style="flex:1;min-height:0;max-height:520px;overflow-y:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">Carrega as notícias com "↻ Buscar notícias"</div></div>
     </div>
   </div>
 
@@ -2170,7 +2240,12 @@ function cv(v,avail) {
 function renderPipeline() {
   document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
     const r = state.rows[f];
-    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
+    const slot = availSlot(f);
+    // A coluna "Disponível" mostra sempre a casa de maturação do fundo (D2 se 2 dias, D3 se 3).
+    const dispVal = r[slot];
+    // Nas casas intermédias, não duplicar o valor que já está na coluna disponível.
+    const d2Show = (slot === 'D2') ? 0 : r.D2;
+    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(d2Show,0)}</td><td>${cv(dispVal,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
 }
 
@@ -2186,7 +2261,7 @@ function renderAdj() {
   FUNDS.forEach(f => {
     const el = document.getElementById('faj-'+f);
     if (!el) return;
-    const disp = state.rows[f].D3;
+    const disp = state.rows[f][availSlot(f)];
     const t = FUND_THEME[f];
     el.innerHTML = `
       <div style="border:1px solid ${t.border};border-radius:6px;background:${t.bg};padding:10px 12px;margin-bottom:8px;">
@@ -2329,7 +2404,7 @@ function doPct(f,pct) {
   if (pct>0) {
     inp.value = parseFloat((cur+step).toFixed(2));
   } else {
-    const disp = state.rows[f].D3;
+    const disp = state.rows[f][availSlot(f)];
     if (Math.abs(cur)>=disp) { setStatus('Resgate máximo atingido — '+f,'err'); return; }
     inp.value = Math.max(parseFloat((cur-step).toFixed(2)),-disp);
   }
@@ -2337,7 +2412,7 @@ function doPct(f,pct) {
 }
 
 function applyResgate(f) {
-  const d = state.rows[f].D3;
+  const d = state.rows[f][availSlot(f)];
   if (d<=0) return;
   document.getElementById('adj-'+f).value = -d.toFixed(2);
   updRestante();
@@ -2489,19 +2564,29 @@ function toggleTestMode() {
 // SÓ shift: move D→D1→D2→D3 e limpa o resgate do dia anterior. Não toca em ordens.
 function shiftPipeline(f) {
   const r=state.rows[f]; const logs=[];
-  r.resgate=0; r.D3+=r.D2; r.D2=r.D1; r.D1=r.D; r.D=0;
-  let m=`${f}: shift ok`; if(r.D3>0) m+=` | disp: ${fmtNum(r.D3)}`;
-  logs.push({msg:m,type:r.D3>0?'hi':''});
+  const slot = availSlot(f); // 'D3' (3 dias) ou 'D2' (2 dias)
+  r.resgate=0;
+  if (slot === 'D2') {
+    // 2 dias: matura em D2. D3 não é usado (mantém-se a 0).
+    r.D2 += r.D1; r.D1 = r.D; r.D = 0;
+  } else {
+    // 3 dias (default): matura em D3.
+    r.D3 += r.D2; r.D2 = r.D1; r.D1 = r.D; r.D = 0;
+  }
+  const disp = r[slot];
+  let m=`${f}: shift ok`; if(disp>0) m+=` | disp: ${fmtNum(disp)}`;
+  logs.push({msg:m,type:disp>0?'hi':''});
   return logs;
 }
 
-// SÓ ordem: aplica resgate (sai do disponível D3) ou subscrição (entra em D, começa
+// SÓ ordem: aplica resgate (sai do disponível) ou subscrição (entra em D, começa
 // hoje o settlement). Atua sobre o pipeline JÁ shiftado. Não faz shift.
 function aplicarOrdem(f,aj) {
   const r=state.rows[f]; const logs=[];
+  const slot = availSlot(f);
   if (aj<0) {
-    const rg=Math.abs(aj); r.D3-=rg; r.resgate=rg;
-    logs.push({msg:`${f}: resgate ${fmtNum(rg)} → disp: ${fmtNum(r.D3)}`,type:'da'});
+    const rg=Math.abs(aj); r[slot]-=rg; r.resgate=rg;
+    logs.push({msg:`${f}: resgate ${fmtNum(rg)} → disp: ${fmtNum(r[slot])}`,type:'da'});
   }
   if (aj>0) {
     r.D=aj;
@@ -2616,7 +2701,7 @@ async function enviarPipelineWhatsApp(fundo, diaDe, diaPara, nAvancos, ordemInic
   else if (ordemInicial < 0) linhas.push('Ordem processada: resgate ' + fmtNum(Math.abs(ordemInicial)) + ' €');
   else                        linhas.push('Ordem processada: —');
 
-  const disp = (state.rows && state.rows[fundo]) ? (state.rows[fundo].D3 || 0) : 0;
+  const disp = (state.rows && state.rows[fundo]) ? (state.rows[fundo][availSlot(fundo)] || 0) : 0;
   linhas.push('Disponível p/ resgate: ' + fmtNum(disp) + ' €');
 
   await enviarWhatsApp(linhas.join('\n'), 'Pipeline ' + fundo + ' (meia-noite)');
@@ -3075,8 +3160,8 @@ function avancarFundoDia(fundo, targetDateIso, forcar) {
     return false;
   }
   const aj = parseFloat(document.getElementById('adj-'+fundo)?.value) || 0;
-  if (aj < 0 && Math.abs(aj) > state.rows[fundo].D3) {
-    toast(fundo + ': resgate excede o disponível (' + fmtNum(state.rows[fundo].D3) + '€).', 'err');
+  if (aj < 0 && Math.abs(aj) > state.rows[fundo][availSlot(fundo)]) {
+    toast(fundo + ': resgate excede o disponível (' + fmtNum(state.rows[fundo][availSlot(fundo)]) + '€).', 'err');
     addLog(fundo + ': resgate excede disponível — cancelado.', 'da');
     return false;
   }
@@ -3133,7 +3218,7 @@ function avancarUmDia() {
   const ajs={};
   FUNDS.forEach(f=>{ ajs[f]=parseFloat(document.getElementById('adj-'+f)?.value)||0; });
   const erros=[];
-  FUNDS.forEach(f=>{ if(ajs[f]<0&&Math.abs(ajs[f])>state.rows[f].D3) erros.push(`${f}: resgate excede disponível`); });
+  FUNDS.forEach(f=>{ if(ajs[f]<0&&Math.abs(ajs[f])>state.rows[f][availSlot(f)]) erros.push(`${f}: resgate excede disponível`); });
   if (erros.length) { erros.forEach(e=>addLog(e,'da')); setStatus('Erro — commit cancelado','err'); toast('Avançar dia cancelado: '+erros.join('; '),'err'); return; }
 
   addLog('─── execução: '+fmtDate(today)+' ───','');
@@ -3240,7 +3325,7 @@ function switchTab(tab) {
   if (tab==='log') { renderLogTab(); renderHealthPanel(); }
   if (tab==='advisor') initAdvisor();
   if (tab==='capital') renderCapital();
-  if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); }
+  if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); renderSettlementConfig(); }
   if (tab==='sandbox') { renderSandboxHistory(); renderSandboxMetrics(); }
 }
 
@@ -3998,6 +4083,7 @@ const NEWS_QUERIES = {
   gold:    ['gold','silver','precious metals','XAU','mining'],
   oil:     ['oil','crude','petroleum','energy','OPEC'],
   finance: ['bank','finance','financial','merger','acquisition','rate','ECB','Fed'],
+  saude:   ['healthcare','pharma','pharmaceutical','FDA','drug','biotech','health'],
   general: ['stock market','economy','fed','interest rates','inflation']
 };
 
@@ -4010,6 +4096,7 @@ function loadAllNews() {
   if (document.getElementById('news-body-gold')) loadNews('gold').then(()=>loadNewsWhiteHouse('gold'));
   if (document.getElementById('news-body-oil')) loadNews('oil').then(()=>loadNewsWhiteHouse('oil'));
   if (document.getElementById('news-body-finance')) loadNews('finance');
+  if (document.getElementById('news-body-saude')) loadNews('saude');
 }
 
 async function loadNewsWhiteHouse(tab) {
@@ -4702,6 +4789,54 @@ let HOLDINGS = {
 
 // Cutoffs per fund
 const CUTOFFS_DEFAULT = {gold:'09:00', oil:'09:00', finance:'09:00', saude:'09:00'};
+// Dias de settlement por fundo (2 ou 3). Default 3 = comportamento atual.
+// A chave interna é minúscula (gold/oil/finance/saude); o pipeline usa Maiúscula (Gold).
+const SETTLEMENT_DEFAULT = {gold:3, oil:3, finance:3, saude:3};
+const _fundKeyLower = f => String(f).toLowerCase();
+function getSettlementDays(key) {
+  try {
+    const saved = JSON.parse(localStorage.getItem('settlement-days') || '{}');
+    const k = _fundKeyLower(key);
+    if (saved && (saved[k] === 2 || saved[k] === 3)) return saved[k];
+  } catch(e) {}
+  return SETTLEMENT_DEFAULT[_fundKeyLower(key)] || 3;
+}
+// Casa do pipeline onde o dinheiro fica disponível: D3 se 3 dias, D2 se 2 dias.
+function availSlot(key) { return getSettlementDays(key) === 2 ? 'D2' : 'D3'; }
+
+// Renderiza os campos de dias de settlement por fundo na Config.
+function renderSettlementConfig() {
+  const el = document.getElementById('settlement-config');
+  if (!el) return;
+  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde' };
+  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
+  el.innerHTML = ['gold','oil','finance','saude'].map(k => {
+    const d = getSettlementDays(k);
+    return `<div style="display:flex;align-items:center;gap:6px">
+      <span style="font-family:var(--mono);font-size:10px;color:${cores[k]};min-width:56px">${nomes[k]}</span>
+      <select id="settle-${k}" onchange="saveSettlement('${k}')"
+        style="font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);padding:4px 6px;outline:none">
+        <option value="2"${d===2?' selected':''}>2 dias</option>
+        <option value="3"${d===3?' selected':''}>3 dias</option>
+      </select>
+    </div>`;
+  }).join('');
+}
+
+// Grava os dias de settlement de um fundo.
+function saveSettlement(key) {
+  const sel = document.getElementById('settle-'+key);
+  if (!sel) return;
+  const val = parseInt(sel.value, 10);
+  if (val !== 2 && val !== 3) return;
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('settlement-days') || '{}'); } catch(e) {}
+  saved[key] = val;
+  localStorage.setItem('settlement-days', JSON.stringify(saved));
+  const st = document.getElementById('settlement-status');
+  if (st) { st.style.color = 'var(--accent)'; st.textContent = key + ': ' + val + ' dias de cativação guardado.'; }
+  try { renderPipeline(); renderAdj(); } catch(e) {}
+}
 // Cutoffs efetivos: lê do localStorage (configurável na Config), com fallback aos defaults.
 function getCutoff(key) {
   try {
@@ -6021,12 +6156,14 @@ const REFERENCE_INDEX_INPUTS = {
 };
 
 function renderPremarketInputs() {
-  const FUND_COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80'};
-  ['gold','oil','finance'].forEach(key => {
+  const FUND_COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6'};
+  ['gold','oil','finance','saude'].forEach(key => {
     const el = document.getElementById('pm-inputs-'+key);
     if (!el) return;
     const c = FUND_COLORS[key];
-      const LABELS  = {gold:'Ouro (XAU/USD)', oil:'WTI (Petróleo)', finance:'Benchmark Finance'};
+      const LABELS  = {gold:'Ouro (XAU/USD)', oil:'WTI (Petróleo)', finance:'Benchmark Finance', saude:'Benchmark Saúde'};
+    // Fundos sem commodity (finance/saude): não mostram a linha da commodity.
+    const semCommodity = !DEFAULT_CONFIG[key] || DEFAULT_CONFIG[key].wCommodity === 0;
 
     const pmInput = (pmKey, label, color) => {
       const val = pmValues[pmKey] !== undefined ? pmValues[pmKey] : '';
@@ -6047,7 +6184,7 @@ function renderPremarketInputs() {
 
     el.innerHTML =
       `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px">Cutoff: ${CUTOFFS[key]}</div>` +
-      pmInput(key+'_commodity', LABELS[key], c) +
+      (semCommodity ? '' : pmInput(key+'_commodity', LABELS[key], c)) +
       referenceIndexHtml +
 
       `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">Holdings</div>` +
@@ -7070,12 +7207,35 @@ function equalizeAdvisorColumns() {
   if (pmOil)  { pmOil.style.minHeight = '';  pmOil.style.height = ''; }
 }
 
+// Sub-abas do Advisor: mostra só o fundo selecionado, esconde os outros.
+const _ADV_CORES = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
+function selAdvisorFund(fund) {
+  localStorage.setItem('advisor-fund', fund);
+  // Mostra/esconde os painéis (sinal e pré-mercado) marcados com data-adv-fund.
+  document.querySelectorAll('[data-adv-fund]').forEach(el => {
+    el.style.display = (el.getAttribute('data-adv-fund') === fund) ? '' : 'none';
+  });
+  // Grelha de sinais passa a uma coluna (um fundo de cada vez).
+  const grid = document.getElementById('advisor-grid');
+  if (grid) grid.style.gridTemplateColumns = '1fr';
+  // Estilo das sub-abas (ativa vs inativas).
+  document.querySelectorAll('.advtab').forEach(b => {
+    const k = b.getAttribute('data-advtab');
+    const cor = _ADV_CORES[k] || 'var(--text3)';
+    if (k === fund) { b.style.background = 'rgba(255,255,255,0.04)'; b.style.border = '1px solid '+cor; b.style.color = cor; }
+    else { b.style.background = 'transparent'; b.style.border = '1px solid var(--border2)'; b.style.color = 'var(--text3)'; }
+  });
+  try { renderAdvisorPanel(fund); } catch(e) {}
+}
+
 function initAdvisor() {
   renderPremarketInputs();
   renderAdvisorPanel('gold');
     renderAdvisorPanel('oil');
     renderAdvisorPanel('finance');
     renderAdvisorPanel('saude');
+  // Sub-abas: mostra só o fundo ativo (default: o último escolhido, ou gold).
+  selAdvisorFund(localStorage.getItem('advisor-fund') || 'gold');
   // Timestamp when advisor was loaded
   const tsEl = document.getElementById('advisor-data-ts');
   if (tsEl) tsEl.textContent = 'Análise: ' + new Date().toLocaleString('pt-PT', {weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
@@ -7222,7 +7382,7 @@ function getSyncState() {
     'pm-inject-ts',
     'advisor-config-gold', 'advisor-config-oil', 'advisor-config-finance', 'advisor-config-saude',
     'advisor-feedback', 'advisor-signal-log', 'advisor-sandbox-log', 'fund-nav-log',
-    'cutoffs'
+    'cutoffs', 'settlement-days'
   ];
   const state = { ts: new Date().toISOString(), data: {} };
   keys.forEach(k => {
@@ -8056,7 +8216,7 @@ async function enviarAdvisorWhatsApp(fundsArg) {
     // Se é VENDA (resgate), inclui o valor disponível para resgate desse fundo (D3).
     if (r.signal === 'VENDA') {
       const rowKey = key === 'gold' ? 'Gold' : 'Oil';
-      const disp = (state.rows && state.rows[rowKey]) ? (state.rows[rowKey].D3 || 0) : 0;
+      const disp = (state.rows && state.rows[rowKey]) ? (state.rows[rowKey][availSlot(rowKey)] || 0) : 0;
       linhas.push('💰 Disponível p/ resgate: ' + fmtNum(disp) + ' €');
     }
 
