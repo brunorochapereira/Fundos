@@ -2130,6 +2130,11 @@ function loadLS() {
     if (!raw) return;
     const s = JSON.parse(raw);
     if (s.rows)        state.rows        = s.rows;
+    // Blindagem: estados guardados antes de um fundo existir não têm a linha dele.
+    // Garante que os 4 fundos existem sempre, para o pipeline não rebentar ao ler .D/.D3.
+    FUNDS.forEach(f => {
+      if (!state.rows[f]) state.rows[f] = {D:0,D1:0,D2:0,D3:0,resgate:0};
+    });
     if (s.lastRun)     state.lastRun     = s.lastRun;
     if (s.fundLastRun) state.fundLastRun = s.fundLastRun;
     if (s.fundShiftRun) state.fundShiftRun = s.fundShiftRun;
@@ -8439,6 +8444,12 @@ window._startApp = async function() {
   try { sbSetUniverse('gold'); } catch(e) {}
   try { computeAutoOutcomes(); } catch(e) {}
   try { computeFundOutcomes(); } catch(e) {}
+  // Garante que os 4 painéis do Advisor refletem o estado final (evita ficarem presos
+  // em "A calcular…" se a aba já estava ativa quando o restauro assíncrono terminou).
+  try {
+    ['gold','oil','finance','saude'].forEach(k => { try { renderAdvisorPanel(k); } catch(e) {} });
+    if (typeof equalizeAdvisorColumns === 'function') equalizeAdvisorColumns();
+  } catch(e) {}
   // Carimbo de versão a partir do último estado sincronizado conhecido
   try {
     const el = document.getElementById('version-stamp');
