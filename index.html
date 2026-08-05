@@ -381,7 +381,7 @@
         </div>
         <button class="btn" onclick="confirmarOrdemFundo('Oil')" id="btn-confirm-Oil" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(148,163,184,0.5);color:#94a3b8;background:rgba(148,163,184,0.06)">✓ Confirmar Petróleo (hoje)</button>
       </div></div>
-        <div class="fblock" id="faj-Finance" style="display:none">
+        <div class="fblock" id="faj-Finance">
       <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <div style="display:flex;align-items:center;gap:7px;">
@@ -396,8 +396,26 @@
           <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
         </div>
+        <button class="btn" onclick="confirmarOrdemFundo('Finance')" id="btn-confirm-Finance" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(74,222,128,0.5);color:#4ade80;background:rgba(74,222,128,0.06)">✓ Confirmar Finance (hoje)</button>
       </div></div>
-      <!-- Finance retirada do programa: bloco escondido (display:none), código mantido por reversibilidade -->
+        <div class="fblock" id="faj-Saude">
+      <div style="border:1px solid rgba(244,114,182,0.3);border-radius:6px;background:rgba(244,114,182,0.07);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#f472b6">✚</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f472b6;letter-spacing:.06em">Saúde</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f472b6">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Saude',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Saude',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Saude')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Saude" value="0" placeholder="0.00" style="border-color:rgba(244,114,182,0.3);color:#f472b6" oninput="updRestante()">
+        </div>
+        <button class="btn" onclick="confirmarOrdemFundo('Saude')" id="btn-confirm-Saude" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(244,114,182,0.5);color:#f472b6;background:rgba(244,114,182,0.06)">✓ Confirmar Saúde (hoje)</button>
+      </div></div>
+      <!-- 4 fundos ativos: Gold, Oil, Finance, Saude -->
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run" onclick="avancarUmDia()">▶ Avançar AMBOS os fundos</button>
         <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px;line-height:1.4">⚠ Avança Ouro e Petróleo ao mesmo tempo. Para confirmar só um, usa os botões "✓ Confirmar" acima.</div>
@@ -436,7 +454,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="va">100k€</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Saúde</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -752,6 +770,11 @@
           <button class="btn" onclick="enviarAdvisorWhatsApp()" style="border-color:rgba(74,222,128,0.3);color:var(--accent);margin-top:0;font-size:10px;padding:7px;width:100%">📲 Enviar Advisor por WhatsApp</button>
           <div id="cmb-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Hora de cutoff por fundo — até esta hora, a ordem confirmada usa a cotação de hoje; depois, a de amanhã. Um por fundo.</div>
+            <div id="cutoffs-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            <div id="cutoffs-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:6px">Verificação de holdings (semanal, automática no PC ligado). Deteta mudanças no top 10 de cada fundo e avisa por WhatsApp — não altera nada sozinho.</div>
             <button onclick="checkHoldings(true).then(r=>{const e=document.getElementById('holdings-check-status');if(!e)return;if(!r.ran){e.style.color='var(--danger)';e.textContent='Não correu: '+(r.reason||'?');}else if(r.anyChange){e.style.color='var(--warn,#f5c542)';e.textContent='Alteração detetada — vê o WhatsApp.';}else{e.style.color='var(--accent)';e.textContent='Sem alterações (referência: '+r.refSource+').';}})" style="font-family:var(--mono);font-size:10px;color:var(--text2);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:5px 10px;cursor:pointer">Verificar holdings agora</button>
             <div id="holdings-check-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
@@ -966,6 +989,34 @@
       <button onclick="toggleAdvisorConfig('oil')" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:3px 8px;cursor:pointer">⚙ Config</button>
     </div>
     <div id="advisor-config-oil" style="display:none;margin-top:10px"></div></div>
+    </div>
+
+    <!-- FINANCE -->
+    <div class="panel" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(74,222,128,0.06);border-bottom-color:rgba(74,222,128,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#4ade80"></div>
+          <span class="label" style="color:#4ade80">▲ Finance</span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 09:00</span>
+      </div>
+      <div style="padding:16px;flex:1;box-sizing:border-box" id="advisor-finance">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">A calcular…</div>
+      </div>
+    </div>
+
+    <!-- SAUDE -->
+    <div class="panel" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(244,114,182,0.06);border-bottom-color:rgba(244,114,182,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#f472b6"></div>
+          <span class="label" style="color:#f472b6">✚ Saúde</span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 09:00</span>
+      </div>
+      <div style="padding:16px;flex:1;box-sizing:border-box" id="advisor-saude">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">A calcular…</div>
+      </div>
     </div>
 
 
@@ -1985,8 +2036,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script>
-// Finance retirada do programa (não processada). Mantida em state.rows por reversibilidade.
-const FUNDS = ['Gold','Oil'];
+// 4 fundos ativos: Gold, Oil, Finance (Jupiter Financial Innovation), Saude (Schroder Healthcare).
+const FUNDS = ['Gold','Oil','Finance','Saude'];
 
 // ── Hardcoded balances ──────────────────────────────────────────
 const BASE_BALANCES = {};  // dados vivem no estado.json (userEdits), não no código
@@ -2001,7 +2052,8 @@ const state = {
   rows: {
     Gold:    {D:0,D1:0,D2:0,D3:0,resgate:0},
     Oil:     {D:0,D1:0,D2:0,D3:0,resgate:0},
-    Finance: {D:0,D1:0,D2:0,D3:0,resgate:0}
+    Finance: {D:0,D1:0,D2:0,D3:0,resgate:0},
+    Saude:   {D:0,D1:0,D2:0,D3:0,resgate:0}
   },
   userEdits: {},
   log: []
@@ -2121,7 +2173,8 @@ function renderPipeline() {
 const FUND_THEME = {
   Gold:    { color:'#f5c542', bg:'rgba(245,197,66,0.08)', border:'rgba(245,197,66,0.35)', icon:'●', label:'Gold' },
   Oil:     { color:'#94a3b8', bg:'rgba(30,30,35,0.6)',    border:'rgba(100,100,120,0.4)', icon:'◆', label:'Oil'  },
-  Finance: { color:'#4ade80', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.3)', icon:'▲', label:'Finance' }
+  Finance: { color:'#4ade80', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.3)', icon:'▲', label:'Finance' },
+  Saude:   { color:'#f472b6', bg:'rgba(244,114,182,0.07)', border:'rgba(244,114,182,0.3)', icon:'✚', label:'Saúde' }
 };
 
 function renderAdj() {
@@ -2147,7 +2200,7 @@ function renderAdj() {
             style="border-color:${t.border};color:${t.color}"
             oninput="updRestante()">
         </div>
-        ${f === 'Finance' ? '' : `<button class="btn" onclick="confirmarOrdemFundo('${f}')" id="btn-confirm-${f}" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:${t.border};color:${t.color};background:${t.bg}">✓ Confirmar ${f === 'Gold' ? 'Ouro' : 'Petróleo'} (hoje)</button>`}
+        <button class="btn" onclick="confirmarOrdemFundo('${f}')" id="btn-confirm-${f}" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:${t.border};color:${t.color};background:${t.bg}">✓ Confirmar ${t.label} (hoje)</button>
       </div>`;
   });
 }
@@ -3182,7 +3235,7 @@ function switchTab(tab) {
   if (tab==='log') { renderLogTab(); renderHealthPanel(); }
   if (tab==='advisor') initAdvisor();
   if (tab==='capital') renderCapital();
-  if (tab==='config') { selModelTab(_modelTab||'gold'); }
+  if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); }
   if (tab==='sandbox') { renderSandboxHistory(); renderSandboxMetrics(); }
 }
 
@@ -4617,27 +4670,77 @@ let HOLDINGS = {
     {name:'Plains GP Holdings',                  aliases:['Plains GP Holdings','PAGP'],        weight:3.47},
   ],
   finance: [
-    {name:'Santander',                           aliases:['Santander','SAN'],                  weight:5.39},
-    {name:'HSBC',                                aliases:['HSBC'],                              weight:5.18},
-    {name:'Citigroup',                           aliases:['Citigroup','Citi','C'],              weight:5.12},
-    {name:'Bank of Cyprus Holdings',             aliases:['Bank of Cyprus','BOCHGRr','BOCH'],  weight:4.94},
-    {name:'UniCredit',                           aliases:['UniCredit','UCG','CRDI'],           weight:4.90},
-    {name:'Samsung Electronics DR',              aliases:['Samsung','Samsung Electronics'],    weight:4.77},
-    {name:'Lion Finance',                        aliases:['Lion Finance','BGEO'],              weight:3.92},
-    {name:'Barclays',                            aliases:['Barclays','BCS','BARC'],            weight:3.89},
-    {name:'BAWAG',                               aliases:['BAWAG'],                            weight:3.72},
-    {name:'NVIDIA',                              aliases:['NVIDIA','NVDA'],                    weight:3.43},
+    {name:'SK Hynix',                 aliases:['SK Hynix','000660'],                weight:5.95},
+    {name:'Samsung Electronics DR',   aliases:['Samsung','Samsung Electronics','Samsung Electronics DR'], weight:5.30},
+    {name:'HSBC',                     aliases:['HSBC','HSBA'],                       weight:5.02},
+    {name:'Santander',                aliases:['Santander','SAN','Banco Santander'], weight:4.85},
+    {name:'UniCredit',                aliases:['UniCredit','UCG','CRDI'],           weight:4.77},
+    {name:'Citigroup',                aliases:['Citigroup','Citi','C'],             weight:4.62},
+    {name:'Bank of Cyprus Holdings',  aliases:['Bank of Cyprus','BOCHGRr','BOCH'],  weight:4.59},
+    {name:'Barclays',                 aliases:['Barclays','BCS','BARC'],            weight:4.56},
+    {name:'Erste Group Bank',         aliases:['Erste','Erste Bank','Erste Group Bank','ERST'], weight:4.33},
+    {name:'NVIDIA',                   aliases:['NVIDIA','NVDA'],                    weight:4.23},
+  ],
+  saude: [
+    {name:'Johnson & Johnson',        aliases:['Johnson & Johnson','J&J','JNJ'],    weight:9.22},
+    {name:'Eli Lilly',                aliases:['Eli Lilly','LLY'],                  weight:7.43},
+    {name:'UnitedHealth Group',       aliases:['UnitedHealth','UnitedHealth Group','UNH'], weight:6.50},
+    {name:'AstraZeneca',              aliases:['AstraZeneca','AZN'],                weight:5.06},
+    {name:'Thermo Fisher Scientific', aliases:['Thermo Fisher','Thermo Fisher Scientific','TMO'], weight:3.35},
+    {name:'CVS Health',               aliases:['CVS','CVS Health','CVS Health Corp'], weight:3.32},
+    {name:'AbbVie',                   aliases:['AbbVie','ABBV'],                    weight:3.30},
+    {name:'Merck & Co',               aliases:['Merck','Merck & Co','Merck&Co','MRK'], weight:3.24},
+    {name:'GSK',                      aliases:['GSK','GSK plc','GlaxoSmithKline'],  weight:2.66},
+    {name:'Teva Pharmaceutical',      aliases:['Teva','Teva Pharmaceutical','TEVA'], weight:2.44},
   ]
 };
 
 // Cutoffs per fund
-const CUTOFFS = {gold:'09:00', oil:'11:00', finance:'09:00'};
+const CUTOFFS_DEFAULT = {gold:'09:00', oil:'09:00', finance:'09:00', saude:'09:00'};
+// Cutoffs efetivos: lê do localStorage (configurável na Config), com fallback aos defaults.
+function getCutoff(key) {
+  try {
+    const saved = JSON.parse(localStorage.getItem('cutoffs') || '{}');
+    if (saved && saved[key]) return saved[key];
+  } catch(e) {}
+  return CUTOFFS_DEFAULT[key] || '09:00';
+}
+// Objeto de compatibilidade: mantém CUTOFFS[key] a funcionar em todo o código existente.
+const CUTOFFS = new Proxy({}, { get: (_, key) => getCutoff(key) });
+
+// Renderiza os campos de cutoff por fundo na Config.
+function renderCutoffsConfig() {
+  const el = document.getElementById('cutoffs-config');
+  if (!el) return;
+  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde' };
+  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
+  el.innerHTML = ['gold','oil','finance','saude'].map(k =>
+    `<div style="display:flex;align-items:center;gap:6px">
+      <span style="font-family:var(--mono);font-size:10px;color:${cores[k]};min-width:56px">${nomes[k]}</span>
+      <input type="time" id="cutoff-${k}" value="${getCutoff(k)}" onchange="saveCutoff('${k}')"
+        style="font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);padding:4px 6px;outline:none">
+    </div>`).join('');
+}
+
+// Grava o cutoff de um fundo e re-renderiza os painéis do Advisor (o aviso de cutoff muda).
+function saveCutoff(key) {
+  const inp = document.getElementById('cutoff-'+key);
+  if (!inp || !inp.value) return;
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('cutoffs') || '{}'); } catch(e) {}
+  saved[key] = inp.value;
+  localStorage.setItem('cutoffs', JSON.stringify(saved));
+  const st = document.getElementById('cutoffs-status');
+  if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Cutoff do '+key+' guardado: '+inp.value; }
+  try { renderAdvisorPanel(key); } catch(e) {}
+}
 
 // Default config per fund
 const DEFAULT_CONFIG = {
   gold:    {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
   oil:     {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
-  finance: {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  finance: {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  saude:   {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
 };
 
 // ── Calendário FOMC 2026 ──────────────────────────────────────────
@@ -5244,8 +5347,8 @@ async function renderAdvisorPanelDeep(key) {
   const el = document.getElementById('advisor-'+key);
   if (!el) return;
   const cfg = loadAdvisorConfig(key);
-  const COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80'};
-  const FUNDS = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation'};
+  const COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6'};
+  const FUNDS = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation', saude:'Schroder Healthcare Innovation'};
   const r = calcAdvisorSignal(key);
   // Override news in score calc (mesma lógica de calcAdvisorSignal: Commodity com escala
   // fixa por variação do dia, peso por cobertura em Holdings/Notícias)
@@ -5460,7 +5563,7 @@ function renderHealthPanel() {
 
 function calcAdvisorSignal(key) {
   const cfg = loadAdvisorConfig(key);
-  const FUNDS   = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation'};
+  const FUNDS   = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation', saude:'Schroder Healthcare Innovation'};
   const today = new Date();
   const isFriday = today.getDay() === 5;
   const dayLabel = isFriday ? ' — processa segunda-feira' : ' — 10% capital';
@@ -5512,10 +5615,20 @@ function calcAdvisorSignal(key) {
 
   if (!totalWeight) { r.signal = 'SEM DADOS'; return r; }
 
-  // Exigência de dados mínimos: ou o commodity tem pós-mercado real, ou cobertura de holdings >= 30%.
-  // Sem isto, um único valor solto (ou nenhum) dispararia um sinal pouco fiável.
+  // Exigência de dados mínimos. Fundos COM commodity (gold/oil): basta o pós-mercado
+  // da commodity OU cobertura de holdings >= 30%. Fundos SEM commodity (finance/saude):
+  // como o Advisor deles assenta nas holdings, exige-se cobertura de holdings >= 40%.
+  const semCommodity = (cfg.wCommodity === 0);
   const coberturaHoldings = (hResult && hResult.coverage) ? hResult.coverage : 0;
-  if (!r.commodityHasData && coberturaHoldings < 30) {
+  const pisoCobertura = semCommodity ? 40 : 30;
+  if (semCommodity) {
+    if (coberturaHoldings < pisoCobertura) {
+      r.signal = 'DADOS INSUFICIENTES';
+      r.action = 'Cobertura de holdings abaixo de ' + pisoCobertura + '% — sem pré/pós-market suficiente';
+      r.score = null;
+      return r;
+    }
+  } else if (!r.commodityHasData && coberturaHoldings < pisoCobertura) {
     r.signal = 'DADOS INSUFICIENTES';
     r.action = 'Preenche a commodity ou mais holdings para calcular';
     r.score = null;
@@ -5579,7 +5692,7 @@ function renderAdvisorPanel(key) {
   const el = document.getElementById('advisor-'+key);
   if (!el) return;
   const cfg = loadAdvisorConfig(key);
-  const COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80'};
+  const COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6'};
   const c = COLORS[key];
   const r = calcAdvisorSignal(key);
 
@@ -5600,9 +5713,9 @@ function renderAdvisorPanel(key) {
   const hDetail = r.holdings.score!==null ?
     `${r.holdings.details.length}/${HOLDINGS[key].length} · ${r.holdings.coverage.toFixed(0)}% peso · ${r.holdings.weightedVar>=0?'+':''}${r.holdings.weightedVar?.toFixed(2)}%` : '';
 
-  // Correlation warning: gold and oil both COMPRA
-  const otherKey = key==='gold' ? 'oil' : 'gold';
-  const corrWarning = r.signal==='COMPRA' && _lastSignals[otherKey]==='COMPRA'
+  // Correlation warning: gold and oil both COMPRA (só se aplica a estes dois)
+  const otherKey = key==='gold' ? 'oil' : key==='oil' ? 'gold' : null;
+  const corrWarning = otherKey && r.signal==='COMPRA' && _lastSignals[otherKey]==='COMPRA'
     ? `<div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:6px;padding:4px 8px;background:rgba(251,191,36,0.08);border-radius:4px">⚠ Correlação inversa: ${otherKey.toUpperCase()} também em COMPRA — valida antes de operar</div>`
     : '';
 
@@ -6390,6 +6503,36 @@ const SERVER_MAP_OIL = {
   'Plains GP Holdings':                   'oil_h_Plains GP Holdings',
 };
 
+// Finance (server devolve na secção 'bank'). Nomes tal como o server_all os devolve.
+const SERVER_MAP_FINANCE = {
+  'Jupiter Financial Innovation':  'finance_fund_Jupiter Financial Innovation',
+  'SK Hynix':                      'finance_h_SK Hynix',
+  'Samsung Electronics DR':        'finance_h_Samsung Electronics DR',
+  'HSBC':                          'finance_h_HSBC',
+  'Santander':                     'finance_h_Santander',
+  'UniCredit':                     'finance_h_UniCredit',
+  'Citigroup':                     'finance_h_Citigroup',
+  'Bank of Cyprus Holdings':       'finance_h_Bank of Cyprus Holdings',
+  'Barclays':                      'finance_h_Barclays',
+  'Erste Group Bank':              'finance_h_Erste Group Bank',
+  'NVIDIA':                        'finance_h_NVIDIA',
+};
+
+// Saude (server devolve na secção 'health').
+const SERVER_MAP_SAUDE = {
+  'Schroder Healthcare Innovation': 'saude_fund_Schroder Healthcare Innovation',
+  'Johnson & Johnson':             'saude_h_Johnson & Johnson',
+  'Eli Lilly':                     'saude_h_Eli Lilly',
+  'UnitedHealth Group':            'saude_h_UnitedHealth Group',
+  'AstraZeneca':                   'saude_h_AstraZeneca',
+  'Thermo Fisher Scientific':      'saude_h_Thermo Fisher Scientific',
+  'CVS Health':                    'saude_h_CVS Health',
+  'AbbVie':                        'saude_h_AbbVie',
+  'Merck & Co':                    'saude_h_Merck & Co',
+  'GSK':                           'saude_h_GSK',
+  'Teva Pharmaceutical':           'saude_h_Teva Pharmaceutical',
+};
+
 function getAfterMarketKey(key) {
   if (!key) return null;
   if (key.includes('_h_')) return key.replace('_h_', '_ac_');
@@ -6461,10 +6604,12 @@ function forceGithubSaveAfterServerUpdate(source) {
   saveToGitHub();
 }
 
-// Injeta items de uma watchlist (gold ou oil) em pmValues. Devolve nº injetado.
+// Injeta items de uma watchlist (gold, oil, finance, saude) em pmValues. Devolve nº injetado.
 function injectWatchlistItems(key, items) {
   if (!Array.isArray(items)) return 0;
-  const map = key === 'gold' ? SERVER_MAP_GOLD : SERVER_MAP_OIL;
+  const MAPS = { gold: SERVER_MAP_GOLD, oil: SERVER_MAP_OIL, finance: SERVER_MAP_FINANCE, saude: SERVER_MAP_SAUDE };
+  const map = MAPS[key];
+  if (!map) return 0;
   let n = 0;
   items.forEach(item => {
     const pk = map[item.name];
@@ -6515,6 +6660,8 @@ async function fetchFromServerFiltered(source, funds) {
       const data = await resp.json();
       if (data.gold?.items) injected += injectWatchlistItems('gold', data.gold.items);
       if (data.oil?.items)  injected += injectWatchlistItems('oil',  data.oil.items);
+      if (data.bank?.items)   injected += injectWatchlistItems('finance', data.bank.items);
+      if (data.health?.items) injected += injectWatchlistItems('saude',   data.health.items);
       fundsData = data.funds || null;
     } else {
       // Só um fundo: /watchlist?list=<fundo>
@@ -6543,10 +6690,14 @@ async function fetchFromServerFiltered(source, funds) {
     renderPremarketInputs();
     renderAdvisorPanel('gold');
     renderAdvisorPanel('oil');
+    renderAdvisorPanel('finance');
+    renderAdvisorPanel('saude');
     equalizeAdvisorColumns();
     if (injected > 0) {
       if (wantGold) setPmInjectTs('gold');
       if (wantOil)  setPmInjectTs('oil');
+      // Quando usa /all (wantGold && wantOil), finance e saude também foram injetados.
+      if (wantGold && wantOil) { setPmInjectTs('finance'); setPmInjectTs('saude'); }
     }
     savePmValues();
 
@@ -6630,10 +6781,17 @@ async function fetchFromServer(source = 'manual') {
 
     let injected = 0;
 
-    // Process gold items
-    if (data.gold?.items) {
-      data.gold.items.forEach(item => {
-        const key = SERVER_MAP_GOLD[item.name];
+    // Injeta variação e pós-mercado dos 4 fundos. Secção do server → chave do dashboard.
+    const INJ = [
+      { sec: 'gold',   fund: 'gold',    map: SERVER_MAP_GOLD },
+      { sec: 'oil',    fund: 'oil',     map: SERVER_MAP_OIL },
+      { sec: 'bank',   fund: 'finance', map: SERVER_MAP_FINANCE },
+      { sec: 'health', fund: 'saude',   map: SERVER_MAP_SAUDE },
+    ];
+    INJ.forEach(({ sec, map }) => {
+      if (!data[sec]?.items) return;
+      data[sec].items.forEach(item => {
+        const key = map[item.name];
         if (key && Object.prototype.hasOwnProperty.call(item, 'variation')) {
           pmValues[key] = parseServerPctDefaultZero(item.variation);
           injected++;
@@ -6646,25 +6804,7 @@ async function fetchFromServer(source = 'manual') {
           }
         }
       });
-    }
-
-    // Process oil items
-    if (data.oil?.items) {
-      data.oil.items.forEach(item => {
-        const key = SERVER_MAP_OIL[item.name];
-        if (key && Object.prototype.hasOwnProperty.call(item, 'variation')) {
-          pmValues[key] = parseServerPctDefaultZero(item.variation);
-          injected++;
-        }
-        if (key && Object.prototype.hasOwnProperty.call(item, 'afterMarketVariation')) {
-          const acKey = getAfterMarketKey(key);
-          if (acKey) {
-            const acVal = parseServerPctOrNull(item.afterMarketVariation);
-            if (acVal === null) delete pmValues[acKey]; else pmValues[acKey] = acVal;
-          }
-        }
-      });
-    }
+    });
 
     // Update timestamp
     const tsEl = document.getElementById('advisor-data-ts');
@@ -6673,6 +6813,8 @@ async function fetchFromServer(source = 'manual') {
     renderPremarketInputs();
     renderAdvisorPanel('gold');
     renderAdvisorPanel('oil');
+    renderAdvisorPanel('finance');
+    renderAdvisorPanel('saude');
     equalizeAdvisorColumns();
 
     // Timestamp de injeção nos cabeçalhos pré-mercado
@@ -6926,7 +7068,9 @@ function equalizeAdvisorColumns() {
 function initAdvisor() {
   renderPremarketInputs();
   renderAdvisorPanel('gold');
-  renderAdvisorPanel('oil');
+    renderAdvisorPanel('oil');
+    renderAdvisorPanel('finance');
+    renderAdvisorPanel('saude');
   // Timestamp when advisor was loaded
   const tsEl = document.getElementById('advisor-data-ts');
   if (tsEl) tsEl.textContent = 'Análise: ' + new Date().toLocaleString('pt-PT', {weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
@@ -7071,8 +7215,9 @@ function getSyncState() {
     'fundos2026',
     'pm-values',
     'pm-inject-ts',
-    'advisor-config-gold', 'advisor-config-oil', 'advisor-config-finance',
-    'advisor-feedback', 'advisor-signal-log', 'advisor-sandbox-log', 'fund-nav-log'
+    'advisor-config-gold', 'advisor-config-oil', 'advisor-config-finance', 'advisor-config-saude',
+    'advisor-feedback', 'advisor-signal-log', 'advisor-sandbox-log', 'fund-nav-log',
+    'cutoffs'
   ];
   const state = { ts: new Date().toISOString(), data: {} };
   keys.forEach(k => {
