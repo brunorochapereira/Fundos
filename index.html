@@ -2242,10 +2242,14 @@ function renderPipeline() {
     const r = state.rows[f];
     const doisDias = availSlot(f) === 'D2';
     if (doisDias) {
-      // Fundo de 2 dias: o dinheiro matura em D2 (é onde fica disponível). A casa D3
-      // não se usa — mostra ⏩ a sinalizar que o dinheiro já passou à frente.
-      const skip = `<span class="v0" title="Fundo de 2 dias: o dinheiro fica disponível em Cativo+1 (D+2). Esta casa não se usa." style="opacity:0.5">⏩</span>`;
-      return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,1)}</td><td>${skip}</td><td>${cv(r.resgate,0)}</td></tr>`;
+      // Fundo de 2 dias: o dinheiro matura em D2. A casa D3 não é usada.
+      // O ⏩ só aparece QUANDO há dinheiro em D2 — indica o salto que acabou de acontecer.
+      // Sem dinheiro, não há salto: a casa mostra um traço como as outras.
+      const houveSalto = r.D2 > 0;
+      const d3cell = houveSalto
+        ? `<span class="va" title="Fundo de 2 dias: o dinheiro saltou esta casa (D+3) e ficou disponível em Cativo+1 (D+2)." style="opacity:0.7">⏩</span>`
+        : `<span class="v0">—</span>`;
+      return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,1)}</td><td>${d3cell}</td><td>${cv(r.resgate,0)}</td></tr>`;
     }
     // Fundo de 3 dias (default): disponível em D3, como antes.
     return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
