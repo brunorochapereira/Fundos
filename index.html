@@ -2066,7 +2066,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const gate = document.getElementById('auth-gate');
   const effectiveHash = AUTH_HASH || localStorage.getItem('auth-hash') || '';
 
-  if (authOk()) { gate.style.display='none'; window._startApp && window._startApp(); return; }
+  // Arranca a app assim que o script grande estiver pronto. Se _startApp ainda não
+  // existe (ficheiro grande ainda a carregar), espera em vez de falhar silenciosamente.
+  // Corrige o login/arranque falhar à primeira e só funcionar à segunda.
+  const startAppWhenReady = (tentativas = 0) => {
+    if (typeof window._startApp === 'function') { window._startApp(); return; }
+    if (tentativas > 100) {
+      const err = document.getElementById('auth-error');
+      if (err) err.textContent = 'A app ainda está a carregar. Aguarda um instante e tenta de novo.';
+      return;
+    }
+    setTimeout(() => startAppWhenReady(tentativas + 1), 100);
+  };
+
+  if (authOk()) { gate.style.display='none'; startAppWhenReady(); return; }
 
   if (!effectiveHash) {
     document.getElementById('auth-login-form').style.display='none';
@@ -2081,7 +2094,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('auth-hash', h);
     document.getElementById('setup-out').innerHTML = 'Hash guardado neste browser. Para fixar no código, define AUTH_HASH = \'' + h + '\'<br><br>A entrar...';
     sessionStorage.setItem('auth-ok','1'); sessionStorage.setItem('auth-ts', Date.now());
-    setTimeout(()=>{ gate.style.display='none'; window._startApp && window._startApp(); }, 1500);
+    setTimeout(()=>{ gate.style.display='none'; startAppWhenReady(); }, 1500);
   });
 
   let attempts = 3;
@@ -2093,7 +2106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const h = await sha256(u+':'+p);
     if (h === effectiveHash) {
       sessionStorage.setItem('auth-ok','1'); sessionStorage.setItem('auth-ts', Date.now());
-      gate.style.display='none'; window._startApp && window._startApp();
+      gate.style.display='none'; startAppWhenReady();
     } else {
       attempts--;
       if (attempts <= 0) { err.textContent='Bloqueado. Recarrega a página.'; document.getElementById('auth-submit').disabled=true; return; }
@@ -2240,18 +2253,8 @@ function cv(v,avail) {
 function renderPipeline() {
   document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
     const r = state.rows[f];
-    const doisDias = availSlot(f) === 'D2';
-    if (doisDias) {
-      // Fundo de 2 dias: o dinheiro matura em D2. A casa D3 não é usada.
-      // O ⏩ só aparece QUANDO há dinheiro em D2 — indica o salto que acabou de acontecer.
-      // Sem dinheiro, não há salto: a casa mostra um traço como as outras.
-      const houveSalto = r.D2 > 0;
-      const d3cell = houveSalto
-        ? `<span class="va" title="Fundo de 2 dias: o dinheiro saltou esta casa (D+3) e ficou disponível em Cativo+1 (D+2)." style="opacity:0.7">⏩</span>`
-        : `<span class="v0">—</span>`;
-      return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,1)}</td><td>${d3cell}</td><td>${cv(r.resgate,0)}</td></tr>`;
-    }
-    // Fundo de 3 dias (default): disponível em D3, como antes.
+    // O disponível está sempre na coluna Disponível (D3). Num fundo de 2 dias, a coluna
+    // Cativo+1 (D2) fica vazia porque o dinheiro salta-a — mas o valor cai sempre em Disponível.
     return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
 }
@@ -2571,16 +2574,17 @@ function toggleTestMode() {
 // SÓ shift: move D→D1→D2→D3 e limpa o resgate do dia anterior. Não toca em ordens.
 function shiftPipeline(f) {
   const r=state.rows[f]; const logs=[];
-  const slot = availSlot(f); // 'D3' (3 dias) ou 'D2' (2 dias)
+  const dias = getSettlementDays(f); // 2 ou 3
   r.resgate=0;
-  if (slot === 'D2') {
-    // 2 dias: matura em D2. D3 não é usado (mantém-se a 0).
-    r.D2 += r.D1; r.D1 = r.D; r.D = 0;
+  // O dinheiro maturado acumula SEMPRE em D3 (a coluna Disponível), seja 2 ou 3 dias.
+  // A diferença é só a velocidade: com 3 dias passa por D1→D2→D3; com 2 dias
+  // salta de D1 direto para D3 (a casa D2 fica sempre vazia nesse fundo).
+  if (dias === 2) {
+    r.D3 += r.D1; r.D1 = r.D; r.D = 0; r.D2 = 0;
   } else {
-    // 3 dias (default): matura em D3.
     r.D3 += r.D2; r.D2 = r.D1; r.D1 = r.D; r.D = 0;
   }
-  const disp = r[slot];
+  const disp = r.D3;
   let m=`${f}: shift ok`; if(disp>0) m+=` | disp: ${fmtNum(disp)}`;
   logs.push({msg:m,type:disp>0?'hi':''});
   return logs;
@@ -4809,7 +4813,9 @@ function getSettlementDays(key) {
   return SETTLEMENT_DEFAULT[_fundKeyLower(key)] || 3;
 }
 // Casa do pipeline onde o dinheiro fica disponível: D3 se 3 dias, D2 se 2 dias.
-function availSlot(key) { return getSettlementDays(key) === 2 ? 'D2' : 'D3'; }
+// O dinheiro disponível vive SEMPRE em D3 (a coluna Disponível), seja o fundo de 2 ou 3 dias.
+// O número de dias afeta só a velocidade de maturação (ver shiftPipeline), não a casa final.
+function availSlot(key) { return 'D3'; }
 
 // Renderiza os campos de dias de settlement por fundo na Config.
 function renderSettlementConfig() {
