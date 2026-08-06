@@ -443,7 +443,7 @@
       <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Pipeline de disponibilidade</span></div>
       <div class="ph-row">
         <span>FUNDO</span>
-        <span>D — Subscrito › D+1 — Cativo › D+2 — Cativo+1 › D+3 — Disponível › Em resgate</span>
+        <span>D — Subscrito › D+1 — Cativo › D+2 — Cativo ou disponível › D+3 — Disponível › Em resgate</span>
       </div>
       <table id="avail-table">
         <thead><tr>
@@ -451,7 +451,7 @@
           <th>Subscrito<span class="sub">D</span></th>
           <th>Cativo<span class="sub">D+1</span></th>
           <th>Cativo+1<span class="sub">D+2</span></th>
-          <th>Disponível<span class="sub">D+3</span></th>
+          <th>Disponível<span class="sub">D+2 / D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
         <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Saúde</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
@@ -773,6 +773,9 @@
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Dias de cativação por fundo — quantos dias úteis o dinheiro subscrito fica cativo antes de ficar disponível para resgate. Um por fundo.</div>
             <div id="settlement-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             <div id="settlement-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin:12px 0 6px">Fonte do fator Holdings. Automático usa pós-fecho quando existe e recorre à variação do dia quando falta.</div>
+            <div id="holdings-source-config" style="display:grid;grid-template-columns:1fr;gap:6px"></div>
+            <div id="holdings-source-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
           </div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:6px">Verificação de holdings (semanal, automática no PC ligado). Deteta mudanças no top 10 de cada fundo e avisa por WhatsApp — não altera nada sozinho.</div>
@@ -2240,12 +2243,17 @@ function cv(v,avail) {
 function renderPipeline() {
   document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
     const r = state.rows[f];
+    const days = getSettlementDays(f);
     const slot = availSlot(f);
-    // A coluna "Disponível" mostra sempre a casa de maturação do fundo (D2 se 2 dias, D3 se 3).
+    const fast = days === 2;
+    // A coluna "Disponível" mostra a casa de maturação efetiva: D2 em 2 dias, D3 em 3 dias.
     const dispVal = r[slot];
-    // Nas casas intermédias, não duplicar o valor que já está na coluna disponível.
-    const d2Show = (slot === 'D2') ? 0 : r.D2;
-    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(d2Show,0)}</td><td>${cv(dispVal,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
+    // Num fundo de 2 dias, D2 passa diretamente para Disponível. O marcador torna o salto explícito.
+    const d2Cell = fast
+      ? `<span title="Settlement de 2 dias: D2 é apresentado na coluna Disponível" style="font-family:var(--mono);font-size:9px;color:var(--warn);white-space:nowrap">D2 ↠ DISP</span>`
+      : cv(r.D2,0);
+    const badge = `<span title="Settlement de ${days} dias" style="display:inline-block;margin-left:6px;padding:1px 5px;border:1px solid ${fast?'var(--warn-dim)':'var(--border2)'};border-radius:3px;font-family:var(--mono);font-size:8px;color:${fast?'var(--warn)':'var(--text3)'};vertical-align:1px">${days}d${fast?' ↠':''}</span>`;
+    return `<tr><td>${f}${badge}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${d2Cell}</td><td>${cv(dispVal,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
 }
 
@@ -2262,6 +2270,7 @@ function renderAdj() {
     const el = document.getElementById('faj-'+f);
     if (!el) return;
     const disp = state.rows[f][availSlot(f)];
+    const settleDays = getSettlementDays(f);
     const t = FUND_THEME[f];
     el.innerHTML = `
       <div style="border:1px solid ${t.border};border-radius:6px;background:${t.bg};padding:10px 12px;margin-bottom:8px;">
@@ -2269,8 +2278,9 @@ function renderAdj() {
           <div style="display:flex;align-items:center;gap:7px;">
             <span style="font-size:14px;color:${t.color}">${t.icon}</span>
             <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:${t.color};letter-spacing:.06em">${t.label}</span>
+            <span title="Disponível em D+${settleDays}" style="font-family:var(--mono);font-size:8px;color:${settleDays===2?'var(--warn)':'var(--text3)'};border:1px solid ${settleDays===2?'var(--warn-dim)':'var(--border2)'};border-radius:3px;padding:1px 4px">${settleDays}d${settleDays===2?' ↠':''}</span>
           </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:${t.color}">${fmtNum(disp)}</span></span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp. D+${settleDays}: <span style="color:${t.color}">${fmtNum(disp)}</span></span>
         </div>
         <div class="fbtns">
           <button class="bs pl" onclick="applyPct('${f}',1)">+10%</button>
@@ -3325,7 +3335,7 @@ function switchTab(tab) {
   if (tab==='log') { renderLogTab(); renderHealthPanel(); }
   if (tab==='advisor') initAdvisor();
   if (tab==='capital') renderCapital();
-  if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); renderSettlementConfig(); }
+  if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); renderSettlementConfig(); renderHoldingsSourceConfig(); }
   if (tab==='sandbox') { renderSandboxHistory(); renderSandboxMetrics(); }
 }
 
@@ -4823,19 +4833,74 @@ function renderSettlementConfig() {
   }).join('');
 }
 
-// Grava os dias de settlement de um fundo.
+// Grava os dias de settlement de um fundo. A mudança só é permitida com o pipeline vazio.
 function saveSettlement(key) {
   const sel = document.getElementById('settle-'+key);
   if (!sel) return;
   const val = parseInt(sel.value, 10);
   if (val !== 2 && val !== 3) return;
+  const oldVal = getSettlementDays(key);
+  const rowKey = {gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saude'}[key];
+  const row = rowKey && state.rows ? state.rows[rowKey] : null;
+  const hasPipelineMoney = row && ['D','D1','D2','D3','resgate'].some(k => Math.abs(Number(row[k]) || 0) > 0.000001);
+  const st = document.getElementById('settlement-status');
+  if (val !== oldVal && hasPipelineMoney) {
+    sel.value = String(oldVal);
+    if (st) {
+      st.style.color = 'var(--danger)';
+      st.textContent = key + ': alteração bloqueada. Esvazia o pipeline e o valor em resgate antes de mudar de ' + oldVal + ' para ' + val + ' dias.';
+    }
+    toast('Settlement não alterado: existe dinheiro no pipeline de '+key+'.','err');
+    return;
+  }
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem('settlement-days') || '{}'); } catch(e) {}
   saved[key] = val;
   localStorage.setItem('settlement-days', JSON.stringify(saved));
-  const st = document.getElementById('settlement-status');
-  if (st) { st.style.color = 'var(--accent)'; st.textContent = key + ': ' + val + ' dias de cativação guardado.'; }
+  if (st) { st.style.color = 'var(--accent)'; st.textContent = key + ': disponível em D+' + val + ' guardado.'; }
   try { renderPipeline(); renderAdj(); } catch(e) {}
+}
+
+// Fonte do fator Holdings: automático, apenas pós-fecho ou apenas variação do dia.
+// Em automático, cada holding usa pós-fecho quando existe; caso contrário usa a variação do dia.
+const HOLDINGS_SOURCE_DEFAULT = {gold:'auto', oil:'auto', finance:'auto', saude:'auto'};
+function getHoldingsSourceMode(key) {
+  const k = _fundKeyLower(key);
+  try {
+    const saved = JSON.parse(localStorage.getItem('holdings-source-mode') || '{}');
+    if (saved && ['auto','post','day'].includes(saved[k])) return saved[k];
+  } catch(e) {}
+  return HOLDINGS_SOURCE_DEFAULT[k] || 'auto';
+}
+function renderHoldingsSourceConfig() {
+  const el = document.getElementById('holdings-source-config');
+  if (!el) return;
+  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde' };
+  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
+  el.innerHTML = ['gold','oil','finance','saude'].map(k => {
+    const mode = getHoldingsSourceMode(k);
+    return `<div style="display:flex;align-items:center;gap:6px">
+      <span style="font-family:var(--mono);font-size:10px;color:${cores[k]};min-width:56px">${nomes[k]}</span>
+      <select id="holdsrc-${k}" onchange="saveHoldingsSource('${k}')"
+        style="flex:1;min-width:0;width:100%;font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);padding:4px 6px;outline:none">
+        <option value="auto"${mode==='auto'?' selected':''}>Automático</option>
+        <option value="post"${mode==='post'?' selected':''}>Só pós-fecho</option>
+        <option value="day"${mode==='day'?' selected':''}>Só variação dia</option>
+      </select>
+    </div>`;
+  }).join('');
+}
+function saveHoldingsSource(key) {
+  const sel = document.getElementById('holdsrc-'+key);
+  if (!sel || !['auto','post','day'].includes(sel.value)) return;
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('holdings-source-mode') || '{}'); } catch(e) {}
+  saved[key] = sel.value;
+  localStorage.setItem('holdings-source-mode', JSON.stringify(saved));
+  const labels = {auto:'automático, pós-fecho com fallback para o dia', post:'apenas pós-fecho', day:'apenas variação do dia'};
+  const st = document.getElementById('holdings-source-status');
+  if (st) { st.style.color = 'var(--accent)'; st.textContent = key + ': ' + labels[sel.value] + '.'; }
+  try { renderAdvisorPanel(key); } catch(e) {}
 }
 // Cutoffs efetivos: lê do localStorage (configurável na Config), com fallback aos defaults.
 function getCutoff(key) {
@@ -5275,7 +5340,7 @@ const GOLD_COMMODITY_ANCHORS = [
 // históricos; ajusta livremente com base na precisão real que fores acumulando.
 const OIL_COMMODITY_ANCHORS = GOLD_COMMODITY_ANCHORS.map(([x,y]) => [Math.round(x*1.8*100)/100, y]);
 
-// Escala das Holdings (pós-mercado): reaproveita a MESMA forma da tabela do Ouro,
+// Escala das Holdings (pós-fecho ou variação do dia): reaproveita a MESMA forma da tabela do Ouro,
 // sem escalar — assume-se magnitude semelhante entre pós-mercado de ações e o dia do
 // ouro. Substitui a antiga calibração automática por volatilidade, que se confirmou
 // estar a medir a série errada (variação do dia, não pós-mercado) depois da mudança
@@ -5292,48 +5357,64 @@ function holdingsDayScore(varPct) {
 
 function calcHoldingsScore(key) {
   const cfg = loadAdvisorConfig(key);
-  const consensusFactor = cfg.consensusFactor ?? 0.3; // fator de penalização por consenso bearish/bullish
-  const holdings = HOLDINGS[key];
+  const consensusFactor = cfg.consensusFactor ?? 0.3;
+  const holdings = HOLDINGS[key] || [];
+  const sourceMode = getHoldingsSourceMode(key);
   let sumWeightedVar = 0, sumWeights = 0;
   let sumNegWeight = 0, sumPosWeight = 0;
+  let postCount = 0, dayCount = 0;
   const details = [];
+
+  const validNumber = v => v !== undefined && v !== null && String(v).trim() !== '' && Number.isFinite(parseFloat(v));
+
   holdings.forEach(h => {
-    // Usa a variação PÓS-MERCADO da holding. Sem pós-mercado → ignora a holding.
-    const acKey = key+'_ac_'+h.name;
-    const val = pmValues[acKey];
-    if (val !== undefined && val !== '' && !isNaN(parseFloat(val))) {
-      const v = parseFloat(val);
+    const postVal = pmValues[key+'_ac_'+h.name];
+    const dayVal  = pmValues[key+'_h_'+h.name];
+    let raw = null, source = null;
+
+    if (sourceMode === 'post') {
+      if (validNumber(postVal)) { raw = postVal; source = 'post'; }
+    } else if (sourceMode === 'day') {
+      if (validNumber(dayVal)) { raw = dayVal; source = 'day'; }
+    } else {
+      if (validNumber(postVal)) { raw = postVal; source = 'post'; }
+      else if (validNumber(dayVal)) { raw = dayVal; source = 'day'; }
+    }
+
+    if (source) {
+      const v = parseFloat(raw);
       sumWeightedVar += v * h.weight;
       sumWeights += h.weight;
       if (v < 0) sumNegWeight += h.weight;
       else sumPosWeight += h.weight;
-      details.push({name: h.name, weight: h.weight, change: v});
+      if (source === 'post') postCount++; else dayCount++;
+      details.push({name:h.name, weight:h.weight, change:v, source});
     }
   });
-  if (!sumWeights) return {score: null, weightedVar: null, coverage: 0, details: []};
+
+  if (!sumWeights) return {
+    score:null, weightedVar:null, coverage:0, details:[],
+    sourceMode, postCount:0, dayCount:0, pctNeg:0, pctPos:0
+  };
+
   const weightedVar = sumWeightedVar / sumWeights;
-
-  // 1. Score base — escala fixa por pontos-âncora (HOLDINGS_ANCHORS), mesma forma da
-  // tabela do Ouro. Substitui a antiga calibração por volatilidade (media a série errada
-  // depois de o Commodity passar a usar a variação do dia).
-  let scoreBase = holdingsDayScore(weightedVar);
-
-  // 2. Fator de consenso — penaliza/amplifica conforme maioria do peso
-  const pctNeg = sumNegWeight / sumWeights;  // % do peso em holdings negativas
-  const pctPos = sumPosWeight / sumWeights;  // % do peso em holdings positivas
+  const scoreBase = holdingsDayScore(weightedVar);
+  const pctNeg = sumNegWeight / sumWeights;
+  const pctPos = sumPosWeight / sumWeights;
   let score = scoreBase;
   if (pctNeg > 0.5) {
-    // Maioria negativa → penaliza o score (puxa para baixo)
     score = Math.max(0, Math.round(scoreBase * (1 - pctNeg * consensusFactor)));
   } else if (pctPos > 0.5) {
-    // Maioria positiva → amplifica o score (puxa para cima)
-    const boost = Math.min(100, Math.round(scoreBase + (100 - scoreBase) * pctPos * consensusFactor));
-    score = boost;
+    score = Math.min(100, Math.round(scoreBase + (100 - scoreBase) * pctPos * consensusFactor));
   }
 
   const totalWeight = holdings.reduce((s,h)=>s+h.weight,0);
-  return {score, scoreBase, weightedVar, coverage: sumWeights/totalWeight*100, details,
-          pctNeg: Math.round(pctNeg*100), pctPos: Math.round(pctPos*100)};
+  return {
+    score, scoreBase, weightedVar,
+    coverage: totalWeight ? sumWeights/totalWeight*100 : 0,
+    details, sourceMode, postCount, dayCount,
+    pctNeg:Math.round(pctNeg*100), pctPos:Math.round(pctPos*100)
+  };
 }
 
 // Calc momentum score from 5d value
@@ -5755,8 +5836,8 @@ function calcAdvisorSignal(key) {
 
   if (!totalWeight) { r.signal = 'SEM DADOS'; return r; }
 
-  // Exigência de dados mínimos. Fundos COM commodity (gold/oil): basta o pós-mercado
-  // da commodity OU cobertura de holdings >= 30%. Fundos SEM commodity (finance/saude):
+  // Exigência de dados mínimos. Fundos COM commodity (gold/oil): basta a commodity
+  // OU cobertura de holdings >= 30%. Fundos SEM commodity (finance/saude):
   // como o Advisor deles assenta nas holdings, exige-se cobertura de holdings >= 40%.
   const semCommodity = (cfg.wCommodity === 0);
   const coberturaHoldings = (hResult && hResult.coverage) ? hResult.coverage : 0;
@@ -5764,7 +5845,7 @@ function calcAdvisorSignal(key) {
   if (semCommodity) {
     if (coberturaHoldings < pisoCobertura) {
       r.signal = 'DADOS INSUFICIENTES';
-      r.action = 'Cobertura de holdings abaixo de ' + pisoCobertura + '% — sem pré/pós-market suficiente';
+      r.action = 'Cobertura de holdings abaixo de ' + pisoCobertura + '% — sem variação suficiente';
       r.score = null;
       return r;
     }
@@ -5850,8 +5931,9 @@ function renderAdvisorPanel(key) {
   };
 
   const commScore = r.commodityHasData ? commodityDayScore(r.commodity, key) : null;
+  const hSourceLabel = r.holdings.sourceMode === 'post' ? 'pós-fecho' : r.holdings.sourceMode === 'day' ? 'dia' : `auto ${r.holdings.postCount}p/${r.holdings.dayCount}d`;
   const hDetail = r.holdings.score!==null ?
-    `${r.holdings.details.length}/${HOLDINGS[key].length} · ${r.holdings.coverage.toFixed(0)}% peso · ${r.holdings.weightedVar>=0?'+':''}${r.holdings.weightedVar?.toFixed(2)}%` : '';
+    `${r.holdings.details.length}/${HOLDINGS[key].length} · ${r.holdings.coverage.toFixed(0)}% peso · ${r.holdings.weightedVar>=0?'+':''}${r.holdings.weightedVar?.toFixed(2)}% · ${hSourceLabel}` : '';
 
   // Correlation warning: gold and oil both COMPRA (só se aplica a estes dois)
   const otherKey = key==='gold' ? 'oil' : key==='oil' ? 'gold' : null;
@@ -6756,8 +6838,8 @@ function injectWatchlistItems(key, items) {
   items.forEach(item => {
     const pk = map[item.name];
     if (pk && Object.prototype.hasOwnProperty.call(item, 'variation')) {
-      pmValues[pk] = parseServerPctDefaultZero(item.variation);
-      n++;
+      const dayVal = pk.includes('_h_') ? parseServerPctOrNull(item.variation) : parseServerPctDefaultZero(item.variation);
+      if (dayVal === null) delete pmValues[pk]; else { pmValues[pk] = dayVal; n++; }
     }
     if (pk && Object.prototype.hasOwnProperty.call(item, 'afterMarketVariation')) {
       const acKey = getAfterMarketKey(pk);
@@ -6935,8 +7017,8 @@ async function fetchFromServer(source = 'manual') {
       data[sec].items.forEach(item => {
         const key = map[item.name];
         if (key && Object.prototype.hasOwnProperty.call(item, 'variation')) {
-          pmValues[key] = parseServerPctDefaultZero(item.variation);
-          injected++;
+          const dayVal = key.includes('_h_') ? parseServerPctOrNull(item.variation) : parseServerPctDefaultZero(item.variation);
+          if (dayVal === null) delete pmValues[key]; else { pmValues[key] = dayVal; injected++; }
         }
         if (key && Object.prototype.hasOwnProperty.call(item, 'afterMarketVariation')) {
           const acKey = getAfterMarketKey(key);
@@ -7382,7 +7464,7 @@ function getSyncState() {
     'pm-inject-ts',
     'advisor-config-gold', 'advisor-config-oil', 'advisor-config-finance', 'advisor-config-saude',
     'advisor-feedback', 'advisor-signal-log', 'advisor-sandbox-log', 'fund-nav-log',
-    'cutoffs', 'settlement-days'
+    'cutoffs', 'settlement-days', 'holdings-source-mode'
   ];
   const state = { ts: new Date().toISOString(), data: {} };
   keys.forEach(k => {
