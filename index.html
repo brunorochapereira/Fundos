@@ -8315,23 +8315,26 @@ async function enviarWhatsApp(texto, tipo) {
 
 // Monta a mensagem do Advisor (sinal + score + ação) e envia por WhatsApp.
 async function enviarAdvisorWhatsApp(fundsArg) {
-  // fundsArg: array ['gold'] ou ['oil'] ou ['gold','oil']. Sem argumento → ambos.
-  const funds = Array.isArray(fundsArg) && fundsArg.length ? fundsArg : ['gold','oil'];
+  // fundsArg: array de chaves (ex: ['gold'], ['finance','saude']). Sem argumento → todos os fundos.
+  const NOMES = { gold:'GOLD', oil:'OIL', finance:'FINANCE', saude:'SAÚDE', energia:'ENERGIA' };
+  const CAP   = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde', energia:'Energia' };
+  const TODOS = ['gold','oil','finance','saude','energia'];
+  const funds = Array.isArray(fundsArg) && fundsArg.length ? fundsArg : TODOS;
   const cab = funds.length === 1
-    ? '🔔 Advisor ' + (funds[0]==='gold'?'GOLD':'OIL') + ' — '
+    ? '🔔 Advisor ' + (NOMES[funds[0]] || funds[0].toUpperCase()) + ' — '
     : '🔔 Advisor Fundos — ';
   const linhas = [cab + new Date().toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})];
   funds.forEach(key => {
     const r = calcAdvisorSignal(key);
-    const nome = key === 'gold' ? 'GOLD' : 'OIL';
+    const nome = NOMES[key] || key.toUpperCase();
     const emoji = r.signal === 'COMPRA' ? '🟢' : r.signal === 'VENDA' ? '🔴' : '🟡';
     const scoreTxt = (r.score !== null && r.score !== undefined) ? Math.round(r.score) : '—';
     linhas.push('');
     linhas.push(emoji + ' ' + nome + ': ' + r.signal + ' (score ' + scoreTxt + ')');
     if (r.action && r.action !== '—') linhas.push('→ ' + r.action);
-    // Se é VENDA (resgate), inclui o valor disponível para resgate desse fundo (D3).
+    // Se é VENDA (resgate), inclui o valor disponível para resgate desse fundo.
     if (r.signal === 'VENDA') {
-      const rowKey = key === 'gold' ? 'Gold' : 'Oil';
+      const rowKey = CAP[key] || key;
       const disp = (state.rows && state.rows[rowKey]) ? (state.rows[rowKey][availSlot(rowKey)] || 0) : 0;
       linhas.push('💰 Disponível p/ resgate: ' + fmtNum(disp) + ' €');
     }
@@ -8356,7 +8359,7 @@ async function enviarAdvisorWhatsApp(fundsArg) {
   const texto = linhas.join('\n');
   const statusEl = document.getElementById('cmb-status');
   if (statusEl) { statusEl.style.color = 'var(--text3)'; statusEl.textContent = 'A enviar ('+funds.join('+')+')...'; }
-  const tipo = funds.length === 1 ? ('Advisor ' + (funds[0]==='gold'?'Gold':'Oil')) : 'Advisor Gold+Oil';
+  const tipo = funds.length === 1 ? ('Advisor ' + (CAP[funds[0]] || funds[0])) : ('Advisor ' + funds.map(f=>CAP[f]||f).join('+'));
   await enviarWhatsApp(texto, tipo);
 }
 
