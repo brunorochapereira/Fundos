@@ -4877,6 +4877,15 @@ let HOLDINGS = {
   // Energia Alternativa (LU2075271812). Holdings a preencher — quando as tiveres,
   // acrescenta aqui {name, aliases, weight} e o URL de cotação no server_all.js (WATCHLISTS.energy).
   energia: [
+    {name:'Vestas Wind',          aliases:['Vestas','Vestas Wind','Vestas Wind Systems'], weight:5.70},
+    {name:'EDP Renováveis',       aliases:['EDP Renováveis','EDP Renovaveis','EDPR'],     weight:4.29},
+    {name:'First Solar',          aliases:['First Solar','FSLR'],                          weight:4.05},
+    {name:'NexTracker',           aliases:['NexTracker','Nextracker','Nextpower','NXT'],   weight:3.62},
+    {name:'Itron',                aliases:['Itron','Itron Inc','ITRI'],                    weight:3.38},
+    {name:'Redeia Corporación',   aliases:['Redeia','Redeia Corporación','Red Eléctrica','Red Electrica'], weight:3.37},
+    {name:'Enphase Energy',       aliases:['Enphase','Enphase Energy','ENPH'],             weight:2.99},
+    {name:'Elia System Operator', aliases:['Elia','Elia System Operator','Elia Group'],    weight:2.82},
+    {name:'Landis+Gyr',           aliases:['Landis+Gyr','Landis Gyr','Landis&Gyr'],        weight:2.69},
   ]
 };
 
@@ -6774,7 +6783,16 @@ const SERVER_MAP_SAUDE = {
 // Energia Alternativa (LU2075271812). Adicionar as holdings aqui quando as tiveres:
 // 'Nome da Holding': 'energia_h_Nome da Holding',
 const SERVER_MAP_ENERGIA = {
-  'Energia Alternativa': 'energia_fund_Energia Alternativa',
+  'Energia Alternativa':   'energia_fund_Energia Alternativa',
+  'Vestas Wind':           'energia_h_Vestas Wind',
+  'EDP Renováveis':        'energia_h_EDP Renováveis',
+  'First Solar':           'energia_h_First Solar',
+  'NexTracker':            'energia_h_NexTracker',
+  'Itron':                 'energia_h_Itron',
+  'Redeia Corporación':    'energia_h_Redeia Corporación',
+  'Enphase Energy':        'energia_h_Enphase Energy',
+  'Elia System Operator':  'energia_h_Elia System Operator',
+  'Landis+Gyr':            'energia_h_Landis+Gyr',
 };
 
 function getAfterMarketKey(key) {

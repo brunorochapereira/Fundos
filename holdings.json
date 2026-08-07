@@ -350,5 +350,43 @@
         "TEVA"
       ]
     }
+  ],
+  "energia": [
+    {
+      "name": "Vestas Wind",
+      "weight": 5.7
+    },
+    {
+      "name": "EDP Renováveis",
+      "weight": 4.29
+    },
+    {
+      "name": "First Solar",
+      "weight": 4.05
+    },
+    {
+      "name": "NexTracker",
+      "weight": 3.62
+    },
+    {
+      "name": "Itron",
+      "weight": 3.38
+    },
+    {
+      "name": "Redeia Corporación",
+      "weight": 3.37
+    },
+    {
+      "name": "Enphase Energy",
+      "weight": 2.99
+    },
+    {
+      "name": "Elia System Operator",
+      "weight": 2.82
+    },
+    {
+      "name": "Landis+Gyr",
+      "weight": 2.69
+    }
   ]
 }
