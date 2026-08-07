@@ -415,7 +415,24 @@
         </div>
         <button class="btn" onclick="confirmarOrdemFundo('Saude')" id="btn-confirm-Saude" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(244,114,182,0.5);color:#f472b6;background:rgba(244,114,182,0.06)">✓ Confirmar Saúde (hoje)</button>
       </div></div>
-      <!-- 4 fundos ativos: Gold, Oil, Finance, Saude -->
+        <div class="fblock" id="faj-Energia">
+      <div style="border:1px solid rgba(45,212,191,0.3);border-radius:6px;background:rgba(45,212,191,0.07);padding:10px 12px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-size:14px;color:#2dd4bf">⚡</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#2dd4bf;letter-spacing:.06em">Energia</span>
+          </div>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#2dd4bf">0,00</span></span>
+        </div>
+        <div class="fbtns">
+          <button class="bs pl" onclick="applyPct('Energia',1)">+10%</button>
+          <button class="bs mi" onclick="applyPct('Energia',-1)">-10%</button>
+          <button class="bs re" onclick="applyResgate('Energia')">All-out</button>
+          <input type="number" step="0.01" class="ai" id="adj-Energia" value="0" placeholder="0.00" style="border-color:rgba(45,212,191,0.3);color:#2dd4bf" oninput="updRestante()">
+        </div>
+        <button class="btn" onclick="confirmarOrdemFundo('Energia')" id="btn-confirm-Energia" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(45,212,191,0.5);color:#2dd4bf;background:rgba(45,212,191,0.06)">✓ Confirmar Energia (hoje)</button>
+      </div></div>
+      <!-- 5 fundos ativos: Gold, Oil, Finance, Saude, Energia -->
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
         <button class="btn" id="btn-run" onclick="avancarUmDia()">▶ Avançar AMBOS os fundos</button>
         <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px;line-height:1.4">⚠ Avança Ouro e Petróleo ao mesmo tempo. Para confirmar só um, usa os botões "✓ Confirmar" acima.</div>
@@ -770,6 +787,11 @@
           <button class="btn" onclick="enviarAdvisorWhatsApp()" style="border-color:rgba(74,222,128,0.3);color:var(--accent);margin-top:0;font-size:10px;padding:7px;width:100%">📲 Enviar Advisor por WhatsApp</button>
           <div id="cmb-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Hora de cutoff por fundo — até esta hora, a ordem usa a cotação de hoje; depois, a de amanhã.</div>
+            <div id="cutoffs-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            <div id="cutoffs-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Dias de cativação por fundo — quantos dias úteis o dinheiro subscrito fica cativo antes de ficar disponível para resgate. Um por fundo.</div>
             <div id="settlement-config" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
             <div id="settlement-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5"></div>
@@ -827,17 +849,23 @@
           </select>
 
           <div class="slabel">1.º horário</div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
             <input type="time" id="sched-time1" value="08:45" onchange="onSchedChange()" style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t1-gold" checked onchange="onSchedChange()" style="accent-color:#f5c542">Gold</label>
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t1-oil" checked onchange="onSchedChange()" style="accent-color:#94a3b8">Oil</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t1-finance" checked onchange="onSchedChange()" style="accent-color:#4ade80">Finance</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t1-saude" checked onchange="onSchedChange()" style="accent-color:#f472b6">Saúde</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t1-energia" checked onchange="onSchedChange()" style="accent-color:#2dd4bf">Energia</label>
           </div>
 
           <div class="slabel">2.º horário</div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
             <input type="time" id="sched-time2" value="10:45" onchange="onSchedChange()" style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-gold" checked onchange="onSchedChange()" style="accent-color:#f5c542">Gold</label>
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-oil" checked onchange="onSchedChange()" style="accent-color:#94a3b8">Oil</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-finance" checked onchange="onSchedChange()" style="accent-color:#4ade80">Finance</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-saude" checked onchange="onSchedChange()" style="accent-color:#f472b6">Saúde</label>
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-energia" checked onchange="onSchedChange()" style="accent-color:#2dd4bf">Energia</label>
           </div>
 
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
@@ -883,6 +911,7 @@
     <button onclick="selAdvisorFund('oil')"     data-advtab="oil"     class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">◆ Oil</button>
     <button onclick="selAdvisorFund('finance')" data-advtab="finance" class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">▲ Finance</button>
     <button onclick="selAdvisorFund('saude')"   data-advtab="saude"   class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">✚ Saúde</button>
+    <button onclick="selAdvisorFund('energia')" data-advtab="energia" class="advtab" style="font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3)">⚡ Energia</button>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;align-items:stretch" id="advisor-grid">
@@ -1023,6 +1052,20 @@
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 09:00</span>
       </div>
       <div style="padding:16px;flex:1;box-sizing:border-box" id="advisor-saude">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">A calcular…</div>
+      </div>
+    </div>
+
+    <!-- ENERGIA -->
+    <div class="panel" data-adv-fund="energia" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(45,212,191,0.06);border-bottom-color:rgba(45,212,191,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#2dd4bf"></div>
+          <span class="label" style="color:#2dd4bf">⚡ Energia</span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Cutoff: 09:00</span>
+      </div>
+      <div style="padding:16px;flex:1;box-sizing:border-box" id="advisor-energia">
         <div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">A calcular…</div>
       </div>
     </div>
@@ -1318,6 +1361,18 @@
         <span id="pm-inject-ts-saude" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
       </div>
       <div style="padding:12px;flex:1" id="pm-inputs-saude"></div>
+    </div>
+
+    <!-- PRE-MERCADO ENERGIA -->
+    <div class="panel" data-adv-fund="energia" data-adv-pm="1" style="display: flex; flex-direction: column;">
+      <div class="ph" style="background:rgba(45,212,191,0.06);border-bottom-color:rgba(45,212,191,0.2);justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#2dd4bf"></div>
+          <span class="label" style="color:#2dd4bf">Pré-mercado Energia</span>
+        </div>
+        <span id="pm-inject-ts-energia" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div style="padding:12px;flex:1" id="pm-inputs-energia"></div>
     </div>
 
 
@@ -1764,6 +1819,25 @@
       </div>
       <div id="news-body-saude" style="flex:1;min-height:0;max-height:520px;overflow-y:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">Carrega as notícias com "↻ Buscar notícias"</div></div>
     </div>
+    <div class="panel" data-adv-fund="energia" data-adv-news="1" style="display:flex;flex-direction:column">
+      <div class="ph" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="dot" style="background:#2dd4bf"></div>
+          <span class="label" style="color:var(--text3)">Notícias Energia</span>
+          <span id="news-ts-energia" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+        </div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">▲ subida &nbsp; ▼ descida &nbsp; → neutro</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="atualizarNoticias('energia')" style="background:rgba(245,197,66,0.1);border:1px solid rgba(245,197,66,0.4);border-radius:4px;color:#f5c542;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">↻ Buscar notícias</button>
+          <button onclick="recalcularSinal('energia')" style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.4);border-radius:4px;color:#4ade80;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">⟳ Recalcular sinal</button>
+          <button onclick="reanalisarNoticias('energia')" style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.4);border-radius:4px;color:#60a5fa;font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;flex-shrink:0">🔄 Reanalisar com Claude</button>
+        </div>
+        <span id="news-analysis-status-energia" style="font-family:var(--mono);font-size:9px;color:var(--text3)"></span>
+      </div>
+      <div id="news-body-energia" style="flex:1;min-height:0;max-height:520px;overflow-y:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:20px;text-align:center">Carrega as notícias com "↻ Buscar notícias"</div></div>
+    </div>
   </div>
 
   <!-- Image slots per fund (movido para o final do separador) -->
@@ -2120,7 +2194,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
 // 4 fundos ativos: Gold, Oil, Finance (Jupiter Financial Innovation), Saude (Schroder Healthcare).
-const FUNDS = ['Gold','Oil','Finance','Saude'];
+const FUNDS = ['Gold','Oil','Finance','Saude','Energia'];
 
 // ── Hardcoded balances ──────────────────────────────────────────
 const BASE_BALANCES = {};  // dados vivem no estado.json (userEdits), não no código
@@ -2136,7 +2210,8 @@ const state = {
     Gold:    {D:0,D1:0,D2:0,D3:0,resgate:0},
     Oil:     {D:0,D1:0,D2:0,D3:0,resgate:0},
     Finance: {D:0,D1:0,D2:0,D3:0,resgate:0},
-    Saude:   {D:0,D1:0,D2:0,D3:0,resgate:0}
+    Saude:   {D:0,D1:0,D2:0,D3:0,resgate:0},
+    Energia: {D:0,D1:0,D2:0,D3:0,resgate:0}
   },
   userEdits: {},
   log: []
@@ -2214,7 +2289,7 @@ function loadLS() {
     const s = JSON.parse(raw);
     if (s.rows)        state.rows        = s.rows;
     // Blindagem: estados guardados antes de um fundo existir não têm a linha dele.
-    // Garante que os 4 fundos existem sempre, para o pipeline não rebentar ao ler .D/.D3.
+    // Garante que todos os fundos existem sempre, para o pipeline não rebentar ao ler .D/.D3.
     FUNDS.forEach(f => {
       if (!state.rows[f]) state.rows[f] = {D:0,D1:0,D2:0,D3:0,resgate:0};
     });
@@ -2264,7 +2339,8 @@ const FUND_THEME = {
   Gold:    { color:'#f5c542', bg:'rgba(245,197,66,0.08)', border:'rgba(245,197,66,0.35)', icon:'●', label:'Gold' },
   Oil:     { color:'#94a3b8', bg:'rgba(30,30,35,0.6)',    border:'rgba(100,100,120,0.4)', icon:'◆', label:'Oil'  },
   Finance: { color:'#4ade80', bg:'rgba(74,222,128,0.07)', border:'rgba(74,222,128,0.3)', icon:'▲', label:'Finance' },
-  Saude:   { color:'#f472b6', bg:'rgba(244,114,182,0.07)', border:'rgba(244,114,182,0.3)', icon:'✚', label:'Saúde' }
+  Saude:   { color:'#f472b6', bg:'rgba(244,114,182,0.07)', border:'rgba(244,114,182,0.3)', icon:'✚', label:'Saúde' },
+  Energia: { color:'#2dd4bf', bg:'rgba(45,212,191,0.07)', border:'rgba(45,212,191,0.3)', icon:'⚡', label:'Energia' }
 };
 
 function renderAdj() {
@@ -4095,6 +4171,7 @@ const NEWS_QUERIES = {
   oil:     ['oil','crude','petroleum','energy','OPEC'],
   finance: ['bank','finance','financial','merger','acquisition','rate','ECB','Fed'],
   saude:   ['healthcare','pharma','pharmaceutical','FDA','drug','biotech','health'],
+  energia: ['renewable energy','clean energy','solar','wind power','green hydrogen','energy transition'],
   general: ['stock market','economy','fed','interest rates','inflation']
 };
 
@@ -4108,6 +4185,7 @@ function loadAllNews() {
   if (document.getElementById('news-body-oil')) loadNews('oil').then(()=>loadNewsWhiteHouse('oil'));
   if (document.getElementById('news-body-finance')) loadNews('finance');
   if (document.getElementById('news-body-saude')) loadNews('saude');
+  if (document.getElementById('news-body-energia')) loadNews('energia');
 }
 
 async function loadNewsWhiteHouse(tab) {
@@ -4795,14 +4873,18 @@ let HOLDINGS = {
     {name:'Merck & Co',               aliases:['Merck','Merck & Co','Merck&Co','MRK'], weight:3.24},
     {name:'GSK',                      aliases:['GSK','GSK plc','GlaxoSmithKline'],  weight:2.66},
     {name:'Teva Pharmaceutical',      aliases:['Teva','Teva Pharmaceutical','TEVA'], weight:2.44},
+  ],
+  // Energia Alternativa (LU2075271812). Holdings a preencher — quando as tiveres,
+  // acrescenta aqui {name, aliases, weight} e o URL de cotação no server_all.js (WATCHLISTS.energy).
+  energia: [
   ]
 };
 
 // Cutoffs per fund
-const CUTOFFS_DEFAULT = {gold:'09:00', oil:'09:00', finance:'09:00', saude:'09:00'};
+const CUTOFFS_DEFAULT = {gold:'09:00', oil:'09:00', finance:'09:00', saude:'09:00', energia:'09:00'};
 // Dias de settlement por fundo (2 ou 3). Default 3 = comportamento atual.
 // A chave interna é minúscula (gold/oil/finance/saude); o pipeline usa Maiúscula (Gold).
-const SETTLEMENT_DEFAULT = {gold:3, oil:3, finance:3, saude:3};
+const SETTLEMENT_DEFAULT = {gold:3, oil:3, finance:3, saude:3, energia:3};
 const _fundKeyLower = f => String(f).toLowerCase();
 function getSettlementDays(key) {
   try {
@@ -4821,9 +4903,9 @@ function availSlot(key) { return 'D3'; }
 function renderSettlementConfig() {
   const el = document.getElementById('settlement-config');
   if (!el) return;
-  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde' };
-  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
-  el.innerHTML = ['gold','oil','finance','saude'].map(k => {
+  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde', energia:'Energia' };
+  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6', energia:'#2dd4bf' };
+  el.innerHTML = ['gold','oil','finance','saude','energia'].map(k => {
     const d = getSettlementDays(k);
     return `<div style="display:flex;align-items:center;gap:6px">
       <span style="font-family:var(--mono);font-size:10px;color:${cores[k]};min-width:56px">${nomes[k]}</span>
@@ -4865,9 +4947,9 @@ const CUTOFFS = new Proxy({}, { get: (_, key) => getCutoff(key) });
 function renderCutoffsConfig() {
   const el = document.getElementById('cutoffs-config');
   if (!el) return;
-  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde' };
-  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
-  el.innerHTML = ['gold','oil','finance','saude'].map(k =>
+  const nomes = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde', energia:'Energia' };
+  const cores = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6', energia:'#2dd4bf' };
+  el.innerHTML = ['gold','oil','finance','saude','energia'].map(k =>
     `<div style="display:flex;align-items:center;gap:6px">
       <span style="font-family:var(--mono);font-size:10px;color:${cores[k]};min-width:56px">${nomes[k]}</span>
       <input type="time" id="cutoff-${k}" value="${getCutoff(k)}" onchange="saveCutoff('${k}')"
@@ -4894,6 +4976,7 @@ const DEFAULT_CONFIG = {
   oil:     {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
   finance: {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
   saude:   {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  energia: {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
 };
 
 // ── Calendário FOMC 2026 ──────────────────────────────────────────
@@ -6170,7 +6253,7 @@ const REFERENCE_INDEX_INPUTS = {
 
 function renderPremarketInputs() {
   const FUND_COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6'};
-  ['gold','oil','finance','saude'].forEach(key => {
+  ['gold','oil','finance','saude','energia'].forEach(key => {
     const el = document.getElementById('pm-inputs-'+key);
     if (!el) return;
     const c = FUND_COLORS[key];
@@ -6688,6 +6771,12 @@ const SERVER_MAP_SAUDE = {
   'Teva Pharmaceutical':           'saude_h_Teva Pharmaceutical',
 };
 
+// Energia Alternativa (LU2075271812). Adicionar as holdings aqui quando as tiveres:
+// 'Nome da Holding': 'energia_h_Nome da Holding',
+const SERVER_MAP_ENERGIA = {
+  'Energia Alternativa': 'energia_fund_Energia Alternativa',
+};
+
 function getAfterMarketKey(key) {
   if (!key) return null;
   if (key.includes('_h_')) return key.replace('_h_', '_ac_');
@@ -6762,7 +6851,7 @@ function forceGithubSaveAfterServerUpdate(source) {
 // Injeta items de uma watchlist (gold, oil, finance, saude) em pmValues. Devolve nº injetado.
 function injectWatchlistItems(key, items) {
   if (!Array.isArray(items)) return 0;
-  const MAPS = { gold: SERVER_MAP_GOLD, oil: SERVER_MAP_OIL, finance: SERVER_MAP_FINANCE, saude: SERVER_MAP_SAUDE };
+  const MAPS = { gold: SERVER_MAP_GOLD, oil: SERVER_MAP_OIL, finance: SERVER_MAP_FINANCE, saude: SERVER_MAP_SAUDE, energia: SERVER_MAP_ENERGIA };
   const map = MAPS[key];
   if (!map) return 0;
   let n = 0;
@@ -6790,14 +6879,21 @@ function schedBaseUrl(source) {
 }
 
 // Fetch filtrado por fundo, usado pelo agendador.
-// funds = {gold:bool, oil:bool}. Ambos → /all; só um → /watchlist?list=<fundo>.
+// funds = {gold,oil,finance,saude}. 2+ fundos → /all; só um → /watchlist?list=<fundo>.
 async function fetchFromServerFiltered(source, funds) {
   const statusEl = document.getElementById('server-fetch-status');
   const schedEl = document.getElementById('sched-status');
   const base = schedBaseUrl(source);
-  const wantGold = !!(funds && funds.gold);
-  const wantOil  = !!(funds && funds.oil);
-  if (!wantGold && !wantOil) {
+  const want = {
+    gold:    !!(funds && funds.gold),
+    oil:     !!(funds && funds.oil),
+    finance: !!(funds && funds.finance),
+    saude:   !!(funds && funds.saude),
+    energia: !!(funds && funds.energia)
+  };
+  const wantGold = want.gold, wantOil = want.oil;
+  const nWanted = Object.values(want).filter(Boolean).length;
+  if (nWanted === 0) {
     appLog('Agendador: horário sem fundos selecionados, nada a fazer.','warn');
     if (schedEl) { schedEl.style.color = 'var(--warn)'; schedEl.textContent = 'Horário sem fundos selecionados.'; }
     return;
@@ -6807,27 +6903,30 @@ async function fetchFromServerFiltered(source, funds) {
   try {
     let injected = 0;
     let fundsData = null;
+    // Mapa fundo interno → chave do server no /watchlist e no /all
+    const LIST_KEY = { gold:'gold', oil:'oil', finance:'bank', saude:'health', energia:'energy' };
 
-    if (wantGold && wantOil) {
-      // Ambos: usa /all (uma só chamada, já inclui os fundos reais)
+    if (nWanted >= 2) {
+      // 2+ fundos: usa /all (uma só chamada, traz tudo). Injeta só os pedidos.
       const resp = await fetch(base + '/all', { method:'GET', cache:'no-store' });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
-      if (data.gold?.items) injected += injectWatchlistItems('gold', data.gold.items);
-      if (data.oil?.items)  injected += injectWatchlistItems('oil',  data.oil.items);
-      if (data.bank?.items)   injected += injectWatchlistItems('finance', data.bank.items);
-      if (data.health?.items) injected += injectWatchlistItems('saude',   data.health.items);
+      if (want.gold    && data.gold?.items)   injected += injectWatchlistItems('gold',    data.gold.items);
+      if (want.oil     && data.oil?.items)    injected += injectWatchlistItems('oil',     data.oil.items);
+      if (want.finance && data.bank?.items)   injected += injectWatchlistItems('finance', data.bank.items);
+      if (want.saude   && data.health?.items) injected += injectWatchlistItems('saude',   data.health.items);
+      if (want.energia && data.energy?.items) injected += injectWatchlistItems('energia', data.energy.items);
       fundsData = data.funds || null;
     } else {
-      // Só um fundo: /watchlist?list=<fundo>
-      const list = wantGold ? 'gold' : 'oil';
+      // Só um fundo: /watchlist?list=<chave do server>
+      const fund = Object.keys(want).find(k => want[k]);
+      const list = LIST_KEY[fund];
       const resp = await fetch(base + '/watchlist?list=' + list, { method:'GET', cache:'no-store' });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
-      // /watchlist devolve {ok, key, items:[...]}
       const items = data.items || (data[list] && data[list].items) || [];
-      injected += injectWatchlistItems(list, items);
-      // Fundos reais não vêm no /watchlist — pede-se à parte (é barato, só 2 páginas).
+      injected += injectWatchlistItems(fund, items);
+      // Fundos reais não vêm no /watchlist — pede-se à parte (é barato).
       try {
         const fResp = await fetch(base + '/funds', { method:'GET', cache:'no-store' });
         if (fResp.ok) fundsData = await fResp.json();
@@ -6847,16 +6946,18 @@ async function fetchFromServerFiltered(source, funds) {
     renderAdvisorPanel('oil');
     renderAdvisorPanel('finance');
     renderAdvisorPanel('saude');
+    renderAdvisorPanel('energia');
     equalizeAdvisorColumns();
     if (injected > 0) {
-      if (wantGold) setPmInjectTs('gold');
-      if (wantOil)  setPmInjectTs('oil');
-      // Quando usa /all (wantGold && wantOil), finance e saude também foram injetados.
-      if (wantGold && wantOil) { setPmInjectTs('finance'); setPmInjectTs('saude'); }
+      if (want.gold)    setPmInjectTs('gold');
+      if (want.oil)     setPmInjectTs('oil');
+      if (want.finance) setPmInjectTs('finance');
+      if (want.saude)   setPmInjectTs('saude');
+      if (want.energia) setPmInjectTs('energia');
     }
     savePmValues();
 
-    const fundsTxt = [wantGold?'Gold':'', wantOil?'Oil':''].filter(Boolean).join('+');
+    const fundsTxt = [want.gold?'Gold':'', want.oil?'Oil':'', want.finance?'Finance':'', want.saude?'Saúde':'', want.energia?'Energia':''].filter(Boolean).join('+');
     if (schedEl) { schedEl.style.color = 'var(--accent)'; schedEl.textContent = 'Actualizado ('+fundsTxt+') · '+injected+' valores às '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})+'. A guardar no GitHub...'; }
     appLog('Agendador actualizou '+fundsTxt+' ('+injected+' valores).','ok');
 
@@ -6869,7 +6970,7 @@ async function fetchFromServerFiltered(source, funds) {
       const cfg = (typeof schedLoad === 'function') ? schedLoad() : {};
       if (cfg.whatsapp) {
         // corre em sequência sem bloquear o fluxo principal
-        agendadorPosFetch(wantGold, wantOil);
+        agendadorPosFetch(want);
       }
     } catch(e) { appLog('Erro na sequência pós-fetch: '+e.message,'err'); }
   } catch(e) {
@@ -6942,6 +7043,7 @@ async function fetchFromServer(source = 'manual') {
       { sec: 'oil',    fund: 'oil',     map: SERVER_MAP_OIL },
       { sec: 'bank',   fund: 'finance', map: SERVER_MAP_FINANCE },
       { sec: 'health', fund: 'saude',   map: SERVER_MAP_SAUDE },
+      { sec: 'energy', fund: 'energia', map: SERVER_MAP_ENERGIA },
     ];
     INJ.forEach(({ sec, map }) => {
       if (!data[sec]?.items) return;
@@ -6970,6 +7072,7 @@ async function fetchFromServer(source = 'manual') {
     renderAdvisorPanel('oil');
     renderAdvisorPanel('finance');
     renderAdvisorPanel('saude');
+    renderAdvisorPanel('energia');
     equalizeAdvisorColumns();
 
     // Timestamp de injeção nos cabeçalhos pré-mercado
@@ -7221,7 +7324,7 @@ function equalizeAdvisorColumns() {
 }
 
 // Sub-abas do Advisor: mostra só o fundo selecionado, esconde os outros.
-const _ADV_CORES = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6' };
+const _ADV_CORES = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6', energia:'#2dd4bf' };
 function selAdvisorFund(fund) {
   localStorage.setItem('advisor-fund', fund);
   // Mostra/esconde os painéis (sinal e pré-mercado) marcados com data-adv-fund.
@@ -7247,6 +7350,7 @@ function initAdvisor() {
     renderAdvisorPanel('oil');
     renderAdvisorPanel('finance');
     renderAdvisorPanel('saude');
+    renderAdvisorPanel('energia');
   // Sub-abas: mostra só o fundo ativo (default: o último escolhido, ou gold).
   selAdvisorFund(localStorage.getItem('advisor-fund') || 'gold');
   // Timestamp when advisor was loaded
@@ -7950,7 +8054,7 @@ let _schedLastFired = {}; // { 'YYYY-MM-DD HH:MM': true } evita duplo disparo
 
 function schedDefaults() {
   return { enabled:false, source:'local', time1:'08:45', time2:'10:45',
-           t1:{gold:true,oil:true}, t2:{gold:true,oil:true}, weekdaysOnly:true, whatsapp:false };
+           t1:{gold:true,oil:true,finance:true,saude:true,energia:true}, t2:{gold:true,oil:true,finance:true,saude:true,energia:true}, weekdaysOnly:true, whatsapp:false };
 }
 
 function schedLoad() {
@@ -7968,8 +8072,8 @@ function schedReadUI() {
     source: document.getElementById('sched-source')?.value || 'local',
     time1: document.getElementById('sched-time1')?.value || '08:45',
     time2: document.getElementById('sched-time2')?.value || '10:45',
-    t1: { gold: document.getElementById('sched-t1-gold')?.checked || false, oil: document.getElementById('sched-t1-oil')?.checked || false },
-    t2: { gold: document.getElementById('sched-t2-gold')?.checked || false, oil: document.getElementById('sched-t2-oil')?.checked || false },
+    t1: { gold: document.getElementById('sched-t1-gold')?.checked || false, oil: document.getElementById('sched-t1-oil')?.checked || false, finance: document.getElementById('sched-t1-finance')?.checked || false, saude: document.getElementById('sched-t1-saude')?.checked || false, energia: document.getElementById('sched-t1-energia')?.checked || false },
+    t2: { gold: document.getElementById('sched-t2-gold')?.checked || false, oil: document.getElementById('sched-t2-oil')?.checked || false, finance: document.getElementById('sched-t2-finance')?.checked || false, saude: document.getElementById('sched-t2-saude')?.checked || false, energia: document.getElementById('sched-t2-energia')?.checked || false },
     weekdaysOnly: document.getElementById('sched-weekdays')?.checked || false,
     whatsapp: document.getElementById('sched-whatsapp')?.checked || false
   };
@@ -7982,8 +8086,8 @@ function schedApplyToUI(cfg) {
   val('sched-source', cfg.source);
   val('sched-time1', cfg.time1);
   val('sched-time2', cfg.time2);
-  set('sched-t1-gold', cfg.t1.gold); set('sched-t1-oil', cfg.t1.oil);
-  set('sched-t2-gold', cfg.t2.gold); set('sched-t2-oil', cfg.t2.oil);
+  set('sched-t1-gold', cfg.t1.gold); set('sched-t1-oil', cfg.t1.oil); set('sched-t1-finance', cfg.t1.finance !== false); set('sched-t1-saude', cfg.t1.saude !== false); set('sched-t1-energia', cfg.t1.energia !== false);
+  set('sched-t2-gold', cfg.t2.gold); set('sched-t2-oil', cfg.t2.oil); set('sched-t2-finance', cfg.t2.finance !== false); set('sched-t2-saude', cfg.t2.saude !== false); set('sched-t2-energia', cfg.t2.energia !== false);
   set('sched-weekdays', cfg.weekdaysOnly);
   set('sched-whatsapp', cfg.whatsapp);
 }
@@ -7999,8 +8103,8 @@ function schedUpdateStatus(cfg) {
   const el = document.getElementById('sched-status');
   if (!el) return;
   if (!cfg.enabled) { el.style.color = 'var(--text3)'; el.textContent = 'Agendador desligado.'; return; }
-  const f1 = [cfg.t1.gold?'Gold':'', cfg.t1.oil?'Oil':''].filter(Boolean).join('+') || '—';
-  const f2 = [cfg.t2.gold?'Gold':'', cfg.t2.oil?'Oil':''].filter(Boolean).join('+') || '—';
+  const f1 = [cfg.t1.gold?'Gold':'', cfg.t1.oil?'Oil':'', cfg.t1.finance?'Finance':'', cfg.t1.saude?'Saúde':'', cfg.t1.energia?'Energia':''].filter(Boolean).join('+') || '—';
+  const f2 = [cfg.t2.gold?'Gold':'', cfg.t2.oil?'Oil':'', cfg.t2.finance?'Finance':'', cfg.t2.saude?'Saúde':'', cfg.t2.energia?'Energia':''].filter(Boolean).join('+') || '—';
   el.style.color = 'var(--accent)';
   el.textContent = 'Ligado · '+cfg.source+' · '+cfg.time1+' ('+f1+') e '+cfg.time2+' ('+f2+')'+(cfg.weekdaysOnly?' · só dias úteis':'')+'.';
 }
@@ -8096,14 +8200,13 @@ function schedInit() {
 
 // Sequência completa após o fetch do agendador:
 // busca notícias → reanalisa com Claude → recalcula → envia WhatsApp.
-async function agendadorPosFetch(wantGold, wantOil) {
-  const funds = [];
-  if (wantGold) funds.push('gold');
-  if (wantOil) funds.push('oil');
+async function agendadorPosFetch(want) {
+  const NOMES = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde', energia:'Energia' };
+  const funds = ['gold','oil','finance','saude','energia'].filter(k => want && want[k]);
   const schedEl = document.getElementById('sched-status');
   try {
     for (const key of funds) {
-      const nome = key === 'gold' ? 'Gold' : 'Oil';
+      const nome = NOMES[key] || key;
       // 1. Buscar notícias frescas (respeita a janela das 21h)
       if (schedEl) { schedEl.style.color = 'var(--text3)'; schedEl.textContent = nome+': a buscar notícias...'; }
       if (typeof loadNews === 'function') { try { await loadNews(key); } catch(e) { appLog('Pós-fetch loadNews '+key+': '+e.message,'warn'); } }
@@ -8620,7 +8723,7 @@ window._startApp = async function() {
   // Garante que os 4 painéis do Advisor refletem o estado final (evita ficarem presos
   // em "A calcular…" se a aba já estava ativa quando o restauro assíncrono terminou).
   try {
-    ['gold','oil','finance','saude'].forEach(k => { try { renderAdvisorPanel(k); } catch(e) {} });
+    ['gold','oil','finance','saude','energia'].forEach(k => { try { renderAdvisorPanel(k); } catch(e) {} });
     if (typeof equalizeAdvisorColumns === 'function') equalizeAdvisorColumns();
   } catch(e) {}
   // Carimbo de versão a partir do último estado sincronizado conhecido
