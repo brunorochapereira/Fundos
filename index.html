@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#0f0f10; --surface:#18181b; --surface2:#222226;
-    --border:#2e2e34; --border2:#3a3a42;
-    --text:#e8e8ea; --text2:#8a8a96; --text3:#52525c;
-    --accent:#4ade80; --accent-dim:#166534;
-    --danger:#f87171; --danger-dim:#7f1d1d;
-    --warn:#fbbf24; --warn-dim:#78350f;
+    --bg:#0d1520; --surface:#131d2b; --surface2:#1b2838;
+    --border:#243447; --border2:#2f4258;
+    --text:#e6ebf2; --text2:#8595a8; --text3:#556377;
+    --accent:#5eb98a; --accent-dim:#1c4432;
+    --danger:#e08585; --danger-dim:#5c2626;
+    --warn:#d9a94e; --warn-dim:#5c4420;
     --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
   }
   /* Modo Alto Brilho — alto contraste para luz solar direta */
@@ -4418,7 +4418,7 @@ async function loadNews(tab) {
 
   try {
     // Use Finnhub market news endpoint
-    const categoryMap = { gold: 'general', oil: 'general', finance: 'merger' };
+    const categoryMap = { gold: 'general', oil: 'general', finance: 'merger', saude: 'general', energia: 'general' };
     const category = categoryMap[tab] || 'general';
     const url = `https://finnhub.io/api/v1/news?category=${category}&token=${fhKey}`;
     const r   = await fetch(url);
@@ -4981,11 +4981,11 @@ function saveCutoff(key) {
 
 // Default config per fund
 const DEFAULT_CONFIG = {
-  gold:    {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
-  oil:     {wCommodity:40, wHoldings:40, wNews:20, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
-  finance: {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
-  saude:   {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
-  energia: {wCommodity:0, wHoldings:70, wNews:30, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  gold:    {wCommodity:35, wHoldings:35, wNews:20, wEurUsd:10, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  oil:     {wCommodity:35, wHoldings:35, wNews:20, wEurUsd:10, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  finance: {wCommodity:35, wHoldings:35, wNews:20, wEurUsd:10, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  saude:   {wCommodity:35, wHoldings:35, wNews:20, wEurUsd:10, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
+  energia: {wCommodity:35, wHoldings:35, wNews:20, wEurUsd:10, buyThreshold:60, sellThreshold:40, consensusFactor:0.3},
 };
 
 // ── Calendário FOMC 2026 ──────────────────────────────────────────
@@ -5858,24 +5858,29 @@ function calcAdvisorSignal(key) {
     totalScore += r.news * effWNews; totalWeight += effWNews;
   }
 
+  // EUR/USD (10%) — fator de câmbio, partilhado por todos os fundos (lê-se de 'eurusd').
+  // DIREÇÃO INVERTIDA: um EUR/USD a subir valoriza o euro e desvaloriza as posições em
+  // dólares, logo contribui NEGATIVAMENTE para o sinal. Score 50 = neutro; acima de 50
+  // = positivo. Invertemos a variação antes de a converter em score.
+  const eurRaw = parseFloat(pmValues['eurusd']);
+  r.eurusd = isNaN(eurRaw) ? null : eurRaw;
+  r.eurusdHasData = !isNaN(eurRaw);
+  if (r.eurusdHasData && cfg.wEurUsd) {
+    const eurScore = commodityDayScore(-eurRaw, key); // sinal invertido
+    r.eurusdScore = eurScore;
+    totalScore += eurScore * cfg.wEurUsd; totalWeight += cfg.wEurUsd;
+  }
+
   if (!totalWeight) { r.signal = 'SEM DADOS'; return r; }
 
-  // Exigência de dados mínimos. Fundos COM commodity (gold/oil): basta o pós-mercado
-  // da commodity OU cobertura de holdings >= 30%. Fundos SEM commodity (finance/saude):
-  // como o Advisor deles assenta nas holdings, exige-se cobertura de holdings >= 40%.
-  const semCommodity = (cfg.wCommodity === 0);
+  // Exigência de dados mínimos. Todos os fundos têm agora commodity/benchmark (35%):
+  // Gold/Oil usam a commodity real; Finance/Saúde/Energia usam o ETF de setor.
+  // Basta ter o valor da commodity/benchmark OU cobertura de holdings >= 30%.
   const coberturaHoldings = (hResult && hResult.coverage) ? hResult.coverage : 0;
-  const pisoCobertura = semCommodity ? 40 : 30;
-  if (semCommodity) {
-    if (coberturaHoldings < pisoCobertura) {
-      r.signal = 'DADOS INSUFICIENTES';
-      r.action = 'Cobertura de holdings abaixo de ' + pisoCobertura + '% — sem pré/pós-market suficiente';
-      r.score = null;
-      return r;
-    }
-  } else if (!r.commodityHasData && coberturaHoldings < pisoCobertura) {
+  const pisoCobertura = 30;
+  if (!r.commodityHasData && coberturaHoldings < pisoCobertura) {
     r.signal = 'DADOS INSUFICIENTES';
-    r.action = 'Preenche a commodity ou mais holdings para calcular';
+    r.action = 'Preenche a commodity/benchmark ou mais holdings para calcular';
     r.score = null;
     return r;
   }
@@ -6261,14 +6266,14 @@ const REFERENCE_INDEX_INPUTS = {
 };
 
 function renderPremarketInputs() {
-  const FUND_COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6'};
+  const FUND_COLORS = {gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6', energia:'#2dd4bf'};
   ['gold','oil','finance','saude','energia'].forEach(key => {
     const el = document.getElementById('pm-inputs-'+key);
     if (!el) return;
     const c = FUND_COLORS[key];
-      const LABELS  = {gold:'Ouro (XAU/USD)', oil:'WTI (Petróleo)', finance:'Benchmark Finance', saude:'Benchmark Saúde'};
-    // Fundos sem commodity (finance/saude): não mostram a linha da commodity.
-    const semCommodity = !DEFAULT_CONFIG[key] || DEFAULT_CONFIG[key].wCommodity === 0;
+      const LABELS  = {gold:'Ouro (XAU/USD)', oil:'WTI (Petróleo)', finance:'Benchmark (STOXX 600 Banks)', saude:'Benchmark (XLV Health Care)', energia:'Benchmark (ICLN Clean Energy)'};
+    // Todos os fundos têm agora commodity/benchmark (35%). Nenhum é "sem commodity".
+    const semCommodity = false;
 
     const pmInput = (pmKey, label, color) => {
       const val = pmValues[pmKey] !== undefined ? pmValues[pmKey] : '';
@@ -6287,9 +6292,16 @@ function renderPremarketInputs() {
         (REFERENCE_INDEX_INPUTS[key] || []).map(idx => pmInput(idx.key, idx.label, c)).join('')
       : '';
 
+    // EUR/USD: partilhado por todos os fundos (mesma chave 'eurusd'), no topo.
+    const eurUsdHtml =
+      `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Câmbio</div>` +
+      pmInput('eurusd', 'EUR/USD', '#38bdf8');
+
     el.innerHTML =
       `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px">Cutoff: ${CUTOFFS[key]}</div>` +
-      (semCommodity ? '' : pmInput(key+'_commodity', LABELS[key], c)) +
+      eurUsdHtml +
+      `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">Commodity / Benchmark</div>` +
+      pmInput(key+'_commodity', LABELS[key], c) +
       referenceIndexHtml +
 
       `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.06em">Holdings</div>` +
@@ -7382,11 +7394,21 @@ function initAdvisor() {
   // Only try Finnhub if key available AND running on https (not localhost)
   const fhKey = localStorage.getItem('finnhub-key')||'';
   if (fhKey && location.protocol === 'https:') {
+    // Gold e Oil também puxam notícias da Casa Branca (loadNewsWhiteHouse).
     loadNews('gold').then(()=>loadNewsWhiteHouse('gold')).then(()=>renderAdvisorPanelDeep('gold'));
     loadNews('oil').then(()=>loadNewsWhiteHouse('oil')).then(()=>renderAdvisorPanelDeep('oil'));
+    // Finance, Saúde e Energia: notícias próprias do setor, depois recalcula o painel.
+    ['finance','saude','energia'].forEach(k => {
+      loadNews(k).then(()=>renderAdvisorPanelDeep(k));
+    });
   } else {
     renderAdvisorPanelDeep('gold');
     renderAdvisorPanelDeep('oil');
+    // Sem Finnhub/https: ainda assim tenta puxar as notícias (o loadNews tem outras fontes)
+    // e recalcula os painéis dos fundos de setor.
+    ['finance','saude','energia'].forEach(k => {
+      loadNews(k).then(()=>renderAdvisorPanelDeep(k)).catch(()=>renderAdvisorPanelDeep(k));
+    });
   }
 }
 
