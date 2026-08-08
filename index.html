@@ -357,8 +357,8 @@
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Gold',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Gold',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('Gold',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('Gold',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()">
         </div>
@@ -374,8 +374,8 @@
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">100&nbsp;000,00</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Oil',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Oil',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('Oil',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('Oil',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()">
         </div>
@@ -391,8 +391,8 @@
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Finance',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Finance',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('Finance',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('Finance',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
         </div>
@@ -408,8 +408,8 @@
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f472b6">0,00</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Saude',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Saude',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('Saude',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('Saude',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('Saude')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Saude" value="0" placeholder="0.00" style="border-color:rgba(244,114,182,0.3);color:#f472b6" oninput="updRestante()">
         </div>
@@ -425,8 +425,8 @@
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#2dd4bf">0,00</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Energia',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('Energia',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('Energia',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('Energia',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('Energia')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-Energia" value="0" placeholder="0.00" style="border-color:rgba(45,212,191,0.3);color:#2dd4bf" oninput="updRestante()">
         </div>
@@ -2359,8 +2359,8 @@ function renderAdj() {
           <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:${t.color}">${fmtNum(disp)}</span></span>
         </div>
         <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('${f}',1)">+10%</button>
-          <button class="bs mi" onclick="applyPct('${f}',-1)">-10%</button>
+          <button class="bs pl" onclick="applyPct('${f}',1)">+2,5%</button>
+          <button class="bs mi" onclick="applyPct('${f}',-1)">-2,5%</button>
           <button class="bs re" onclick="applyResgate('${f}')">All-out</button>
           <input type="number" step="0.01" class="ai" id="adj-${f}" value="0" placeholder="0.00"
             style="border-color:${t.border};color:${t.color}"
@@ -2476,9 +2476,9 @@ function updRestante() {
 
 const _clicks={};
 function applyPct(f,dir) {
-  if (!_clicks[f]) _clicks[f]={c:0,t:null};
-  const s=_clicks[f]; s.c++; clearTimeout(s.t);
-  s.t=setTimeout(()=>{ doPct(f,dir*0.1*s.c); s.c=0; },280);
+  // Cada clique aplica 2,5% do capital global, acumulando no valor atual do campo.
+  // 1 clique = 2,5%, 2 cliques = 5%, 3 cliques = 7,5%, etc. dir: +1 sobe, -1 desce.
+  doPct(f, dir*0.025);
 }
 
 function doPct(f,pct) {
