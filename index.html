@@ -2332,6 +2332,8 @@ function renderPipeline() {
     // Cativo+1 (D2) fica vazia porque o dinheiro salta-a — mas o valor cai sempre em Disponível.
     return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
+  // Garante as etiquetas de valor+% por fundo e atualiza-as.
+  if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
 }
 
 // ── Render: fund adjustments ────────────────────────────────────
@@ -2472,6 +2474,41 @@ function updRestante() {
   const el = document.getElementById('capital-restante');
   el.textContent = fmtNum(r);
   el.style.color = r<0?'var(--danger)':'var(--accent)';
+  // Atualiza a etiqueta de valor+percentagem de cada fundo.
+  FUNDS.forEach(f => updFundInfo(f));
+}
+
+// Garante que existe uma etiqueta de info (valor € + %) por baixo do campo de cada fundo.
+function ensureFundInfoSpans() {
+  FUNDS.forEach(f => {
+    const inp = document.getElementById('adj-'+f);
+    if (!inp) return;
+    if (document.getElementById('fundinfo-'+f)) return;
+    const span = document.createElement('div');
+    span.id = 'fundinfo-'+f;
+    span.style.cssText = 'font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:6px;text-align:right;min-height:13px';
+    // Inserir logo a seguir ao contentor dos botões (.fbtns), antes do botão Confirmar.
+    const fbtns = inp.closest('.fbtns');
+    if (fbtns && fbtns.parentNode) fbtns.parentNode.insertBefore(span, fbtns.nextSibling);
+  });
+}
+
+// Mostra, para um fundo, o valor em euros que estás a subscrever/resgatar e a
+// percentagem desse valor face ao CAPITAL GLOBAL (tanto para subscrição como resgate).
+function updFundInfo(f) {
+  let span = document.getElementById('fundinfo-'+f);
+  if (!span) { ensureFundInfoSpans(); span = document.getElementById('fundinfo-'+f); }
+  if (!span) return;
+  const g   = parseFloat(document.getElementById('capital-global').value)||0;
+  const val = parseFloat(document.getElementById('adj-'+f)?.value)||0;
+  if (!val) { span.textContent = ''; return; }
+  const pct = g>0 ? (Math.abs(val)/g*100) : 0;
+  const pctTxt = pct.toFixed(1).replace('.', ',') + '%';
+  if (val > 0) {
+    span.innerHTML = '<span style="color:var(--accent)">subscrever ' + fmtNum(val) + ' € · ' + pctTxt + '</span>';
+  } else {
+    span.innerHTML = '<span style="color:var(--danger)">resgatar ' + fmtNum(Math.abs(val)) + ' € · ' + pctTxt + '</span>';
+  }
 }
 
 const _clicks={};
