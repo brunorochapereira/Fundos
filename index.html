@@ -900,6 +900,10 @@
     <button onclick="fetchFromServer('remote')" id="btn-server-fetch-remote" title="Actualizar dados via Cloudflare Tunnel" style="font-family:var(--mono);font-size:10px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);color:#60a5fa;border-radius:4px;padding:6px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0">↻ Remoto</button>
     <button onclick="fetchFromServer('manual')" id="btn-server-fetch-manual" title="Actualizar a partir do URL indicado" style="font-family:var(--mono);font-size:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border2);color:var(--text2);border-radius:4px;padding:6px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0">↻ URL</button>
     <input type="text" id="server-url-input" value="http://localhost:3004/all" style="font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text2);padding:5px 8px;flex:1;min-width:140px;outline:none">
+    <label style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0" title="Quando ativo, o servidor corre o Chrome visível (vês o scraping a acontecer). Quando desligado, corre invisível (headless).">
+      <input type="checkbox" id="scraping-visivel-chk" onchange="toggleScrapingVisivel(this.checked)" style="accent-color:#60a5fa">
+      <span id="scraping-visivel-lbl">Scraping invisível</span>
+    </label>
     <span id="server-fetch-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);flex-basis:100%"></span>
   </div>
 
@@ -2726,18 +2730,25 @@ function processLinha(f,aj) {
 
 // ── Avanço automático de dia (meia-noite + recuperação no arranque) ──
 // Dia útil = não é fim de semana e não é feriado de NENHUMA das bolsas seguidas.
-function isBusinessDay(d) {
+// PONTO 8: dia útil por FUNDO. Se fundKey for dado, só conta os feriados das bolsas
+// desse fundo (FUND_MARKETS); sem fundKey, mantém o comportamento antigo (todas as bolsas).
+// Assim um feriado da NYSE não trava o pipeline de um fundo cujas bolsas são IE/LU.
+function isBusinessDay(d, fundKey) {
   const wd = d.getDay();
   if (wd === 0 || wd === 6) return false; // domingo/sábado
   const ds = d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+  if (fundKey) {
+    if (typeof fundMarketsClosed === 'function' && fundMarketsClosed(fundKey, ds).length) return false;
+    return true;
+  }
   if (typeof holidaysOn === 'function' && holidaysOn(ds).length) return false;
   return true;
 }
 
-function nextBusinessDay(fromDate) {
+function nextBusinessDay(fromDate, fundKey) {
   const d = new Date(fromDate);
   d.setHours(0,0,0,0);
-  do { d.setDate(d.getDate() + 1); } while (!isBusinessDay(d));
+  do { d.setDate(d.getDate() + 1); } while (!isBusinessDay(d, fundKey));
   return d;
 }
 
@@ -2967,7 +2978,7 @@ function formatChangesMsg(fundLabel, c) {
 
 // Grava o holdings.json no GitHub. É o PROGRAMA a aplicar a alteração, depois
 // de tu aceitares no painel — nunca sem confirmação.
-async function saveHoldingsJson(novoGold, novoOil) {
+async function saveHoldingsJson(novasListas) {
   const token = localStorage.getItem('gh-token');
   const repo  = localStorage.getItem('gh-repo');
   if (!token || !repo) { toast('Falta token/repo do GitHub na Config.','err'); return false; }
@@ -2975,8 +2986,11 @@ async function saveHoldingsJson(novoGold, novoOil) {
   const payload = JSON.stringify({
     _comment: 'Referência de holdings (top 10) dos fundos. Atualizado pelo dashboard quando o utilizador aceita uma alteração detetada.',
     _updated: new Date().toISOString().slice(0,10),
-    gold: novoGold,
-    oil: novoOil,
+    gold: novasListas.gold,
+    oil: novasListas.oil,
+    finance: novasListas.finance,
+    saude: novasListas.saude,
+    energia: novasListas.energia,
   }, null, 2);
 
   try {
@@ -3032,13 +3046,14 @@ let _pendingHoldings = null;
 // Chamado quando aceitas no painel: o PROGRAMA aplica sozinho.
 async function acceptHoldingsChanges() {
   if (!_pendingHoldings) return;
-  const { novoGold, novoOil, precisaUrls } = _pendingHoldings;
-  const ok = await saveHoldingsJson(novoGold, novoOil);
+  const { novasListas, precisaUrls } = _pendingHoldings;
+  const ok = await saveHoldingsJson(novasListas);
   if (!ok) return;
 
-  // Aplica já em memória, sem esperar por reload.
-  HOLDINGS.gold = novoGold.map(h => ({ ...h }));
-  HOLDINGS.oil  = novoOil.map(h => ({ ...h }));
+  // Aplica já em memória, sem esperar por reload — os 5 fundos.
+  ['gold','oil','finance','saude','energia'].forEach(k => {
+    if (Array.isArray(novasListas[k])) HOLDINGS[k] = novasListas[k].map(h => ({ ...h }));
+  });
   _pendingHoldings = null;
   renderHoldingsPanel();
   toast('Holdings atualizadas ✓','ok');
@@ -3111,41 +3126,51 @@ async function checkHoldings(force) {
     const ref = await loadHoldingsReference();
     const results = {};
     let anyChange = false;
-    for (const [key, label] of [['gold','Ouro (Jupiter)'], ['oil','Petróleo (Goldman Sachs)']]) {
-      const site = holdingsData[key];
+    // PONTO 7: deteção uniforme para os 5 fundos (chave do index → chave no /holdings do server).
+    const FUND_HOLD = [
+      ['gold','gold','Ouro (Jupiter)'],
+      ['oil','oil','Petróleo (Goldman Sachs)'],
+      ['finance','bank','Finance (Jupiter)'],
+      ['saude','health','Saúde (Schroder)'],
+      ['energia','energy','Energia Alternativa'],
+    ];
+    for (const [key, srvKey, label] of FUND_HOLD) {
+      const site = holdingsData[srvKey] || holdingsData[key];
       if (!site || !site.ok || !Array.isArray(site.items) || site.items.length < 5) {
         appLog('Verificação de holdings ('+label+'): leitura insuficiente ('+((site&&site.items)?site.items.length:0)+' itens), ignorada.','warn');
         results[key] = { skipped: true };
         continue;
       }
-      const c = diffHoldings(site.items, ref.data[key]);
+      const refData = ref.data[key] || [];
+      if (!refData.length) { results[key] = { skipped: true, noRef: true }; continue; }
+      const c = diffHoldings(site.items, refData);
       results[key] = c;
       if (!changesEmpty(c)) anyChange = true;
     }
     localStorage.setItem('holdings-check-last', String(Date.now()));
     if (anyChange) {
-      // Prepara a proposta de atualização. O programa só a aplica se aceitares.
-      const novoGold = (results.gold && !results.gold.skipped)
-        ? buildNewHoldingsList(holdingsData.gold.items, ref.data.gold)
-        : ref.data.gold;
-      const novoOil = (results.oil && !results.oil.skipped)
-        ? buildNewHoldingsList(holdingsData.oil.items, ref.data.oil)
-        : ref.data.oil;
-
-      // Holdings novas (nome que não existia) precisam de URL no server_all.js —
-      // o programa não consegue adivinhar o URL nem escrever no teu disco.
+      // Prepara a proposta de atualização por fundo (PONTO 7: os 5 fundos, não só gold/oil).
+      const SRV = { gold:'gold', oil:'oil', finance:'bank', saude:'health', energia:'energy' };
+      const LBL = { gold:'GOLD - Jupiter', oil:'OIL - Goldman Sachs', finance:'FINANCE - Jupiter', saude:'SAUDE - Schroder', energia:'ENERGIA Alternativa' };
+      const novasListas = {};
       const precisaUrls = [];
-      ['gold','oil'].forEach(k => {
+      const partes = [];
+      ['gold','oil','finance','saude','energia'].forEach(k => {
         const c = results[k];
-        if (c && !c.skipped) c.entered.forEach(x => precisaUrls.push(x.name));
+        const srvItems = (holdingsData[SRV[k]] || holdingsData[k] || {}).items;
+        if (c && !c.skipped && srvItems) {
+          novasListas[k] = buildNewHoldingsList(srvItems, ref.data[k] || []);
+          if (c.entered) c.entered.forEach(x => precisaUrls.push(k+': '+x.name));
+          if (!changesEmpty(c)) partes.push(formatChangesMsg(LBL[k], c));
+        } else {
+          novasListas[k] = ref.data[k] || [];
+        }
       });
 
-      _pendingHoldings = { changes: results, novoGold, novoOil, precisaUrls };
+      _pendingHoldings = { changes: results, novasListas,
+        novoGold: novasListas.gold, novoOil: novasListas.oil, precisaUrls };
       renderHoldingsPanel();
 
-      const partes = [];
-      if (results.gold && !results.gold.skipped && !changesEmpty(results.gold)) partes.push(formatChangesMsg('GOLD - Jupiter', results.gold));
-      if (results.oil && !results.oil.skipped && !changesEmpty(results.oil)) partes.push(formatChangesMsg('OIL - Goldman Sachs', results.oil));
       const msg = '⚠️ Alteração detetada nas holdings\n\n' + partes.join('\n\n') +
                   (precisaUrls.length ? '\n\nNovas sem URL no server_all: ' + precisaUrls.join(', ') : '') +
                   '\n\nAbre o dashboard e carrega em "Aceitar e atualizar" para aplicar.';
@@ -3447,7 +3472,6 @@ function switchTab(tab) {
   if (tab==='status')  renderStatus();
   if (tab==='advisor') initAdvisor();
   if (tab==='log') { renderLogTab(); renderHealthPanel(); }
-  if (tab==='advisor') initAdvisor();
   if (tab==='capital') renderCapital();
   if (tab==='config') { selModelTab(_modelTab||'gold'); renderCutoffsConfig(); renderSettlementConfig(); }
   if (tab==='sandbox') { renderSandboxHistory(); renderSandboxMetrics(); }
@@ -5213,9 +5237,10 @@ function renderModelConfigPanel(key) {
     </div>`;
 
   el.innerHTML = `
-    ${row('Peso Commodity (%)', 'mc-wc', cfg.wCommodity, 0, 80, 5, 'Quanto a commodity pesa no sinal final')}
+    ${row('Peso Commodity/Benchmark (%)', 'mc-wc', cfg.wCommodity, 0, 80, 5, 'Commodity (Gold/Oil) ou benchmark ETF de setor')}
     ${row('Peso Holdings (%)', 'mc-wh', cfg.wHoldings, 0, 80, 5, 'Quanto as holdings pesam no sinal final')}
     ${row('Peso Notícias (%)', 'mc-wn', cfg.wNews, 0, 60, 5, 'Quanto as notícias pesam no sinal final')}
+    ${row('Peso EUR/USD (%)', 'mc-we', cfg.wEurUsd ?? 0, 0, 40, 5, 'Câmbio (direção invertida: euro forte penaliza)')}
     <div style="font-family:var(--mono);font-size:8px;color:var(--warn);margin:-4px 0 10px">Soma dos pesos: <span id="mc-sum"></span></div>
     ${row('Threshold COMPRA (≥)', 'mc-bt', cfg.buyThreshold, 51, 90, 1, 'Score mínimo para sinal de COMPRA')}
     ${row('Threshold VENDA (≤)', 'mc-st', cfg.sellThreshold, 10, 49, 1, 'Score máximo para sinal de VENDA')}
@@ -5226,8 +5251,9 @@ function renderModelConfigPanel(key) {
     <div id="mc-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px"></div>`;
 
   // Atualizar soma dos pesos em tempo real
-  ['mc-wc','mc-wh','mc-wn'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateWeightSum);
+  ['mc-wc','mc-wh','mc-wn','mc-we'].forEach(id => {
+    const elx = document.getElementById(id);
+    if (elx) elx.addEventListener('input', updateWeightSum);
   });
   updateWeightSum();
 }
@@ -5236,7 +5262,8 @@ function updateWeightSum() {
   const wc = parseInt(document.getElementById('mc-wc')?.value||0);
   const wh = parseInt(document.getElementById('mc-wh')?.value||0);
   const wn = parseInt(document.getElementById('mc-wn')?.value||0);
-  const sum = wc+wh+wn;
+  const we = parseInt(document.getElementById('mc-we')?.value||0);
+  const sum = wc+wh+wn+we;
   const el = document.getElementById('mc-sum');
   if (el) { el.textContent = sum+'%'; el.style.color = sum===100 ? 'var(--accent)' : 'var(--warn)'; }
 }
@@ -5245,14 +5272,15 @@ function applyModelConfig(key) {
   const wc = parseInt(document.getElementById('mc-wc').value);
   const wh = parseInt(document.getElementById('mc-wh').value);
   const wn = parseInt(document.getElementById('mc-wn').value);
-  const sum = wc+wh+wn;
+  const we = parseInt(document.getElementById('mc-we').value);
+  const sum = wc+wh+wn+we;
   if (sum !== 100) {
-    document.getElementById('mc-status').textContent = '⚠ A soma dos pesos deve ser 100% (atual: '+sum+'%)';
+    document.getElementById('mc-status').textContent = '⚠ A soma dos 4 pesos deve ser 100% (atual: '+sum+'%)';
     document.getElementById('mc-status').style.color = 'var(--warn)';
     return;
   }
   const cfg = {
-    wCommodity: wc, wHoldings: wh, wNews: wn,
+    wCommodity: wc, wHoldings: wh, wNews: wn, wEurUsd: we,
     buyThreshold: parseInt(document.getElementById('mc-bt').value),
     sellThreshold: parseInt(document.getElementById('mc-st').value),
   };
@@ -5261,7 +5289,7 @@ function applyModelConfig(key) {
   document.getElementById('mc-status').textContent = '✓ Guardado e recalculado.';
   document.getElementById('mc-status').style.color = 'var(--accent)';
   toast('Configuração '+key+' guardada ✓','ok');
-  appLog('Modelo '+key+' atualizado: Comm='+wc+'% Hold='+wh+'% News='+wn+'% Buy≥'+cfg.buyThreshold+' Sell≤'+cfg.sellThreshold,'ok');
+  appLog('Modelo '+key+' atualizado: Comm/Bench='+wc+'% Hold='+wh+'% News='+wn+'% EUR/USD='+we+'% Buy≥'+cfg.buyThreshold+' Sell≤'+cfg.sellThreshold,'ok');
 }
 
 function resetModelConfig(key) {
@@ -5295,7 +5323,7 @@ const MARKET_HOLIDAYS = {
   }
 };
 // Bolsas que afetam cada fundo
-const FUND_MARKETS = { gold:['IE','LU'], oil:['NYSE'], finance:['NYSE'] };
+const FUND_MARKETS = { gold:['IE','LU'], oil:['NYSE'], finance:['NYSE'], saude:['NYSE'], energia:['NYSE'] };
 const MARKET_LABEL = { NYSE:'NYSE', IE:'Irlanda', LU:'Luxemburgo' };
 
 // Feriados de uma data, por bolsa. Devolve [{market, name}].
@@ -5403,12 +5431,13 @@ function scoreFromAnchors(varPct, anchors) {
 }
 
 // Escala do Commodity principal (Ouro), a partir da variação DO DIA — o pós-mercado
-// nunca está disponível para commodities spot (confirmado). Pontos-âncora definidos
-// pelo utilizador: -1,00%→0 · -0,50%→10 · -0,25%→15 · -0,10%→20 · 0,00%→25 ·
-// +0,10%→40 · +0,25%→50 · +0,50%→100.
+// nunca está disponível para commodities spot (confirmado).
+// Escala do Ouro (variação do dia). CORRIGIDA: 0,00% = score 50 (mercado neutro),
+// simétrica em torno do neutro. Antes 0% dava 25, o que enviesava o modelo para VENDA.
+// -1,00%→0, -0,50%→25, 0%→50, +0,50%→75, +1,00%→100. Interpolação linear entre âncoras.
 const GOLD_COMMODITY_ANCHORS = [
-  [-1.00, 0], [-0.50, 10], [-0.25, 15], [-0.10, 20],
-  [0.00, 25], [0.10, 40], [0.25, 50], [0.50, 100]
+  [-1.00, 0], [-0.50, 25], [-0.25, 37.5], [-0.10, 45],
+  [0.00, 50], [0.10, 55], [0.25, 62.5], [0.50, 75], [1.00, 100]
 ];
 
 // Escala do Petróleo (WTI): mesma forma da tabela do Ouro, mas com os pontos no eixo
@@ -5417,15 +5446,23 @@ const GOLD_COMMODITY_ANCHORS = [
 // históricos; ajusta livremente com base na precisão real que fores acumulando.
 const OIL_COMMODITY_ANCHORS = GOLD_COMMODITY_ANCHORS.map(([x,y]) => [Math.round(x*1.8*100)/100, y]);
 
-// Escala das Holdings (pós-mercado): reaproveita a MESMA forma da tabela do Ouro,
-// sem escalar — assume-se magnitude semelhante entre pós-mercado de ações e o dia do
-// ouro. Substitui a antiga calibração automática por volatilidade, que se confirmou
-// estar a medir a série errada (variação do dia, não pós-mercado) depois da mudança
-// do Commodity para "dia". Fixa e auditável, tal como as duas de cima.
-const HOLDINGS_ANCHORS = GOLD_COMMODITY_ANCHORS;
+// Escala das Holdings (pós-mercado de ações). PONTO 2: escala PRÓPRIA, mais larga que a
+// do ouro — ações individuais oscilam bastante mais num dia/pós-mercado do que o ouro spot,
+// por isso uma variação de 0,5% numa ação é menos significativa. Eixo da variação ×2,0
+// face ao ouro: assim -2%→0, -1%→25, 0%→50, +1%→75, +2%→100. Ponto de partida, ajustável.
+const HOLDINGS_ANCHORS = GOLD_COMMODITY_ANCHORS.map(([x,y]) => [Math.round(x*2.0*100)/100, y]);
+
+// Escala dos Benchmarks de setor (ETF: STOXX Banks, XLV, ICLN). Um ETF de setor move-se
+// mais que o ouro mas menos que uma ação isolada (é uma cesta). Eixo ×1,5 face ao ouro.
+const BENCHMARK_ANCHORS = GOLD_COMMODITY_ANCHORS.map(([x,y]) => [Math.round(x*1.5*100)/100, y]);
 
 function commodityDayScore(varPct, key) {
-  const anchors = key === 'oil' ? OIL_COMMODITY_ANCHORS : GOLD_COMMODITY_ANCHORS;
+  // Gold/Oil usam a escala da commodity real; Finance/Saúde/Energia usam a escala de
+  // benchmark ETF (cesta de setor, volatilidade intermédia).
+  let anchors;
+  if (key === 'oil') anchors = OIL_COMMODITY_ANCHORS;
+  else if (key === 'gold') anchors = GOLD_COMMODITY_ANCHORS;
+  else anchors = BENCHMARK_ANCHORS; // finance, saude, energia
   return scoreFromAnchors(varPct, anchors);
 }
 function holdingsDayScore(varPct) {
@@ -5437,7 +5474,8 @@ function calcHoldingsScore(key) {
   const consensusFactor = cfg.consensusFactor ?? 0.3; // fator de penalização por consenso bearish/bullish
   const holdings = HOLDINGS[key];
   let sumWeightedVar = 0, sumWeights = 0;
-  let sumNegWeight = 0, sumPosWeight = 0;
+  let sumNegWeight = 0, sumPosWeight = 0, sumNeuWeight = 0;
+  const NEUTRAL_BAND = 0.10; // holdings entre -0,10% e +0,10% contam como NEUTRAS
   const details = [];
   holdings.forEach(h => {
     // Usa a variação PÓS-MERCADO da holding. Sem pós-mercado → ignora a holding.
@@ -5447,8 +5485,10 @@ function calcHoldingsScore(key) {
       const v = parseFloat(val);
       sumWeightedVar += v * h.weight;
       sumWeights += h.weight;
-      if (v < 0) sumNegWeight += h.weight;
-      else sumPosWeight += h.weight;
+      // Banda neutra: só conta como positiva/negativa fora de ±0,10%.
+      if (v < -NEUTRAL_BAND) sumNegWeight += h.weight;
+      else if (v > NEUTRAL_BAND) sumPosWeight += h.weight;
+      else sumNeuWeight += h.weight;
       details.push({name: h.name, weight: h.weight, change: v});
     }
   });
@@ -5473,9 +5513,20 @@ function calcHoldingsScore(key) {
     score = boost;
   }
 
-  const totalWeight = holdings.reduce((s,h)=>s+h.weight,0);
-  return {score, scoreBase, weightedVar, coverage: sumWeights/totalWeight*100, details,
-          pctNeg: Math.round(pctNeg*100), pctPos: Math.round(pctPos*100)};
+  const totalHoldingWeight = holdings.reduce((s,h)=>s+h.weight,0);
+  // Cobertura ECONÓMICA: % do fundo representada pelas holdings monitorizadas COM dados
+  //   (soma dos pesos com dado / soma dos pesos de TODAS as holdings da carteira).
+  // Cobertura TÉCNICA: % das holdings monitorizadas que têm dados
+  //   (nº com dados / nº total de holdings monitorizadas). Não confundir: 100% técnica
+  //   pode ainda representar só parte do fundo (a lista monitorizada não é a carteira toda).
+  const coverageEcon = totalHoldingWeight>0 ? sumWeights/totalHoldingWeight*100 : 0;
+  const nComDados = details.length;
+  const coverageTech = holdings.length>0 ? nComDados/holdings.length*100 : 0;
+  return {score, scoreBase, weightedVar,
+          coverage: coverageEcon,           // mantém o nome antigo = económica (usada no peso efetivo)
+          coverageEcon, coverageTech,
+          details, nMonitorizadas: holdings.length, nComDados,
+          pctNeg: Math.round(pctNeg*100), pctPos: Math.round(pctPos*100), pctNeu: Math.round((sumNeuWeight/sumWeights)*100)};
 }
 
 // Calc momentum score from 5d value
@@ -5845,7 +5896,7 @@ function renderHealthPanel() {
 
 function calcAdvisorSignal(key) {
   const cfg = loadAdvisorConfig(key);
-  const FUNDS   = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation', saude:'Schroder Healthcare Innovation'};
+  const FUNDS   = {gold:'Jupiter Gold & Silver Fund', oil:'Goldman Sachs North America Energy', finance:'Jupiter Financial Innovation', saude:'Schroder Healthcare Innovation', energia:'Energia Alternativa'};
   const today = new Date();
   const isFriday = today.getDay() === 5;
   const dayLabel = isFriday ? ' — processa segunda-feira' : ' — 10% capital';
@@ -5860,7 +5911,7 @@ function calcAdvisorSignal(key) {
   // disponível para estes ativos — confirmado, não há sessão after-hours distinta
   // para commodities spot). Escala própria: ver commodityDayScore/COMMODITY_DAY_ANCHORS.
   const commValRaw = parseFloat(pmValues[key+'_commodity']);
-  r.commodity = isNaN(commValRaw) ? 0 : commValRaw;
+  r.commodity = isNaN(commValRaw) ? null : commValRaw;  // null = sem dado (não 0%)
   r.commodityHasData = !isNaN(commValRaw);
 
   // Holdings (30%)
@@ -5876,10 +5927,14 @@ function calcAdvisorSignal(key) {
   // Weighted score
   let totalScore = 0, totalWeight = 0;
 
-  // Commodity entra sempre (0% quando falta a variação do dia, o que é raro).
-  // Escala fixa por pontos-âncora (não segue a calibração por volatilidade das Holdings).
-  const cs = commodityDayScore(r.commodity, key);
-  totalScore += cs * cfg.wCommodity; totalWeight += cfg.wCommodity;
+  // Commodity/Benchmark: só entra no cálculo se TIVER dados. A ausência de dado NÃO é
+  // tratada como variação 0% (isso injetaria um sinal neutro/enviesado falso). Quando
+  // falta, o peso sai e os restantes fatores são normalizados sobre o peso disponível.
+  if (r.commodityHasData) {
+    const cs = commodityDayScore(r.commodity, key);
+    r.commodityScore = cs;
+    totalScore += cs * cfg.wCommodity; totalWeight += cfg.wCommodity;
+  }
 
   // Holdings e Notícias: peso efetivo escalado pela sua própria cobertura/confiança.
   // Cobertura baixa (poucas holdings a reportar, poucas notícias) pesa menos no total,
@@ -5959,11 +6014,13 @@ function calcAdvisorSignal(key) {
     return r;
   }
 
-  // Feriado é apenas informativo — não bloqueia o sinal
-  r.cutoffPassed = isCutoffPassed(CUTOFFS[key]); // informational only
+  // PONTO 9: distinguir o momento da análise do momento em que a ordem é processada.
+  // Depois do cutoff do fundo, a ordem já não apanha o NAV de hoje — aplica-se ao próximo.
+  r.cutoffPassed = isCutoffPassed(CUTOFFS[key]);
+  const janela = r.cutoffPassed ? ' (após cutoff — próxima janela/NAV)' : '';
 
-  if      (r.score >= cfg.buyThreshold)  { r.signal = 'COMPRA'; r.action = 'Comprar '+FUNDS[key]+dayLabel; }
-  else if (r.score <= cfg.sellThreshold) { r.signal = 'VENDA';  r.action = 'Vender '+FUNDS[key]+sellLabel; }
+  if      (r.score >= cfg.buyThreshold)  { r.signal = 'COMPRA'; r.action = 'Comprar '+FUNDS[key]+dayLabel+janela; }
+  else if (r.score <= cfg.sellThreshold) { r.signal = 'VENDA';  r.action = 'Vender '+FUNDS[key]+sellLabel+janela; }
   else                                    { r.signal = 'NEUTRO'; r.action = 'Aguardar — sinal inconclusivo'; }
 
   _lastSignals[key] = r.signal;
@@ -6083,9 +6140,10 @@ function renderAdvisorConfigPanel(key) {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px">
         <div>
-          ${slider('Peso Commodity (%)', 'wc', cfg.wCommodity, 0, 80, 5, '')}
+          ${slider('Peso Commodity/Bench (%)', 'wc', cfg.wCommodity, 0, 80, 5, '')}
           ${slider('Peso Holdings (%)', 'wh', cfg.wHoldings, 0, 80, 5, '')}
-          ${slider('Peso Notícias (%)', 'wn', cfg.wNews, 0, 60, 5, 'Soma deve ser 100%')}
+          ${slider('Peso Notícias (%)', 'wn', cfg.wNews, 0, 60, 5, '')}
+          ${slider('Peso EUR/USD (%)', 'we', cfg.wEurUsd ?? 0, 0, 40, 5, 'Soma dos 4 deve ser 100%')}
         </div>
         <div>
           ${slider('Fator consenso holdings', 'cf', cfg.consensusFactor??0.3, 0, 1, 0.05, '0=sem penalização · 1=máxima')}
@@ -6093,49 +6151,25 @@ function renderAdvisorConfigPanel(key) {
           ${slider('VENDA ≤', 'st', cfg.sellThreshold, 10, 49, 1, '')}
         </div>
       </div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--warn);margin:4px 0 0">Soma dos pesos: <span id="icfg-${key}-sum">—</span></div>
       <div style="display:flex;gap:6px;margin-top:6px">
+        <button onclick="applyInlineConfig('${key}')" style="font-family:var(--mono);font-size:9px;color:var(--accent);background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.4);border-radius:4px;padding:4px 10px;cursor:pointer">✓ Aplicar</button>
         <button onclick="resetInlineConfig('${key}')" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:transparent;border:1px solid var(--border2);border-radius:4px;padding:4px 10px;cursor:pointer">↺ Repor defaults</button>
       </div>
     </div>`;
 
-  // Atualizar aviso de soma e auto-balancear os outros dois sliders
-  ['icfg-'+key+'-wc','icfg-'+key+'-wh','icfg-'+key+'-wn'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', (e) => {
-      const ids = ['icfg-'+key+'-wc','icfg-'+key+'-wh','icfg-'+key+'-wn'];
-      const changed = e.target;
-      const others = ids.filter(i => i !== changed.id).map(i => document.getElementById(i));
-      const changedVal = parseInt(changed.value);
-      const remaining = 100 - changedVal;
-
-      // Distribui o restante proporcionalmente pelos outros dois
-      const sumOthers = others.reduce((s,o) => s + parseInt(o.value), 0);
-      if (sumOthers > 0) {
-        let distributed = 0;
-        others.forEach((o, i) => {
-          if (i === others.length - 1) {
-            // último recebe o resto para evitar erros de arredondamento
-            const v = Math.max(0, remaining - distributed);
-            o.value = v;
-            document.getElementById(o.id+'-val').textContent = v;
-          } else {
-            const v = Math.max(0, Math.round(remaining * (parseInt(o.value) / sumOthers)));
-            o.value = v;
-            document.getElementById(o.id+'-val').textContent = v;
-            distributed += v;
-          }
-        });
-      } else {
-        // Se os outros são 0, divide igualmente
-        const half = Math.floor(remaining / 2);
-        others[0].value = half; document.getElementById(others[0].id+'-val').textContent = half;
-        others[1].value = remaining - half; document.getElementById(others[1].id+'-val').textContent = remaining - half;
-      }
-
-      // Atualizar aviso
-      const warn = document.getElementById('icfg-'+key+'-sum-warn');
-      if (warn) { warn.textContent = ''; } // soma é sempre 100 agora
-    });
+  // Atualiza o aviso da soma dos 4 pesos em tempo real (sem auto-balancear — o utilizador
+  // ajusta e vê a soma; só aplica quando estiver a 100%).
+  const _icfgSum = () => {
+    const g = id => parseInt(document.getElementById('icfg-'+key+'-'+id)?.value||0);
+    const s = g('wc')+g('wh')+g('wn')+g('we');
+    const el = document.getElementById('icfg-'+key+'-sum');
+    if (el) { el.textContent = s+'%'; el.style.color = s===100?'var(--accent)':'var(--warn)'; }
+  };
+  ['wc','wh','wn','we'].forEach(id => {
+    document.getElementById('icfg-'+key+'-'+id)?.addEventListener('input', _icfgSum);
   });
+  _icfgSum();
 }
 
 function applyInlineConfig(key) {
@@ -6144,8 +6178,13 @@ function applyInlineConfig(key) {
   const wc = parseInt(g('wc').value);
   const wh = parseInt(g('wh').value);
   const wn = parseInt(g('wn').value);
+  const we = parseInt(g('we').value);
+  if (wc+wh+wn+we !== 100) {
+    toast('A soma dos 4 pesos deve ser 100% (atual: '+(wc+wh+wn+we)+'%)','warn');
+    return;
+  }
   const cfg = {
-    wCommodity: wc, wHoldings: wh, wNews: wn,
+    wCommodity: wc, wHoldings: wh, wNews: wn, wEurUsd: we,
     consensusFactor: parseFloat(g('cf').value),
     buyThreshold: parseInt(g('bt').value),
     sellThreshold: parseInt(g('st').value),
@@ -6164,7 +6203,7 @@ function applyInlineConfig(key) {
     const hel = document.getElementById('advisor-help-'+key);
     if (hel) { renderAdvisorHelp(key); hel.style.display = 'block'; }
   }
-  appLog('Modelo '+key+' ajustado inline: Comm='+wc+'% Hold='+wh+'% News='+wn+'%','ok');
+  appLog('Modelo '+key+' ajustado inline: Comm/Bench='+wc+'% Hold='+wh+'% News='+wn+'% EUR/USD='+we+'%','ok');
 }
 
 function resetInlineConfig(key) {
@@ -6975,7 +7014,7 @@ async function fetchFromServerFiltered(source, funds) {
 
     if (nWanted >= 2) {
       // 2+ fundos: usa /all (uma só chamada, traz tudo). Injeta só os pedidos.
-      const resp = await fetch(base + '/all', { method:'GET', cache:'no-store' });
+      const resp = await fetch(comVisual(base + '/all'), { method:'GET', cache:'no-store' });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
       if (want.gold    && data.gold?.items)   injected += injectWatchlistItems('gold',    data.gold.items);
@@ -6988,7 +7027,7 @@ async function fetchFromServerFiltered(source, funds) {
       // Só um fundo: /watchlist?list=<chave do server>
       const fund = Object.keys(want).find(k => want[k]);
       const list = LIST_KEY[fund];
-      const resp = await fetch(base + '/watchlist?list=' + list, { method:'GET', cache:'no-store' });
+      const resp = await fetch(comVisual(base + '/watchlist?list=' + list), { method:'GET', cache:'no-store' });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
       const items = data.items || (data[list] && data[list].items) || [];
@@ -7047,6 +7086,22 @@ async function fetchFromServerFiltered(source, funds) {
   }
 }
 
+// Toggle "Scraping visível": quando ativo, acrescenta ?visual=1 ao URL do servidor,
+// para o server_all.js correr o Chrome de forma visível (não headless). Persiste em
+// localStorage. O parâmetro é acrescentado a /all e aos endpoints por fundo.
+function scrapingVisivel() {
+  return localStorage.getItem('scraping-visivel') === '1';
+}
+function comVisual(url) {
+  if (!scrapingVisivel()) return url;
+  return url + (url.includes('?') ? '&' : '?') + 'visual=1';
+}
+function toggleScrapingVisivel(on) {
+  localStorage.setItem('scraping-visivel', on ? '1' : '0');
+  const lbl = document.getElementById('scraping-visivel-lbl');
+  if (lbl) lbl.textContent = on ? 'Scraping visível' : 'Scraping invisível';
+}
+
 async function fetchFromServer(source = 'manual') {
   const localBtn = document.getElementById('btn-server-fetch-local');
   const remoteBtn = document.getElementById('btn-server-fetch-remote');
@@ -7094,7 +7149,7 @@ async function fetchFromServer(source = 'manual') {
   if (activeBtn) activeBtn.textContent = 'A carregar...';
 
   try {
-    const resp = await fetch(serverUrl, {
+    const resp = await fetch(comVisual(serverUrl), {
       method: 'GET',
       cache: 'no-store'
     });
@@ -7413,6 +7468,9 @@ function selAdvisorFund(fund) {
 
 function initAdvisor() {
   renderPremarketInputs();
+  // Reflete o estado guardado do toggle "Scraping visível".
+  const svChk = document.getElementById('scraping-visivel-chk');
+  if (svChk) { svChk.checked = scrapingVisivel(); toggleScrapingVisivel(svChk.checked); }
   renderAdvisorPanel('gold');
     renderAdvisorPanel('oil');
     renderAdvisorPanel('finance');
