@@ -2809,38 +2809,36 @@ function autoAdvanceDays(reason) {
 
     appLog('Shift automático: '+totalAvancos+' passo(s) processado(s) ['+(reason||'')+'].','ok');
     toast('Shift automático: '+totalAvancos+' passo(s) ✓','ok');
-    // Mensagem de confirmação SÓ no shift da meia-noite (não na recuperação ao abrir),
-    // e SÓ para os fundos que de facto avançaram — uma mensagem por fundo.
+    // Mensagem de fim de dia SÓ no shift da meia-noite (não na recuperação ao abrir).
+    // UMA mensagem, com TODOS os fundos pela ordem do pipeline (FUNDS), para a posição
+    // de cada fundo ser sempre a mesma e não haver risco de troca ao subscrever/resgatar.
     if (reason === 'meia-noite') {
-      Object.entries(resumoPorFundo).forEach(([fundo, info]) => {
-        try { enviarPipelineWhatsApp(fundo, info.de, info.para, info.avancos, info.ordemInicial); }
-        catch(e) { appLog('Erro a enviar msg de pipeline ('+fundo+'): '+e.message,'err'); }
-      });
+      try { enviarFimDeDiaWhatsApp(resumoPorFundo); }
+      catch(e) { appLog('Erro a enviar mensagem de fim de dia: '+e.message,'err'); }
     }
   }
   return totalAvancos;
 }
 
-// Mensagem WhatsApp de confirmação do avanço de meia-noite — UMA POR FUNDO.
-async function enviarPipelineWhatsApp(fundo, diaDe, diaPara, nAvancos, ordemInicial) {
-  const linhas = ['🌙 Pipeline ' + fundo + ' executado — ' + new Date().toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})];
+// Mensagem WhatsApp de fim de dia (meia-noite): UMA mensagem, TODOS os fundos pela
+// ordem do pipeline (FUNDS). Mostra, por fundo, se o pipeline avançou e o dinheiro
+// disponível para resgate. Sem sinal de compra — só o essencial para não errar ordens.
+// A ordem é SEMPRE a mesma do pipeline, para a posição de cada fundo ser previsível.
+async function enviarFimDeDiaWhatsApp(resumoPorFundo) {
+  const ICON = { Gold:'●', Oil:'◆', Finance:'▲', Saude:'✚', Energia:'⚡' };
+  const NOME = { Gold:'Gold', Oil:'Oil', Finance:'Finance', Saude:'Saúde', Energia:'Energia' };
+  const linhas = ['🌙 Fim de dia — ' + new Date().toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})];
   linhas.push('');
-  if (nAvancos > 1) {
-    linhas.push('Dias avançados: ' + fmtDate(diaDe) + ' → ' + fmtDate(diaPara) + ' (' + nAvancos + ' dias úteis)');
-  } else {
-    linhas.push('Dia avançado: ' + fmtDate(diaDe) + ' → ' + fmtDate(diaPara));
-  }
-
-  linhas.push('');
-  if (ordemInicial > 0)      linhas.push('Ordem processada: subscrição ' + fmtNum(ordemInicial) + ' €');
-  else if (ordemInicial < 0) linhas.push('Ordem processada: resgate ' + fmtNum(Math.abs(ordemInicial)) + ' €');
-  else                        linhas.push('Ordem processada: —');
-
-  const disp = (state.rows && state.rows[fundo]) ? (state.rows[fundo][availSlot(fundo)] || 0) : 0;
-  linhas.push('Disponível p/ resgate: ' + fmtNum(disp) + ' €');
-
-  await enviarWhatsApp(linhas.join('\n'), 'Pipeline ' + fundo + ' (meia-noite)');
+  // FUNDS é a ordem do pipeline: Gold, Oil, Finance, Saude, Energia.
+  FUNDS.forEach(f => {
+    const avancou = resumoPorFundo && resumoPorFundo[f] && resumoPorFundo[f].avancos > 0;
+    const disp = (state.rows && state.rows[f]) ? (state.rows[f][availSlot(f)] || 0) : 0;
+    const marca = avancou ? 'pipeline avançou' : 'sem alteração';
+    linhas.push((ICON[f]||'•') + ' ' + (NOME[f]||f) + ': ' + marca + ' · disponível p/ resgate ' + fmtNum(disp) + ' €');
+  });
+  await enviarWhatsApp(linhas.join('\n'), 'Fim de dia');
 }
+
 
 // ── Sincronização automática com o GitHub (multi-dispositivo) ────
 // Numa máquina sempre ligada, deteta se outro dispositivo (ex.: telemóvel)
@@ -6805,6 +6803,33 @@ function renderSignalLog() {
 // ── Server fetch (localhost:3004) ────────────────────────────────
 
 // Mapping: server name → pmValues key
+// Normaliza um nome de ativo para correspondência tolerante entre o servidor e o
+// dashboard: minúsculas, sem acentos, sem pontuação/espaços. Assim "Redeia Corporación",
+// "Redeia Corporacion" e "REDEIA CORPORACION" batem certo, e "Elia System Op." casa com
+// "Elia System Operator" pelo prefixo. Evita holdings a "—" por diferenças de grafia.
+function _normName(s) {
+  return String(s||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')  // tira acentos
+    .replace(/[^a-z0-9]/g,'');                          // tira espaços/pontos/símbolos
+}
+// Resolve a chave pmValues para um item vindo do servidor, tolerando diferenças de nome.
+// 1) match exato; 2) match normalizado; 3) match por prefixo (nome abreviado do site).
+function resolveServerKey(map, itemName) {
+  if (map[itemName]) return map[itemName];
+  const target = _normName(itemName);
+  if (!target) return null;
+  let melhor = null;
+  for (const nome of Object.keys(map)) {
+    const n = _normName(nome);
+    if (n === target) return map[nome];
+    // prefixo: "eliasystemop" casa com "eliasystemoperator" (e vice-versa)
+    if (melhor === null && (n.startsWith(target) || target.startsWith(n)) && Math.min(n.length,target.length) >= 5) {
+      melhor = map[nome];
+    }
+  }
+  return melhor;
+}
+
 const SERVER_MAP_GOLD = {
   'EUR/USD':                               'gold_fx_EURUSD',
   'Jupiter Gold & Silver Fund L EUR':      'gold_fund_Jupiter Gold & Silver Fund L EUR',
@@ -6823,6 +6848,7 @@ const SERVER_MAP_GOLD = {
 };
 
 const SERVER_MAP_OIL = {
+  'EUR/USD': 'eurusd',
   'Goldman Sachs North America Energy':   'oil_fund_Goldman Sachs North America Energy',
   'DJ Oil & Gas':                         'oil_index_DJ Oil & Gas',
   'Petróleo Bruto WTI':                   'oil_commodity',
@@ -6840,7 +6866,11 @@ const SERVER_MAP_OIL = {
 
 // Finance (server devolve na secção 'bank'). Nomes tal como o server_all os devolve.
 const SERVER_MAP_FINANCE = {
+  'EUR/USD': 'eurusd',
   'Jupiter Financial Innovation':  'finance_fund_Jupiter Financial Innovation',
+  'Benchmark (STOXX 600 Banks)':   'finance_commodity',
+  'iShares STOXX 600 Banks':       'finance_commodity',
+  'iShares STOXX Europe 600 Banks': 'finance_commodity',
   'SK Hynix':                      'finance_h_SK Hynix',
   'Samsung Electronics DR':        'finance_h_Samsung Electronics DR',
   'HSBC':                          'finance_h_HSBC',
@@ -6855,7 +6885,11 @@ const SERVER_MAP_FINANCE = {
 
 // Saude (server devolve na secção 'health').
 const SERVER_MAP_SAUDE = {
+  'EUR/USD': 'eurusd',
   'Schroder Healthcare Innovation': 'saude_fund_Schroder Healthcare Innovation',
+  'Benchmark (XLV Health Care)':   'saude_commodity',
+  'Health Care Select Sector':     'saude_commodity',
+  'Health Care Select Sector SPDR': 'saude_commodity',
   'Johnson & Johnson':             'saude_h_Johnson & Johnson',
   'Eli Lilly':                     'saude_h_Eli Lilly',
   'UnitedHealth Group':            'saude_h_UnitedHealth Group',
@@ -6871,7 +6905,10 @@ const SERVER_MAP_SAUDE = {
 // Energia Alternativa (LU2075271812). Adicionar as holdings aqui quando as tiveres:
 // 'Nome da Holding': 'energia_h_Nome da Holding',
 const SERVER_MAP_ENERGIA = {
+  'EUR/USD': 'eurusd',
   'Energia Alternativa':   'energia_fund_Energia Alternativa',
+  'Benchmark (ICLN Clean Energy)': 'energia_commodity',
+  'iShares Global Clean Energy':   'energia_commodity',
   'Vestas Wind':           'energia_h_Vestas Wind',
   'EDP Renováveis':        'energia_h_EDP Renováveis',
   'First Solar':           'energia_h_First Solar',
@@ -6962,7 +6999,7 @@ function injectWatchlistItems(key, items) {
   if (!map) return 0;
   let n = 0;
   items.forEach(item => {
-    const pk = map[item.name];
+    const pk = resolveServerKey(map, item.name);
     if (pk && Object.prototype.hasOwnProperty.call(item, 'variation')) {
       pmValues[pk] = parseServerPctDefaultZero(item.variation);
       n++;
@@ -7167,10 +7204,16 @@ async function fetchFromServer(source = 'manual') {
       { sec: 'health', fund: 'saude',   map: SERVER_MAP_SAUDE },
       { sec: 'energy', fund: 'energia', map: SERVER_MAP_ENERGIA },
     ];
+    // EUR/USD partilhado: o /all devolve-o em data.eurusd (e também no topo dos items de
+    // cada fundo). Injeta-se uma vez na chave partilhada 'eurusd'.
+    if (data.eurusd && Object.prototype.hasOwnProperty.call(data.eurusd, 'variation')) {
+      pmValues['eurusd'] = parseServerPctDefaultZero(data.eurusd.variation);
+      injected++;
+    }
     INJ.forEach(({ sec, map }) => {
       if (!data[sec]?.items) return;
       data[sec].items.forEach(item => {
-        const key = map[item.name];
+        const key = resolveServerKey(map, item.name);
         if (key && Object.prototype.hasOwnProperty.call(item, 'variation')) {
           pmValues[key] = parseServerPctDefaultZero(item.variation);
           injected++;
