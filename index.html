@@ -471,7 +471,7 @@
           <th>Disponível<span class="sub">D+3</span></th>
           <th>Em resgate</th>
         </tr></thead>
-        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Saúde</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
+        <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Saúde</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Energia</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
     </div>
 
@@ -2344,14 +2344,31 @@ function cv(v,avail) {
 }
 
 function renderPipeline() {
+  const testMode = document.getElementById('flag-test')?.checked;
   document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
     const r = state.rows[f];
     // O disponível está sempre na coluna Disponível (D3). Num fundo de 2 dias, a coluna
     // Cativo+1 (D2) fica vazia porque o dinheiro salta-a — mas o valor cai sempre em Disponível.
+    if (testMode) {
+      // Modo teste: células editáveis, para corrigir o pipeline à mão sem avançar dias.
+      const cell = (col) => `<td><input type="number" step="any" value="${r[col]||0}" onchange="setPipelineCell('${f}','${col}',this.value)" style="width:72px;text-align:right;font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);padding:3px 5px;outline:none"></td>`;
+      return `<tr><td>${f}</td>${cell('D')}${cell('D1')}${cell('D2')}${cell('D3')}${cell('resgate')}</tr>`;
+    }
     return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
   // Garante as etiquetas de valor+% por fundo e atualiza-as.
   if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
+}
+
+// Escreve diretamente numa célula do pipeline (só usado no modo teste). Guarda e não
+// re-renderiza a tabela toda (para não perder o foco enquanto se editam vários campos).
+function setPipelineCell(fundo, col, valor) {
+  if (!state.rows[fundo]) return;
+  const v = parseFloat(String(valor).replace(',', '.'));
+  state.rows[fundo][col] = isNaN(v) ? 0 : v;
+  saveLS();
+  if (typeof updFundInfo === 'function') { try { updFundInfo(fundo); } catch(e){} }
+  appLog('Modo teste: '+fundo+'.'+col+' = '+(isNaN(v)?0:v)+' (edição manual).','warn');
 }
 
 // ── Render: fund adjustments ────────────────────────────────────
@@ -2681,13 +2698,15 @@ function renderTestToggle() {
     tt.style.background='var(--warn-dim)';
     th.style.left='19px';
     th.style.background='var(--warn)';
-    setStatus('Modo teste ativo','warn');
+    setStatus('Modo teste ativo — pipeline editável','warn');
   } else {
     tt.style.background='var(--border2)';
     th.style.left='3px';
     th.style.background='var(--text3)';
     setStatus('','');
   }
+  // O pipeline muda entre texto e células editáveis conforme o modo teste.
+  if (typeof renderPipeline === 'function') renderPipeline();
 }
 function toggleTestMode() {
   const ft=document.getElementById('flag-test');
@@ -2780,8 +2799,6 @@ function autoAdvanceDays(reason) {
   const resumoPorFundo = {};
 
   FUNDS.forEach(fundo => {
-    if (fundo === 'Finance') return; // Finance fora do programa
-
     // O shift usa o seu próprio marcador (fundShiftRun), separado das ordens (fundLastRun).
     // Migração suave: herda do fundLastRun antigo, depois do global. Assim uma app já em uso
     // não faz um shift a dobrar na primeira meia-noite após a atualização.
@@ -2795,7 +2812,8 @@ function autoAdvanceDays(reason) {
     let guard = 0;
     while (isoOf(cursor) < hojeIso && guard < 400) {
       guard++;
-      const prox = nextBusinessDay(cursor);
+      // Calendário do próprio fundo (ponto 8): a chave do fundo é minúscula em FUND_MARKETS.
+      const prox = nextBusinessDay(cursor, fundo.toLowerCase());
       if (isoOf(prox) > hojeIso) break; // não passar de hoje
       // SÓ shift do pipeline — sem ordem. As ordens são a confirmação manual da manhã.
       // Como não lê o campo de ajuste, não pode ficar bloqueado por valor inválido.
