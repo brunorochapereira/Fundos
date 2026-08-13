@@ -830,6 +830,20 @@
             </label>
           </div>
           <button class="btn" id="btn-pdf" style="border-color:#1e3a5f;color:#60a5fa;margin-top:6px">⎙ Relatório do dia PDF</button>
+
+          <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border2)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Backups (GitHub)</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Pipeline: diário à meia-noite (últimos 5 dias). Registo diário: semanal (histórico completo). Automáticos, mas podes forçar aqui.</div>
+            <div style="display:flex;gap:6px;margin-bottom:6px">
+              <button class="btn" onclick="backupPipelineDiario()" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;font-size:10px">⬆ Backup pipeline</button>
+              <button class="btn" onclick="backupRegistoSemanal().then(ok=>{if(ok)marcaBackupSemanal();})" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;font-size:10px">⬆ Backup registo</button>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn" onclick="abrirImportarPipeline()" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0;flex:1;font-size:10px">⬇ Importar pipeline</button>
+              <button class="btn" onclick="abrirImportarRegisto()" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0;flex:1;font-size:10px">⬇ Importar registo</button>
+            </div>
+            <div id="backup-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.4"></div>
+          </div>
         </div>
       </div>
 
@@ -2815,6 +2829,13 @@ function autoAdvanceDays(reason) {
     if (reason === 'meia-noite') {
       try { enviarFimDeDiaWhatsApp(resumoPorFundo); }
       catch(e) { appLog('Erro a enviar mensagem de fim de dia: '+e.message,'err'); }
+      // Backup DIÁRIO do pipeline (últimos 5 dias) à meia-noite, após o avanço.
+      backupPipelineDiario().catch(e => appLog('Erro no backup diário do pipeline: '+e.message,'err'));
+      // Backup SEMANAL do registo diário — uma vez por semana (na 1.ª meia-noite da semana).
+      if (deveBackupSemanal()) {
+        backupRegistoSemanal().then(ok => { if (ok) marcaBackupSemanal(); })
+          .catch(e => appLog('Erro no backup semanal do registo: '+e.message,'err'));
+      }
     }
   }
   return totalAvancos;
@@ -3023,6 +3044,188 @@ async function saveHoldingsJson(novasListas) {
     toast('Erro a gravar holdings.json: '+e.message,'err');
     return false;
   }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// BACKUPS (GitHub)
+// - backup-pipeline.json: snapshot do pipeline dos 5 fundos, DIÁRIO à meia-noite após o
+//   avanço. Guarda um histórico rotativo dos últimos 5 dias (o mais antigo cai).
+// - backup-registo.json: cópia completa do registo diário (balanços/agregados/juros),
+//   SEMANAL. Guarda todas as semanas (histórico completo).
+// Ambos podem ser feitos à mão (botões na Config) e importados de volta.
+// ══════════════════════════════════════════════════════════════════
+
+// Escrita genérica de um ficheiro JSON no GitHub (get sha → PUT). Reutiliza o padrão
+// do saveHoldingsJson. Devolve true/false.
+async function ghPutJson(path, obj, commitMsg) {
+  const token = localStorage.getItem('gh-token');
+  const repo  = localStorage.getItem('gh-repo');
+  if (!token || !repo) { toast('Falta token/repo do GitHub na Config.','err'); return false; }
+  const payload = JSON.stringify(obj, null, 2);
+  try {
+    let sha;
+    try {
+      const getR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (getR.ok) { const d = await getR.json(); sha = d.sha; }
+    } catch(e){}
+    const body = { message: commitMsg || (path+' atualizado '+new Date().toLocaleString('pt-PT')),
+                   content: btoa(unescape(encodeURIComponent(payload))) };
+    if (sha) body.sha = sha;
+    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!putR.ok) {
+      const e = await putR.json().catch(()=>({}));
+      appLog('Erro a gravar '+path+': '+(e.message||putR.status),'err');
+      return false;
+    }
+    appLog(path+' gravado no GitHub.','ok');
+    return true;
+  } catch(e) { appLog('Erro a gravar '+path+': '+e.message,'err'); return false; }
+}
+
+// Leitura genérica de um ficheiro JSON do GitHub. Devolve o objeto ou null.
+async function ghGetJson(path) {
+  const token = localStorage.getItem('gh-token');
+  const repo  = localStorage.getItem('gh-repo');
+  if (!token || !repo) { toast('Falta token/repo do GitHub na Config.','err'); return null; }
+  try {
+    const r = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=main&_=${Date.now()}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    const txt = decodeURIComponent(escape(atob(d.content)));
+    return JSON.parse(txt);
+  } catch(e) { appLog('Erro a ler '+path+': '+e.message,'err'); return null; }
+}
+
+// Snapshot do pipeline dos 5 fundos (as 5 colunas por fundo).
+function snapshotPipeline() {
+  const rows = {};
+  FUNDS.forEach(f => {
+    const r = state.rows[f] || {D:0,D1:0,D2:0,D3:0,resgate:0};
+    rows[f] = { D:r.D, D1:r.D1, D2:r.D2, D3:r.D3, resgate:r.resgate };
+  });
+  return { data: new Date().toISOString().slice(0,10), ts: new Date().toISOString(), rows };
+}
+
+// BACKUP DIÁRIO do pipeline — histórico rotativo dos últimos 5 dias.
+async function backupPipelineDiario() {
+  const atual = await ghGetJson('backup-pipeline.json') || { _comment:'Backup diário do pipeline (últimos 5 dias). Gerado à meia-noite após o avanço.', snapshots: [] };
+  const hoje = new Date().toISOString().slice(0,10);
+  atual.snapshots = (atual.snapshots || []).filter(s => s.data !== hoje); // substitui se já houver de hoje
+  atual.snapshots.push(snapshotPipeline());
+  atual.snapshots.sort((a,b)=> a.data < b.data ? -1 : 1);
+  if (atual.snapshots.length > 5) atual.snapshots = atual.snapshots.slice(-5); // só os últimos 5
+  atual._updated = new Date().toISOString();
+  const ok = await ghPutJson('backup-pipeline.json', atual, 'backup pipeline '+hoje);
+  if (ok) appLog('Backup diário do pipeline gravado ('+atual.snapshots.length+' dias).','ok');
+  return ok;
+}
+
+// BACKUP SEMANAL do registo diário — histórico completo (todas as semanas).
+async function backupRegistoSemanal() {
+  const atual = await ghGetJson('backup-registo.json') || { _comment:'Backup semanal do registo diário (histórico completo).', semanas: [] };
+  const agora = new Date();
+  // Chave da semana: ano + número da semana ISO.
+  const semanaKey = agora.getFullYear()+'-W'+String(isoWeekNum(agora)).padStart(2,'0');
+  const registo = {
+    userEdits: state.userEdits || {},   // balanços manuais por dia
+    // agregados/juros são derivados do registo; guardamos o essencial (userEdits) + os meses conhecidos
+    meses: Object.keys(state.userEdits||{}).map(k=>k.slice(0,7)).filter((v,i,a)=>a.indexOf(v)===i),
+  };
+  atual.semanas = (atual.semanas || []).filter(s => s.semana !== semanaKey); // substitui se já houver desta semana
+  atual.semanas.push({ semana: semanaKey, ts: agora.toISOString(), registo });
+  atual.semanas.sort((a,b)=> a.semana < b.semana ? -1 : 1);
+  atual._updated = agora.toISOString();
+  const ok = await ghPutJson('backup-registo.json', atual, 'backup registo '+semanaKey);
+  if (ok) appLog('Backup semanal do registo gravado ('+atual.semanas.length+' semanas).','ok');
+  return ok;
+}
+
+// Número da semana ISO (1-53).
+function isoWeekNum(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = (date.getUTCDay() + 6) % 7;
+  date.setUTCDate(date.getUTCDate() - dayNum + 3);
+  const firstThursday = new Date(Date.UTC(date.getUTCFullYear(),0,4));
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+  return 1 + Math.round((date - firstThursday) / (7*24*3600*1000));
+}
+
+// Decide se o backup semanal deve correr hoje (uma vez por semana). Guarda a última
+// semana em que correu, em localStorage, para não repetir.
+function deveBackupSemanal() {
+  const agora = new Date();
+  const semanaKey = agora.getFullYear()+'-W'+String(isoWeekNum(agora)).padStart(2,'0');
+  return localStorage.getItem('backup-registo-semana') !== semanaKey;
+}
+function marcaBackupSemanal() {
+  const agora = new Date();
+  const semanaKey = agora.getFullYear()+'-W'+String(isoWeekNum(agora)).padStart(2,'0');
+  localStorage.setItem('backup-registo-semana', semanaKey);
+}
+
+// IMPORTAR: restaura o pipeline de um dia específico do backup-pipeline.json.
+async function importarBackupPipeline(dataAlvo) {
+  const bk = await ghGetJson('backup-pipeline.json');
+  if (!bk || !bk.snapshots || !bk.snapshots.length) { toast('Sem backups de pipeline no GitHub.','err'); return false; }
+  const snap = dataAlvo ? bk.snapshots.find(s=>s.data===dataAlvo) : bk.snapshots[bk.snapshots.length-1];
+  if (!snap) { toast('Não há backup do pipeline para '+dataAlvo+'.','err'); return false; }
+  FUNDS.forEach(f => { if (snap.rows[f]) state.rows[f] = { ...snap.rows[f] }; });
+  saveLS(); renderPipeline();
+  toast('Pipeline restaurado do backup de '+snap.data+'.','ok');
+  appLog('Pipeline importado do backup de '+snap.data+'.','ok');
+  return true;
+}
+
+// IMPORTAR: restaura o registo diário de uma semana específica do backup-registo.json.
+async function importarBackupRegisto(semanaAlvo) {
+  const bk = await ghGetJson('backup-registo.json');
+  if (!bk || !bk.semanas || !bk.semanas.length) { toast('Sem backups de registo no GitHub.','err'); return false; }
+  const sem = semanaAlvo ? bk.semanas.find(s=>s.semana===semanaAlvo) : bk.semanas[bk.semanas.length-1];
+  if (!sem) { toast('Não há backup do registo para '+semanaAlvo+'.','err'); return false; }
+  if (sem.registo && sem.registo.userEdits) {
+    state.userEdits = { ...sem.registo.userEdits };
+    saveLS();
+    if (typeof renderDailyTable === 'function') renderDailyTable();
+    toast('Registo diário restaurado do backup de '+sem.semana+'.','ok');
+    appLog('Registo importado do backup de '+sem.semana+'.','ok');
+    return true;
+  }
+  return false;
+}
+
+// UI: lista os dias disponíveis no backup do pipeline e deixa escolher qual restaurar.
+async function abrirImportarPipeline() {
+  const st = document.getElementById('backup-status');
+  if (st) st.textContent = 'A carregar backups do pipeline…';
+  const bk = await ghGetJson('backup-pipeline.json');
+  if (!bk || !bk.snapshots || !bk.snapshots.length) { if (st) st.textContent = 'Sem backups de pipeline no GitHub.'; return; }
+  const dias = bk.snapshots.map(s=>s.data);
+  const escolha = prompt('Restaurar pipeline de que dia?\n\nDisponíveis:\n' + dias.join('\n') + '\n\nEscreve a data (AAAA-MM-DD):', dias[dias.length-1]);
+  if (!escolha) { if (st) st.textContent = 'Importação cancelada.'; return; }
+  const ok = await importarBackupPipeline(escolha.trim());
+  if (st) st.textContent = ok ? ('Pipeline restaurado de '+escolha.trim()+'.') : ('Não foi possível restaurar '+escolha.trim()+'.');
+}
+
+// UI: lista as semanas disponíveis no backup do registo e deixa escolher qual restaurar.
+async function abrirImportarRegisto() {
+  const st = document.getElementById('backup-status');
+  if (st) st.textContent = 'A carregar backups do registo…';
+  const bk = await ghGetJson('backup-registo.json');
+  if (!bk || !bk.semanas || !bk.semanas.length) { if (st) st.textContent = 'Sem backups de registo no GitHub.'; return; }
+  const sems = bk.semanas.map(s=>s.semana);
+  const escolha = prompt('Restaurar registo diário de que semana?\n\nISTO SUBSTITUI os balanços atuais.\n\nDisponíveis:\n' + sems.join('\n') + '\n\nEscreve a semana (ex: '+sems[sems.length-1]+'):', sems[sems.length-1]);
+  if (!escolha) { if (st) st.textContent = 'Importação cancelada.'; return; }
+  const ok = await importarBackupRegisto(escolha.trim());
+  if (st) st.textContent = ok ? ('Registo restaurado de '+escolha.trim()+'.') : ('Não foi possível restaurar '+escolha.trim()+'.');
 }
 
 // Constrói a nova lista de holdings de um fundo a partir do que o site mostra,
@@ -8474,6 +8677,12 @@ async function enviarWhatsApp(texto, tipo) {
     logWhatsAppSend(tipo, texto, false, 'sem número/apikey configurado');
     return false;
   }
+  // Salvaguarda: o CallMeBot corta mensagens muito longas (limite do comprimento do URL).
+  // Cortamos de forma limpa aqui, para nunca sair uma mensagem truncada a meio.
+  const LIMITE_WA = 1500;
+  if (texto && texto.length > LIMITE_WA) {
+    texto = texto.slice(0, LIMITE_WA) + '\n…(cortada — vê o dashboard)';
+  }
   const url = 'https://api.callmebot.com/whatsapp.php?phone=' + encodeURIComponent(phone) +
               '&text=' + encodeURIComponent(texto) + '&apikey=' + encodeURIComponent(apikey);
   try {
@@ -8517,24 +8726,26 @@ async function enviarAdvisorWhatsApp(fundsArg) {
       linhas.push('💰 Disponível p/ resgate: ' + fmtNum(disp) + ' €');
     }
 
-    // Alerta FOMC: próxima reunião a menos de 2 dias (se já estiver em janela, já vem refletido no sinal/ação acima).
+    // Alerta FOMC: próxima reunião a menos de 2 dias.
     if (r.fedProx && !r.fedProx.inWindow && r.fedProx.daysTo !== null && r.fedProx.daysTo <= 2) {
-      linhas.push('🏛 Próximo FOMC em ' + r.fedProx.daysTo + ' dia(s) (' + r.fedProx.eventDate + ')');
+      linhas.push('🏛 FOMC em ' + r.fedProx.daysTo + 'd (' + r.fedProx.eventDate + ')');
     }
-    // Alertas de notícias Fed e Trump/Casa Branca detetadas na janela atual, com link.
-    const alerts = _newsAlertCounts[key] || {fed:0, trump:0, fedItems:[], trumpItems:[]};
-    if (alerts.fed > 0) {
-      linhas.push('🏛 ' + alerts.fed + ' notícia(s) sobre o Fed');
-      const item = (alerts.fedItems || [])[0];
-      if (item && item.url) linhas.push('   ' + item.headline.slice(0,80) + '\n   ' + item.url);
-    }
-    if (alerts.trump > 0) {
-      linhas.push('🇺🇸 ' + alerts.trump + ' notícia(s) sobre Trump/Casa Branca');
-      const item = (alerts.trumpItems || [])[0];
-      if (item && item.url) linhas.push('   ' + item.headline.slice(0,80) + '\n   ' + item.url);
-    }
+    // Alertas de notícias Fed/Trump: só a CONTAGEM (sem títulos nem URLs, que são longos e
+    // estouram o limite do CallMeBot com 5 fundos). O detalhe vê-se no painel de notícias.
+    const alerts = _newsAlertCounts[key] || {fed:0, trump:0};
+    const na = [];
+    if (alerts.fed > 0)   na.push('🏛 ' + alerts.fed + ' Fed');
+    if (alerts.trump > 0) na.push('🇺🇸 ' + alerts.trump + ' Trump');
+    if (na.length) linhas.push(na.join(' · '));
   });
-  const texto = linhas.join('\n');
+  let texto = linhas.join('\n');
+  // Salvaguarda de tamanho: o CallMeBot corta mensagens muito longas (limite do URL).
+  // Se passar de ~1400 caracteres, corta de forma limpa com aviso, em vez de o serviço
+  // a cortar a meio de forma imprevisível.
+  const LIMITE = 1400;
+  if (texto.length > LIMITE) {
+    texto = texto.slice(0, LIMITE) + '\n…(mensagem cortada — vê o dashboard)';
+  }
   const statusEl = document.getElementById('cmb-status');
   if (statusEl) { statusEl.style.color = 'var(--text3)'; statusEl.textContent = 'A enviar ('+funds.join('+')+')...'; }
   const tipo = funds.length === 1 ? ('Advisor ' + (CAP[funds[0]] || funds[0])) : ('Advisor ' + funds.map(f=>CAP[f]||f).join('+'));
