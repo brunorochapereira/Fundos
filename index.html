@@ -340,7 +340,13 @@
           </div>
         </div>
         <div class="divider"></div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital Próprio</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Capital Próprio</span>
+          <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer" title="Ligado: escreves o valor à mão. Desligado: é copiado automaticamente do último balanço do registo diário.">
+            <input type="checkbox" id="cap-proprio-forcar" onchange="toggleForcarProprio()" style="accent-color:var(--warn)">
+            <span>forçar</span>
+          </label>
+        </div>
         <div style="margin-bottom:10px;">
           <input type="number" step="0.01" class="ai" id="capital-proprio" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" oninput="updCapitalEfetivo()">
         </div>
@@ -438,7 +444,7 @@
       </div></div>
       <!-- 5 fundos ativos: Gold, Oil, Finance, Saude, Energia -->
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
-        <button class="btn" id="btn-run" onclick="avancarUmDia()">▶ Avançar AMBOS os fundos</button>
+        <button class="btn" id="btn-run" onclick="avancarUmDia()">▶ Avançar TODOS os fundos</button>
         <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px;line-height:1.4">⚠ Avança Ouro e Petróleo ao mesmo tempo. Para confirmar só um, usa os botões "✓ Confirmar" acima.</div>
         <button class="btn" id="btn-gh-save" onclick="saveToGitHub()" style="border-color:#1e3a5f;color:#60a5fa;margin-top:8px">☁ Guardar no GitHub</button>
         <div id="gh-deploy-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:8px;line-height:1.5;min-height:14px"></div>
@@ -2212,6 +2218,23 @@ document.addEventListener('DOMContentLoaded', () => {
 // 4 fundos ativos: Gold, Oil, Finance (Jupiter Financial Innovation), Saude (Schroder Healthcare).
 const FUNDS = ['Gold','Oil','Finance','Saude','Energia'];
 
+// Ordem de VISUALIZAÇÃO dos fundos (pipeline + mensagem de fim de dia). Separada da lista
+// mestre FUNDS (que nunca muda), para reordenar sem risco de perder ou duplicar fundos.
+// Guardada em localStorage 'fund-order'. Sempre validada contra FUNDS: fundos em falta na
+// ordem guardada são acrescentados no fim; entradas inválidas são descartadas.
+function fundOrder() {
+  let ord = [];
+  try { ord = JSON.parse(localStorage.getItem('fund-order') || '[]'); } catch(e) { ord = []; }
+  ord = (Array.isArray(ord) ? ord : []).filter(f => FUNDS.includes(f));
+  FUNDS.forEach(f => { if (!ord.includes(f)) ord.push(f); }); // completa com os que faltam
+  return ord;
+}
+function saveFundOrder(ord) {
+  const limpa = ord.filter(f => FUNDS.includes(f));
+  FUNDS.forEach(f => { if (!limpa.includes(f)) limpa.push(f); });
+  localStorage.setItem('fund-order', JSON.stringify(limpa));
+}
+
 // ── Hardcoded balances ──────────────────────────────────────────
 const BASE_BALANCES = {};  // dados vivem no estado.json (userEdits), não no código
 
@@ -2265,6 +2288,8 @@ function setBalance(key, value) {
   else state.userEdits[key] = n;
   saveLS();
   renderDailyTable();
+  // Atualiza o Capital Próprio automático (se a flag "forçar" não estiver ligada).
+  if (typeof syncCapitalProprio === 'function') { try { syncCapitalProprio(); } catch(e){} }
 }
 
 function bizDays(monthKey) {
@@ -2319,6 +2344,10 @@ function loadLS() {
     if (s.log)         state.log         = s.log;
     if (s.capital) document.getElementById('capital-global').value = s.capital;
     if (s.capitalProprio) { const cp = document.getElementById('capital-proprio'); if (cp) cp.value = s.capitalProprio; }
+    // Flag "forçar Capital Próprio" e sincronização com o último balanço do registo.
+    const forcarChk = document.getElementById('cap-proprio-forcar');
+    if (forcarChk) forcarChk.checked = localStorage.getItem('cap-proprio-forcar') === '1';
+    if (typeof syncCapitalProprio === 'function') { try { syncCapitalProprio(); } catch(e){} }
     if (s.lastRun) document.getElementById('last-run').value = fmtDate(s.lastRun);
     // Atualiza a data para hoje automaticamente se a guardada for anterior
     const todayIso = new Date().toISOString().slice(0,10);
@@ -2345,16 +2374,19 @@ function cv(v,avail) {
 
 function renderPipeline() {
   const testMode = document.getElementById('flag-test')?.checked;
-  document.getElementById('avail-body').innerHTML = FUNDS.map(f => {
+  const ordem = fundOrder();
+  document.getElementById('avail-body').innerHTML = ordem.map(f => {
     const r = state.rows[f];
+    // Puxador de arrasto (⠿) na primeira coluna — arrastar a linha reordena os fundos.
+    const nome = `<td draggable="true" ondragstart="pipeDragStart(event,'${f}')" ondragover="pipeDragOver(event)" ondrop="pipeDrop(event,'${f}')" ondragend="pipeDragEnd(event)" style="cursor:grab;user-select:none"><span style="color:var(--text3);margin-right:8px">⠿</span>${f}</td>`;
     // O disponível está sempre na coluna Disponível (D3). Num fundo de 2 dias, a coluna
     // Cativo+1 (D2) fica vazia porque o dinheiro salta-a — mas o valor cai sempre em Disponível.
     if (testMode) {
       // Modo teste: células editáveis, para corrigir o pipeline à mão sem avançar dias.
       const cell = (col) => `<td><input type="number" step="any" value="${r[col]||0}" onchange="setPipelineCell('${f}','${col}',this.value)" style="width:72px;text-align:right;font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);padding:3px 5px;outline:none"></td>`;
-      return `<tr><td>${f}</td>${cell('D')}${cell('D1')}${cell('D2')}${cell('D3')}${cell('resgate')}</tr>`;
+      return `<tr data-fund="${f}">${nome}${cell('D')}${cell('D1')}${cell('D2')}${cell('D3')}${cell('resgate')}</tr>`;
     }
-    return `<tr><td>${f}</td><td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
+    return `<tr data-fund="${f}">${nome}<td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
   }).join('');
   // Garante as etiquetas de valor+% por fundo e atualiza-as.
   if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
@@ -2362,7 +2394,73 @@ function renderPipeline() {
   if (typeof updCapitalEfetivo === 'function') { try { updCapitalEfetivo(); } catch(e){} }
 }
 
-// Calcula e mostra o resumo de capital do pipeline:
+// ── Reordenar fundos no pipeline (arrastar) ─────────────────────
+let _pipeDragFund = null;
+function pipeDragStart(ev, fundo) {
+  _pipeDragFund = fundo;
+  ev.dataTransfer.effectAllowed = 'move';
+  try { ev.dataTransfer.setData('text/plain', fundo); } catch(e){}
+  const tr = ev.target.closest('tr'); if (tr) tr.style.opacity = '0.4';
+}
+function pipeDragOver(ev) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'move'; }
+function pipeDragEnd(ev) {
+  const tr = ev.target.closest('tr'); if (tr) tr.style.opacity = '';
+}
+function pipeDrop(ev, alvo) {
+  ev.preventDefault();
+  const arrastado = _pipeDragFund;
+  _pipeDragFund = null;
+  if (!arrastado || arrastado === alvo) { renderPipeline(); return; }
+  const ordem = fundOrder();
+  const iDe = ordem.indexOf(arrastado);
+  const iPara = ordem.indexOf(alvo);
+  if (iDe < 0 || iPara < 0) return;
+  ordem.splice(iDe, 1);              // tira o arrastado
+  ordem.splice(iPara, 0, arrastado); // insere na posição do alvo
+  saveFundOrder(ordem);
+  renderPipeline();
+  appLog('Ordem dos fundos alterada: ' + ordem.join(' → '), 'info');
+}
+
+// Encontra o último balanço preenchido no registo diário (o valor mais recente),
+// percorrendo os meses do mais recente para trás. Considera as chaves EXPORT de fecho
+// de mês e os dias úteis. Devolve null se o registo estiver vazio.
+function ultimoBalanceRegisto() {
+  for (let i = CAP_MONTHS.length - 1; i >= 0; i--) {
+    const mk = CAP_MONTHS[i];
+    const days = bizDays(mk);
+    // Do último dia útil do mês para o primeiro.
+    for (let d = days.length - 1; d >= 0; d--) {
+      const b = getBalance(days[d]);
+      if (b !== null && !isNaN(b)) return b;
+    }
+    // Chave EXPORT do mês (fecho), caso os dias não estejam preenchidos.
+    const exp = getBalance(mk + '-EXPORT');
+    if (exp !== null && !isNaN(exp)) return exp;
+  }
+  return null;
+}
+
+// Preenche o Capital Próprio a partir do último balanço do registo, EXCETO quando a flag
+// "forçar" está ativa (aí o utilizador escreve o valor à mão e não se sobrepõe).
+function syncCapitalProprio() {
+  const forcar = document.getElementById('cap-proprio-forcar')?.checked;
+  const inp = document.getElementById('capital-proprio');
+  if (!inp) return;
+  if (forcar) { inp.readOnly = false; inp.style.opacity = '1'; return; }
+  const ultimo = ultimoBalanceRegisto();
+  if (ultimo !== null) inp.value = ultimo;
+  inp.readOnly = true;         // automático: não editável enquanto a flag estiver desligada
+  inp.style.opacity = '0.85';
+  if (typeof updCapitalEfetivo === 'function') updCapitalEfetivo();
+}
+
+// Chamado quando a flag "forçar Capital Próprio" muda.
+function toggleForcarProprio() {
+  const forcar = document.getElementById('cap-proprio-forcar')?.checked;
+  localStorage.setItem('cap-proprio-forcar', forcar ? '1' : '0');
+  syncCapitalProprio();
+}
 //  - Valor cativo total = tudo o que está investido (Subscrito + Cativo + Cativo+1 + Disponível D3),
 //    resgatável ou não — todo o dinheiro aplicado nos fundos.
 //  - Valor em resgate total = coluna Em resgate (dinheiro em processo de saída).
@@ -2898,8 +2996,9 @@ async function enviarFimDeDiaWhatsApp(resumoPorFundo) {
   const NOME = { Gold:'Gold', Oil:'Oil', Finance:'Finance', Saude:'Saúde', Energia:'Energia' };
   const linhas = ['🌙 Fim de dia — ' + new Date().toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})];
   linhas.push('');
-  // FUNDS é a ordem do pipeline: Gold, Oil, Finance, Saude, Energia.
-  FUNDS.forEach(f => {
+  // Segue a ORDEM DE VISUALIZAÇÃO do pipeline (fundOrder), para a mensagem ser sempre
+  // consistente com o que vês na tabela — mesmo depois de reordenares os fundos.
+  fundOrder().forEach(f => {
     const avancou = resumoPorFundo && resumoPorFundo[f] && resumoPorFundo[f].avancos > 0;
     const disp = (state.rows && state.rows[f]) ? (state.rows[f][availSlot(f)] || 0) : 0;
     const marca = avancou ? 'pipeline avançou' : 'sem alteração';
