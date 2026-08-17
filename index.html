@@ -340,7 +340,11 @@
           </div>
         </div>
         <div class="divider"></div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital disponível para investir</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital Próprio</div>
+        <div style="margin-bottom:10px;">
+          <input type="number" step="0.01" class="ai" id="capital-proprio" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" oninput="updCapitalEfetivo()">
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Capital Alavancado</div>
         <div style="margin-bottom:6px;">
           <input type="number" step="0.01" class="ai" id="capital-global" value="0" placeholder="0.00" style="width:100%;font-size:12px;margin-left:0;padding:4px 8px;" __gcruniqueid="6">
           <span id="capital-restante" style="display: none; color: var(--accent);">1&nbsp;000&nbsp;000,00</span>
@@ -473,6 +477,25 @@
         </tr></thead>
         <tbody id="avail-body"><tr><td>Gold</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Oil</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Finance</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Saúde</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr><tr><td>Energia</td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td><td><span class="v0">—</span></td></tr></tbody>
       </table>
+      <div style="padding:14px 18px;border-top:1px solid var(--border);font-family:var(--mono);font-size:12px">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--text2)">
+          <span>Valor cativo total <span style="color:var(--text3);font-size:10px">(investido)</span></span>
+          <span id="pipe-cativo-total" style="color:var(--text)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--text2)">
+          <span>Valor em resgate total</span>
+          <span id="pipe-resgate-total" style="color:var(--text)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 4px;margin-top:4px;border-top:1px solid var(--border2)">
+          <span style="color:var(--text2)">Capital Próprio</span>
+          <span id="pipe-proprio" style="color:var(--text)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--border2)">
+          <span style="color:var(--accent);font-weight:600">Valor efetivo p/ investimento</span>
+          <span id="pipe-efetivo" style="color:var(--accent);font-weight:600">—</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">Capital Próprio − (cativo total + resgate total)</div>
+      </div>
     </div>
 
     <!-- Registo diário -->
@@ -1859,34 +1882,9 @@
   </div>
 
   <!-- Image slots per fund (movido para o final do separador) -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0 1rem;align-items:stretch">
-    <div class="panel" style="min-height: 146px;height:100%;display:flex;flex-direction:column">
-      <div class="ph" style="background:rgba(245,197,66,0.06);border-bottom-color:rgba(245,197,66,0.2)">
-        <div class="dot" style="background:#f5c542"></div>
-        <span class="label" style="color:#f5c542">📷 Imagem Gold</span>
-      </div>
-      <div style="padding:10px;flex:1;display:flex;flex-direction:column">
-        <label style="display:block;border:1px dashed rgba(245,197,66,0.3);border-radius:4px;padding:10px;text-align:center;cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;display:flex;align-items:center;justify-content:center">
-          <div id="adv-thumb-gold">Carregar ou Ctrl+V</div>
-          <input type="file" class="adv-slot-input" data-key="gold" accept="image/*" style="display:none">
-        </label>
-        <button class="btn" style="margin-top:6px;font-size:10px;padding:6px;border-color:rgba(245,197,66,0.3);color:#f5c542" onclick="advExtractSlot('gold')">✦ Extrair → Advisor</button>
-      </div>
-    </div>
-    <div class="panel" style="min-height: 146px;height:100%;display:flex;flex-direction:column">
-      <div class="ph" style="background:rgba(148,163,184,0.06);border-bottom-color:rgba(148,163,184,0.2)">
-        <div class="dot" style="background:#94a3b8"></div>
-        <span class="label" style="color:#94a3b8">📷 Imagem Oil</span>
-      </div>
-      <div style="padding:10px;flex:1;display:flex;flex-direction:column">
-        <label style="display:block;border:1px dashed rgba(148,163,184,0.3);border-radius:4px;padding:10px;text-align:center;cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--text3);flex:1;display:flex;align-items:center;justify-content:center">
-          <div id="adv-thumb-oil">Carregar ou Ctrl+V</div>
-          <input type="file" class="adv-slot-input" data-key="oil" accept="image/*" style="display:none">
-        </label>
-        <button class="btn" style="margin-top:6px;font-size:10px;padding:6px;border-color:rgba(148,163,184,0.3);color:#94a3b8" onclick="advExtractSlot('oil')">✦ Extrair → Advisor</button>
-      </div>
-    </div>
-  </div>
+  <!-- Painéis de imagem (Gold/Oil) removidos: o scraping automático do servidor já
+       preenche os dados dos 5 fundos. As funções advExtractSlot/_advSlotImages ficam
+       no código, sem uso, caso se queira reativar a extração por imagem. -->
   <div id="adv-extract-result" style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:1rem"></div>
 
 </div>
@@ -2295,7 +2293,8 @@ function saveLS() {
       today: state.today, lastRun: state.lastRun, fundLastRun: state.fundLastRun, fundShiftRun: state.fundShiftRun,
       activeMonth: state.activeMonth, rows: state.rows,
       userEdits: state.userEdits, log: state.log.slice(0,30),
-      capital: document.getElementById('capital-global').value||'0'
+      capital: document.getElementById('capital-global').value||'0',
+      capitalProprio: document.getElementById('capital-proprio')?.value||'0'
     }));
   } catch(e){}
 }
@@ -2319,6 +2318,7 @@ function loadLS() {
     if (s.userEdits)   state.userEdits   = s.userEdits;
     if (s.log)         state.log         = s.log;
     if (s.capital) document.getElementById('capital-global').value = s.capital;
+    if (s.capitalProprio) { const cp = document.getElementById('capital-proprio'); if (cp) cp.value = s.capitalProprio; }
     if (s.lastRun) document.getElementById('last-run').value = fmtDate(s.lastRun);
     // Atualiza a data para hoje automaticamente se a guardada for anterior
     const todayIso = new Date().toISOString().slice(0,10);
@@ -2358,9 +2358,38 @@ function renderPipeline() {
   }).join('');
   // Garante as etiquetas de valor+% por fundo e atualiza-as.
   if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
+  // Atualiza o resumo de capital (cativo total, resgate total, valor efetivo).
+  if (typeof updCapitalEfetivo === 'function') { try { updCapitalEfetivo(); } catch(e){} }
 }
 
-// Escreve diretamente numa célula do pipeline (só usado no modo teste). Guarda e não
+// Calcula e mostra o resumo de capital do pipeline:
+//  - Valor cativo total = tudo o que está investido (Subscrito + Cativo + Cativo+1 + Disponível D3),
+//    resgatável ou não — todo o dinheiro aplicado nos fundos.
+//  - Valor em resgate total = coluna Em resgate (dinheiro em processo de saída).
+//  - Valor efetivo p/ investimento = Capital Próprio − (cativo total + resgate total).
+function updCapitalEfetivo() {
+  let cativo = 0, resgate = 0;
+  FUNDS.forEach(f => {
+    const r = state.rows[f] || {};
+    cativo  += (r.D||0) + (r.D1||0) + (r.D2||0) + (r.D3||0);
+    resgate += (r.resgate||0);
+  });
+  const proprio = parseFloat(document.getElementById('capital-proprio')?.value) || 0;
+  const efetivo = proprio - (cativo + resgate);
+
+  const setTxt = (id, val, color) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = fmtNum(val) + ' €';
+    if (color) el.style.color = color;
+  };
+  setTxt('pipe-cativo-total', cativo);
+  setTxt('pipe-resgate-total', resgate);
+  setTxt('pipe-proprio', proprio);
+  // Efetivo: verde se positivo, vermelho se negativo (comprometeste mais do que tens).
+  setTxt('pipe-efetivo', efetivo, efetivo < 0 ? 'var(--danger)' : 'var(--accent)');
+  return { cativo, resgate, proprio, efetivo };
+}
 // re-renderiza a tabela toda (para não perder o foco enquanto se editam vários campos).
 function setPipelineCell(fundo, col, valor) {
   if (!state.rows[fundo]) return;
@@ -2368,6 +2397,7 @@ function setPipelineCell(fundo, col, valor) {
   state.rows[fundo][col] = isNaN(v) ? 0 : v;
   saveLS();
   if (typeof updFundInfo === 'function') { try { updFundInfo(fundo); } catch(e){} }
+  if (typeof updCapitalEfetivo === 'function') { try { updCapitalEfetivo(); } catch(e){} }
   appLog('Modo teste: '+fundo+'.'+col+' = '+(isNaN(v)?0:v)+' (edição manual).','warn');
 }
 
@@ -2875,6 +2905,13 @@ async function enviarFimDeDiaWhatsApp(resumoPorFundo) {
     const marca = avancou ? 'pipeline avançou' : 'sem alteração';
     linhas.push((ICON[f]||'•') + ' ' + (NOME[f]||f) + ': ' + marca + ' · disponível p/ resgate ' + fmtNum(disp) + ' €');
   });
+  // Valor efetivo para investimento = Capital Próprio − (cativo total + resgate total).
+  try {
+    const cap = updCapitalEfetivo();
+    linhas.push('');
+    linhas.push('💰 Valor efetivo p/ investimento: ' + fmtNum(cap.efetivo) + ' €');
+    linhas.push('(cativo ' + fmtNum(cap.cativo) + ' € + resgate ' + fmtNum(cap.resgate) + ' €)');
+  } catch(e){}
   await enviarWhatsApp(linhas.join('\n'), 'Fim de dia');
 }
 
@@ -3610,7 +3647,8 @@ function avancarUmDia() {
 function exportData() {
   const snap={version:2,exported:new Date().toISOString(),today:state.today,lastRun:state.lastRun,fundLastRun:state.fundLastRun,fundShiftRun:state.fundShiftRun,
     activeMonth:state.activeMonth,rows:state.rows,userEdits:state.userEdits,log:state.log.slice(0,60),
-    capital:document.getElementById('capital-global').value||'0'};
+    capital:document.getElementById('capital-global').value||'0',
+    capitalProprio:document.getElementById('capital-proprio')?.value||'0'};
   const b=new Blob([JSON.stringify(snap,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(b); a.download=`fundos_${state.today||'export'}.json`; a.click();
@@ -4662,9 +4700,11 @@ const _newsAlertCounts = { gold: {fed:0, trump:0, fedItems:[], trumpItems:[]}, o
 
 // Início da janela de notícias: 21:00 do dia anterior (hora local).
 function newsWindowStart() {
+  // Janela alargada: últimas 48 horas. Antes era só desde as 21h de ontem, o que era
+  // curto demais e deixava de fora notícias de setor relevantes (energia, saúde), que
+  // não saem todos os dias. 48h dá mais notícias correlacionadas sem perder atualidade.
   const d = new Date();
-  d.setDate(d.getDate() - 1);
-  d.setHours(21, 0, 0, 0);
+  d.setHours(d.getHours() - 48);
   return d;
 }
 
@@ -4702,6 +4742,15 @@ async function loadNews(tab) {
     const category = categoryMap[tab] || 'general';
     const url = `https://finnhub.io/api/v1/news?category=${category}&token=${fhKey}`;
     const r   = await fetch(url);
+    // Diagnóstico claro: distinguir key inválida (401), limite atingido (429) e outros.
+    if (!r.ok) {
+      let motivo = 'Erro ' + r.status;
+      if (r.status === 401) motivo = 'Key do Finnhub inválida — verifica a key na Config.';
+      else if (r.status === 429) motivo = 'Limite de pedidos do Finnhub atingido — espera um pouco e tenta de novo.';
+      body.innerHTML = '<div style="padding:16px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--danger)">⚠ '+motivo+'</div>';
+      appLog('Notícias ('+tab+'): '+motivo,'err');
+      return;
+    }
     const data = await r.json();
 
     // Finnhub returns array or object with error
@@ -4736,7 +4785,15 @@ async function loadNews(tab) {
       return kws.some(k=>text.includes(k));
     }).slice(0,15);
 
-    const items = filtered.length ? filtered : inWindow.slice(0,15);
+    // Se houver poucas correlacionadas (a fonte nem sempre tem muitas de cada setor),
+    // completa com as notícias gerais mais recentes da janela, para o painel dar sempre
+    // contexto de mercado. As correlacionadas vêm primeiro.
+    let items = filtered;
+    if (filtered.length < 8) {
+      const extra = inWindow.filter(n => !filtered.includes(n)).slice(0, 8 - filtered.length);
+      items = filtered.concat(extra);
+    }
+    items = items.slice(0, 15);
     if (!items.length) {
       const desde = cutoffStart.toLocaleString('pt-PT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
       body.innerHTML = '<div style="padding:16px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3)">Sem notícias desde '+desde+'</div>';
