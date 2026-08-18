@@ -3010,6 +3010,21 @@ async function enviarFimDeDiaWhatsApp(resumoPorFundo) {
     linhas.push('');
     linhas.push('💰 Valor efetivo p/ investimento: ' + fmtNum(cap.efetivo) + ' €');
     linhas.push('(cativo ' + fmtNum(cap.cativo) + ' € + resgate ' + fmtNum(cap.resgate) + ' €)');
+    // Percentagem investida sobre o Capital Alavancado. Investido = tudo o que está aplicado
+    // MENOS o que está em resgate (o resgate já não conta como investido, está a sair).
+    let investido = 0, emResgate = 0;
+    FUNDS.forEach(f => {
+      const r = state.rows[f] || {};
+      investido += (r.D||0) + (r.D1||0) + (r.D2||0) + (r.D3||0);
+      emResgate += (r.resgate||0);
+    });
+    const alavancado = parseFloat(document.getElementById('capital-global')?.value) || 0;
+    if (alavancado > 0) {
+      const pct = (investido / alavancado) * 100;
+      linhas.push('');
+      linhas.push('📊 Investido: ' + pct.toFixed(1).replace('.', ',') + '% do capital alavancado');
+      linhas.push('(' + fmtNum(investido) + ' € de ' + fmtNum(alavancado) + ' €)');
+    }
   } catch(e){}
   await enviarWhatsApp(linhas.join('\n'), 'Fim de dia');
 }
@@ -5853,11 +5868,19 @@ function calcHoldingsScore(key) {
   const NEUTRAL_BAND = 0.10; // holdings entre -0,10% e +0,10% contam como NEUTRAS
   const details = [];
   holdings.forEach(h => {
-    // Usa a variação PÓS-MERCADO da holding. Sem pós-mercado → ignora a holding.
-    const acKey = key+'_ac_'+h.name;
-    const val = pmValues[acKey];
-    if (val !== undefined && val !== '' && !isNaN(parseFloat(val))) {
-      const v = parseFloat(val);
+    // Validação em cascata por holding: usa o PÓS-MERCADO (_ac_) se existir; se não houver,
+    // usa a VARIAÇÃO DO DIA (_h_); se nenhum existir, ignora a holding e passa à seguinte.
+    // Assim o sinal aproveita todos os dados disponíveis (à hora europeia o pós-mercado
+    // americano ainda não saiu, mas a variação do dia já existe) e não fica preso no neutro.
+    const acRaw  = pmValues[key+'_ac_'+h.name];   // pós-mercado
+    const dayRaw = pmValues[key+'_h_'+h.name];     // variação do dia
+    let v = null;
+    if (acRaw !== undefined && acRaw !== '' && !isNaN(parseFloat(acRaw))) {
+      v = parseFloat(acRaw);
+    } else if (dayRaw !== undefined && dayRaw !== '' && !isNaN(parseFloat(dayRaw))) {
+      v = parseFloat(dayRaw);
+    }
+    if (v !== null) {
       sumWeightedVar += v * h.weight;
       sumWeights += h.weight;
       // Banda neutra: só conta como positiva/negativa fora de ±0,10%.
@@ -5866,6 +5889,7 @@ function calcHoldingsScore(key) {
       else sumNeuWeight += h.weight;
       details.push({name: h.name, weight: h.weight, change: v});
     }
+    // Sem nenhum dos dois dados → holding ignorada (não entra no cálculo).
   });
   if (!sumWeights) return {score: null, weightedVar: null, coverage: 0, details: []};
   const weightedVar = sumWeightedVar / sumWeights;
