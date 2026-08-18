@@ -2419,6 +2419,7 @@ function pipeDrop(ev, alvo) {
   ordem.splice(iPara, 0, arrastado); // insere na posição do alvo
   saveFundOrder(ordem);
   renderPipeline();
+  if (typeof reordenarAdvisorTabs === 'function') reordenarAdvisorTabs(); // mantém o Advisor consistente
   appLog('Ordem dos fundos alterada: ' + ordem.join(' → '), 'info');
 }
 
@@ -7891,6 +7892,19 @@ function equalizeAdvisorColumns() {
 
 // Sub-abas do Advisor: mostra só o fundo selecionado, esconde os outros.
 const _ADV_CORES = { gold:'#f5c542', oil:'#94a3b8', finance:'#4ade80', saude:'#f472b6', energia:'#2dd4bf' };
+// Reordena os separadores de fundo do Advisor conforme a ordem de visualização do pipeline
+// (fundOrder), para tudo ficar consistente. Os botões têm data-advtab em minúsculas
+// (gold, oil...) e a fundOrder usa capitalizadas (Gold, Oil...) — mapeia-se por minúsculas.
+function reordenarAdvisorTabs() {
+  const cont = document.getElementById('advisor-fund-tabs');
+  if (!cont || typeof fundOrder !== 'function') return;
+  const ordem = fundOrder().map(f => f.toLowerCase()); // ['gold','oil',...]
+  ordem.forEach(key => {
+    const btn = cont.querySelector('[data-advtab="'+key+'"]');
+    if (btn) cont.appendChild(btn); // reposiciona no fim, pela ordem — fica ordenado
+  });
+}
+
 function selAdvisorFund(fund) {
   localStorage.setItem('advisor-fund', fund);
   // Mostra/esconde os painéis (sinal e pré-mercado) marcados com data-adv-fund.
@@ -7912,6 +7926,7 @@ function selAdvisorFund(fund) {
 
 function initAdvisor() {
   renderPremarketInputs();
+  reordenarAdvisorTabs(); // separadores na mesma ordem do pipeline
   // Reflete o estado guardado do toggle "Scraping visível".
   const svChk = document.getElementById('scraping-visivel-chk');
   if (svChk) { svChk.checked = scrapingVisivel(); toggleScrapingVisivel(svChk.checked); }
