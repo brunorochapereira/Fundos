@@ -772,6 +772,16 @@
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Agg SUM — todos os dias</span></div>
     <div style="padding:12px 16px"><canvas id="chart-agg" height="120"></canvas></div>
   </div>
+
+  <div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Concordância com o Advisor</span></div>
+    <div id="concordancia-body" style="padding:14px 18px"></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Acerto das ordens (cotação 23h)</span></div>
+    <div id="acerto-body" style="padding:14px 18px"></div>
+  </div>
 </div>
 <!-- /grid -->
 
@@ -873,6 +883,13 @@
             </div>
             <div id="backup-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.4"></div>
           </div>
+
+          <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border2)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Análise do Advisor</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Copia concordância, acerto das ordens, pesos do modelo e balanços, para analisar tendências e afinar o Advisor.</div>
+            <button class="btn" onclick="dumpAnalise()" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0;width:100%;font-size:10px">⧉ Copiar dump de análise</button>
+            <div id="dump-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.4"></div>
+          </div>
         </div>
       </div>
 
@@ -910,6 +927,14 @@
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-saude" checked onchange="onSchedChange()" style="accent-color:#f472b6">Saúde</label>
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-energia" checked onchange="onSchedChange()" style="accent-color:#2dd4bf">Energia</label>
           </div>
+
+          <div class="slabel">Análise de acerto (fim do dia)</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+            <input type="time" id="sched-time3" value="23:00" onchange="onSchedChange()" style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
+            <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t3-on" onchange="onSchedChange()" style="accent-color:var(--accent)">ativar</label>
+            <button class="btn" onclick="analisarAcertoOrdens()" style="margin-top:0;font-size:10px;padding:5px 10px;border-color:var(--border2);color:var(--text2)">▶ correr agora</button>
+          </div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:12px">Busca a cotação dos 5 fundos e avalia as ordens da manhã do dia útil anterior (a cotação de hoje reflete a sessão anterior).</div>
 
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
             <input type="checkbox" id="sched-weekdays" checked onchange="onSchedChange()" style="width:16px;height:16px;accent-color:var(--accent)">
@@ -2916,6 +2941,17 @@ function nextBusinessDay(fromDate, fundKey) {
 
 function isoOf(d) { return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
 
+// Dia útil ANTERIOR ao dado (usa o calendário do fundo, como o nextBusinessDay).
+function prevBusinessDay(fromDate, fundKey) {
+  const d = new Date(fromDate);
+  let guard = 0;
+  do {
+    d.setDate(d.getDate() - 1);
+    guard++;
+  } while (!isBusinessDay(d, fundKey) && guard < 10);
+  return d;
+}
+
 // Avança automaticamente, POR FUNDO, todos os dias úteis em falta desde o último
 // dia confirmado desse fundo. Um fundo em dia não é tocado, mesmo que o outro esteja
 // atrasado — cada fundo só avança o que lhe falta a ele.
@@ -3670,6 +3706,337 @@ function initAutoAdvance() {
 //
 // targetDateIso: dia a processar (por defeito, hoje real). forcar: ignora o bloqueio de
 // "já confirmado hoje" — usado só pelo avanço automático ao recuperar vários dias em falta.
+// ── Sinal congelado no cutoff ───────────────────────────────────
+// O sinal usado para a concordância é o ÚLTIMO calculado ANTES do cutoff do fundo, nesse
+// dia. Guarda-se em localStorage 'advisor-sinal-dia' {dia_fundo: {signal,score}}. Enquanto
+// não passou o cutoff, cada cálculo atualiza (fica com o mais recente da manhã). Depois do
+// cutoff, não atualiza (fica congelado) — assim, correr o scraping à tarde só para ver o
+// mercado não altera o sinal oficial do dia nem a análise de concordância.
+function congelarSinalSeAntesCutoff(key) {
+  try {
+    const cutoff = (typeof CUTOFFS !== 'undefined') ? CUTOFFS[key] : null;
+    if (!cutoff) return;
+    if (isCutoffPassed(cutoff)) return; // já passou o cutoff → não mexe no sinal congelado
+    const sig = calcAdvisorSignal(key);
+    if (!sig || !sig.signal) return;
+    const dia = todayStr();
+    let store = {};
+    try { store = JSON.parse(localStorage.getItem('advisor-sinal-dia') || '{}'); } catch(e) { store = {}; }
+    store[dia + '_' + key] = { signal: sig.signal, score: (sig.score!=null?Math.round(sig.score):null), ts: new Date().toISOString() };
+    localStorage.setItem('advisor-sinal-dia', JSON.stringify(store));
+  } catch(e) {}
+}
+// Lê o sinal congelado de um fundo num dia. Se não houver (ex: nunca se calculou antes do
+// cutoff), devolve null — e quem chama decide o fallback.
+function getSinalCongelado(key, dia) {
+  try {
+    const store = JSON.parse(localStorage.getItem('advisor-sinal-dia') || '{}');
+    return store[dia + '_' + key] || null;
+  } catch(e) { return null; }
+}
+
+// ── Dump de dados para análise do Advisor ───────────────────────
+// Reúne tudo o que é preciso para analisar tendências e afinar o modelo:
+// concordância (segui o Advisor?), acerto (as ordens deram lucro?), sinais congelados,
+// pesos do modelo por fundo, e o histórico de balanços. Copiado para a área de
+// transferência em JSON, para colar numa conversa de análise.
+function dumpAnalise() {
+  const ler = (k, def) => { try { return JSON.parse(localStorage.getItem(k) || def); } catch(e) { return JSON.parse(def); } };
+
+  const concordancia = ler('advisor-concordancia', '[]');
+  const acerto       = ler('advisor-acerto', '[]');
+  const sinaisDia    = ler('advisor-sinal-dia', '{}');
+
+  // Pesos do modelo por fundo (o que está a ser usado no cálculo).
+  const configs = {};
+  FUNDS.forEach(f => {
+    const key = f.toLowerCase();
+    try { configs[key] = (typeof loadAdvisorConfig === 'function') ? loadAdvisorConfig(key) : null; } catch(e) { configs[key] = null; }
+  });
+
+  // Cruzamento por fundo: concordância vs acerto (o essencial para afinar o modelo).
+  const porFundo = {};
+  FUNDS.forEach(f => {
+    const c = concordancia.filter(r => r.fundo === f);
+    const a = acerto.filter(r => r.fundo === f);
+    const cSeguiu = c.filter(r => r.concorda);
+    const aAcertou = a.filter(r => r.acertou);
+    // Quando seguiu o Advisor, acertou? (cruza pelos dias)
+    const diasSeguiu = new Set(cSeguiu.map(r => r.dia));
+    const acertoQuandoSeguiu = a.filter(r => diasSeguiu.has(r.diaOrdem));
+    porFundo[f] = {
+      decisoes: c.length,
+      seguiuAdvisor: cSeguiu.length,
+      pctSeguiu: c.length ? Math.round(cSeguiu.length / c.length * 100) : null,
+      ordensAvaliadas: a.length,
+      acertos: aAcertou.length,
+      pctAcerto: a.length ? Math.round(aAcertou.length / a.length * 100) : null,
+      retornoMedioPct: a.length ? +(a.reduce((s,r)=>s+(r.aj>0?r.varPct:-r.varPct),0)/a.length).toFixed(3) : null,
+      quandoSeguiuAdvisor: {
+        ordens: acertoQuandoSeguiu.length,
+        acertos: acertoQuandoSeguiu.filter(r=>r.acertou).length,
+        retornoMedioPct: acertoQuandoSeguiu.length ? +(acertoQuandoSeguiu.reduce((s,r)=>s+(r.aj>0?r.varPct:-r.varPct),0)/acertoQuandoSeguiu.length).toFixed(3) : null
+      }
+    };
+  });
+
+  const dump = {
+    gerado: new Date().toISOString(),
+    nota: 'Dump do dashboard Fundos para análise do modelo Advisor.',
+    resumoPorFundo: porFundo,
+    pesosModelo: configs,
+    cutoffs: FUNDS.reduce((o,f)=>{ o[f.toLowerCase()] = (typeof CUTOFFS!=='undefined') ? CUTOFFS[f.toLowerCase()] : null; return o; }, {}),
+    settlement: FUNDS.reduce((o,f)=>{ o[f] = (typeof getSettlementDays==='function') ? getSettlementDays(f) : null; return o; }, {}),
+    registos: { concordancia, acerto, sinaisPorDia: sinaisDia },
+    balancos: state.userEdits || {},
+    pipelineAtual: state.rows || {}
+  };
+
+  const txt = JSON.stringify(dump, null, 2);
+  // Copiar para a área de transferência (com fallback para descarregar ficheiro).
+  const st = document.getElementById('dump-status');
+  navigator.clipboard.writeText(txt).then(() => {
+    if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Copiado para a área de transferência (' + (txt.length/1024).toFixed(1) + ' KB · ' + concordancia.length + ' decisões, ' + acerto.length + ' ordens avaliadas). Cola na conversa de análise.'; }
+    toast('Dump copiado ✓','ok');
+  }).catch(() => {
+    // Fallback: descarrega como ficheiro.
+    const b = new Blob([txt], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'fundos_dump_'+todayStr()+'.json'; a.click();
+    if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Descarregado como ficheiro (a cópia direta falhou).'; }
+  });
+  return dump;
+}
+
+// ── Análise de acerto das ordens (cotação das 23h) ──────────────
+// Às 23h corre-se um scraping leve (/funds) que traz a variação do NAV de cada fundo.
+// IMPORTANTE (definido com o utilizador): a data que o site reporta ("Data NAV") vem
+// desfasada — a cotação capturada às 23h do dia N conta como sendo do dia N.
+// Essa cotação avalia a ORDEM dada na manhã do dia útil ANTERIOR (N-1), porque a ordem
+// dada antes do cutoff é executada ao NAV que só incorpora a sessão seguinte.
+// Regra de acerto: comprou + fundo valorizou → acertou; vendeu + fundo desvalorizou →
+// acertou; o inverso → errou. Sem ordem nesse dia, não há nada a avaliar.
+async function analisarAcertoOrdens(serverUrlBase) {
+  const statusEl = document.getElementById('sched-status');
+  try {
+    const base = serverUrlBase || (localStorage.getItem('server-url') || 'http://localhost:3004');
+    const url = (typeof comVisual === 'function') ? comVisual(base + '/funds') : (base + '/funds');
+    if (statusEl) { statusEl.style.color = 'var(--text3)'; statusEl.textContent = 'A buscar cotações dos fundos (23h)...'; }
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    const items = data.items || [];
+    if (!items.length) throw new Error('sem fundos na resposta');
+
+    // Data da CAPTURA (não a do site) — é esta que conta.
+    const diaCaptura = todayStr();
+    let avaliadas = 0;
+    const resumo = [];
+
+    items.forEach(it => {
+      // key do server: gold/oil/bank/health/energy → chave do dashboard
+      const MAP = { gold:'Gold', oil:'Oil', bank:'Finance', health:'Saude', energy:'Energia' };
+      const fundo = MAP[it.key] || null;
+      if (!fundo) return;
+      const varPct = parseServerPct(it.variation);
+      if (varPct === null) return; // sem cotação, não avalia
+
+      // Ordem da manhã do dia útil ANTERIOR ao da captura.
+      const diaOrdem = isoOf(prevBusinessDay(new Date(diaCaptura + 'T12:00:00'), fundo.toLowerCase()));
+      const ordem = getOrdemDoDia(fundo, diaOrdem);
+      if (!ordem || ordem.aj === 0) return; // sem ordem (ou não mexeu) → nada a avaliar
+
+      const comprou = ordem.aj > 0;
+      const acertou = comprou ? (varPct > 0) : (varPct < 0);
+      registarAcerto(fundo, diaOrdem, diaCaptura, ordem.aj, varPct, acertou);
+      avaliadas++;
+      resumo.push(fundo + ' ' + (comprou?'compra':'venda') + ' ' + (varPct>=0?'+':'') + varPct.toFixed(2) + '% → ' + (acertou?'acertou':'errou'));
+    });
+
+    appLog('Análise de acerto (' + diaCaptura + '): ' + avaliadas + ' ordem(ns) avaliada(s).' +
+           (resumo.length ? ' ' + resumo.join(' · ') : ''), 'ok');
+    if (statusEl) { statusEl.style.color = 'var(--accent)'; statusEl.textContent = 'Análise de acerto concluída: ' + avaliadas + ' ordem(ns).'; }
+    if (typeof renderAcerto === 'function') renderAcerto();
+    return avaliadas;
+  } catch(e) {
+    appLog('Erro na análise de acerto: ' + e.message, 'err');
+    if (statusEl) { statusEl.style.color = 'var(--danger)'; statusEl.textContent = 'Erro na análise de acerto: ' + e.message; }
+    return 0;
+  }
+}
+
+// Converte "+2,03%" / "-0,42%" em número. Devolve null se não houver valor.
+function parseServerPct(v) {
+  if (v === null || v === undefined || v === '' || v === 'n/a') return null;
+  const n = parseFloat(String(v).replace('%','').replace(',','.').trim());
+  return isNaN(n) ? null : n;
+}
+
+// Procura a ordem dada num fundo/dia (a partir do registo de concordância, que já guarda
+// o aj de cada confirmação).
+function getOrdemDoDia(fundo, dia) {
+  try {
+    const reg = JSON.parse(localStorage.getItem('advisor-concordancia') || '[]');
+    return reg.find(r => r.fundo === fundo && r.dia === dia) || null;
+  } catch(e) { return null; }
+}
+
+// Guarda o resultado da avaliação de uma ordem.
+function registarAcerto(fundo, diaOrdem, diaCotacao, aj, varPct, acertou) {
+  try {
+    let reg = [];
+    try { reg = JSON.parse(localStorage.getItem('advisor-acerto') || '[]'); } catch(e) { reg = []; }
+    reg = reg.filter(r => !(r.fundo === fundo && r.diaOrdem === diaOrdem)); // substitui
+    reg.push({ fundo, diaOrdem, diaCotacao, aj, varPct, acertou });
+    localStorage.setItem('advisor-acerto', JSON.stringify(reg));
+  } catch(e) {}
+}
+
+// Painel na aba Status: taxa de acerto das ordens (global e por fundo).
+function renderAcerto() {
+  const body = document.getElementById('acerto-body');
+  if (!body) return;
+  let reg = [];
+  try { reg = JSON.parse(localStorage.getItem('advisor-acerto') || '[]'); } catch(e) { reg = []; }
+  if (!reg.length) {
+    body.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3)">Ainda sem dados. Corre às 23h: compara a cotação do fundo com a ordem que deste na manhã do dia útil anterior.</div>';
+    return;
+  }
+  const total = reg.length;
+  const acertos = reg.filter(r => r.acertou).length;
+  const pct = (acertos / total) * 100;
+  // Ganho médio por ordem (a favor da direção da ordem).
+  const ganhoMedio = reg.reduce((s,r) => s + (r.aj > 0 ? r.varPct : -r.varPct), 0) / total;
+
+  const porFundo = {};
+  reg.forEach(r => {
+    if (!porFundo[r.fundo]) porFundo[r.fundo] = { total:0, acertos:0, soma:0 };
+    porFundo[r.fundo].total++;
+    if (r.acertou) porFundo[r.fundo].acertos++;
+    porFundo[r.fundo].soma += (r.aj > 0 ? r.varPct : -r.varPct);
+  });
+
+  const cor = p => p >= 60 ? 'var(--accent)' : p >= 40 ? '#e0a848' : 'var(--danger)';
+  const ordem = (typeof fundOrder === 'function') ? fundOrder() : Object.keys(porFundo);
+
+  let html = '<div style="font-family:var(--mono);margin-bottom:14px">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+    '<span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Taxa de acerto</span>' +
+    '<span style="font-size:22px;font-weight:600;color:'+cor(pct)+'">'+pct.toFixed(0)+'%</span></div>' +
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+acertos+' de '+total+' ordens a favor · média por ordem ' +
+    '<span style="color:'+(ganhoMedio>=0?'var(--accent)':'var(--danger)')+'">'+(ganhoMedio>=0?'+':'')+ganhoMedio.toFixed(2).replace('.',',')+'%</span></div></div>';
+
+  html += '<div style="font-family:var(--mono);font-size:11px">';
+  ordem.forEach(f => {
+    const d = porFundo[f];
+    if (!d) return;
+    const p = (d.acertos / d.total) * 100;
+    const media = d.soma / d.total;
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border2)">' +
+      '<span style="width:70px;color:var(--text2)">'+f+'</span>' +
+      '<div style="flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden">' +
+        '<div style="width:'+p.toFixed(0)+'%;height:100%;background:'+cor(p)+'"></div></div>' +
+      '<span style="width:38px;text-align:right;color:'+cor(p)+'">'+p.toFixed(0)+'%</span>' +
+      '<span style="width:58px;text-align:right;color:'+(media>=0?'var(--accent)':'var(--danger)')+';font-size:10px">'+(media>=0?'+':'')+media.toFixed(2).replace('.',',')+'%</span>' +
+      '<span style="width:44px;text-align:right;color:var(--text3);font-size:10px">'+d.acertos+'/'+d.total+'</span>' +
+    '</div>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+// ── Concordância com o Advisor ──────────────────────────────────
+// Ao confirmar a ordem de um fundo de manhã (logo após o Advisor correr), regista se a
+// decisão do utilizador concordou com o sinal do Advisor. Regra:
+//   COMPRA + subscreveu (aj>0)  → concorda
+//   VENDA  + resgatou  (aj<0)   → concorda
+//   NEUTRO + não mexeu (aj==0)  → concorda
+//   qualquer outra combinação   → discorda (inclui não agir quando havia sinal)
+// Guardado em localStorage 'advisor-concordancia' como lista de registos por dia+fundo.
+function classificarAcao(aj) {
+  if (aj > 0) return 'COMPRA';
+  if (aj < 0) return 'VENDA';
+  return 'NEUTRO';
+}
+function registarConcordancia(fundo, aj, dia) {
+  try {
+    const key = fundo.toLowerCase();
+    // Usa o sinal CONGELADO no cutoff (o oficial do dia), não o sinal do momento — para que
+    // correr o scraping mais tarde (só para ver o mercado) não afete a comparação.
+    let sig = getSinalCongelado(key, dia);
+    // Fallback: se ainda não há sinal congelado (ex: confirmaste antes de qualquer cálculo),
+    // congela agora (se ainda antes do cutoff) e usa o do momento.
+    if (!sig) {
+      congelarSinalSeAntesCutoff(key);
+      sig = getSinalCongelado(key, dia);
+    }
+    if (!sig) {
+      const atual = (typeof calcAdvisorSignal === 'function') ? calcAdvisorSignal(key) : null;
+      if (atual && atual.signal) sig = { signal: atual.signal, score: (atual.score!=null?Math.round(atual.score):null) };
+    }
+    if (!sig || !sig.signal) return; // sem sinal do Advisor, não há o que comparar
+    const acao = classificarAcao(aj);
+    const concorda = (acao === sig.signal);
+    let reg = [];
+    try { reg = JSON.parse(localStorage.getItem('advisor-concordancia') || '[]'); } catch(e) { reg = []; }
+    // Substitui se já houver registo deste fundo neste dia (só conta a decisão final).
+    reg = reg.filter(r => !(r.dia === dia && r.fundo === fundo));
+    reg.push({ dia, fundo, sinal: sig.signal, acao, concorda,
+               score: (sig.score!=null?sig.score:null), aj });
+    localStorage.setItem('advisor-concordancia', JSON.stringify(reg));
+    appLog('Concordância ' + fundo + ': Advisor=' + sig.signal + ' · ação=' + acao +
+           ' → ' + (concorda ? 'concorda' : 'discorda'), concorda ? 'ok' : 'warn');
+  } catch(e) { appLog('Erro a registar concordância de '+fundo+': '+e.message, 'warn'); }
+}
+
+// Mostra a taxa de concordância acumulada (global e por fundo) na aba Status.
+function renderConcordancia() {
+  const body = document.getElementById('concordancia-body');
+  if (!body) return;
+  let reg = [];
+  try { reg = JSON.parse(localStorage.getItem('advisor-concordancia') || '[]'); } catch(e) { reg = []; }
+  if (!reg.length) {
+    body.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3)">Ainda sem dados. A concordância é registada quando confirmas as ordens de cada fundo de manhã, logo após o Advisor correr.</div>';
+    return;
+  }
+  const total = reg.length;
+  const concordou = reg.filter(r => r.concorda).length;
+  const pctGlobal = (concordou / total) * 100;
+
+  // Por fundo.
+  const porFundo = {};
+  reg.forEach(r => {
+    if (!porFundo[r.fundo]) porFundo[r.fundo] = { total:0, concordou:0 };
+    porFundo[r.fundo].total++;
+    if (r.concorda) porFundo[r.fundo].concordou++;
+  });
+
+  const cor = p => p >= 70 ? 'var(--accent)' : p >= 40 ? '#e0a848' : 'var(--danger)';
+  const ordem = (typeof fundOrder === 'function') ? fundOrder() : Object.keys(porFundo);
+
+  let html = '<div style="font-family:var(--mono);margin-bottom:14px">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+    '<span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Concordância global</span>' +
+    '<span style="font-size:22px;font-weight:600;color:'+cor(pctGlobal)+'">'+pctGlobal.toFixed(0)+'%</span></div>' +
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+concordou+' de '+total+' decisões seguiram o Advisor</div></div>';
+
+  html += '<div style="font-family:var(--mono);font-size:11px">';
+  ordem.forEach(f => {
+    const d = porFundo[f];
+    if (!d) return;
+    const p = (d.concordou / d.total) * 100;
+    html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--border2)">' +
+      '<span style="width:70px;color:var(--text2)">'+f+'</span>' +
+      '<div style="flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden">' +
+        '<div style="width:'+p.toFixed(0)+'%;height:100%;background:'+cor(p)+'"></div></div>' +
+      '<span style="width:38px;text-align:right;color:'+cor(p)+'">'+p.toFixed(0)+'%</span>' +
+      '<span style="width:52px;text-align:right;color:var(--text3);font-size:10px">'+d.concordou+'/'+d.total+'</span>' +
+    '</div>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
 function avancarFundoDia(fundo, targetDateIso, forcar) {
   const dia = targetDateIso || todayStr();
   const test = document.getElementById('flag-test')?.checked === true;
@@ -3687,6 +4054,8 @@ function avancarFundoDia(fundo, targetDateIso, forcar) {
   }
 
   addLog('─── ' + fundo + ': ordem ' + fmtDate(dia) + ' ───', '');
+  // Regista a concordância com o Advisor ANTES de aplicar (usa o aj da decisão da manhã).
+  registarConcordancia(fundo, aj, dia);
   // SÓ a ordem — o shift do pipeline já correu automaticamente à meia-noite.
   // A ordem atua sobre o disponível (D3) já maturado.
   aplicarOrdem(fundo, aj).forEach(l => addLog(l.msg, l.type));
@@ -3919,6 +4288,8 @@ function getWeekdayStats(days) {
 }
 
 function renderStatus() {
+  if (typeof renderConcordancia === 'function') renderConcordancia();
+  if (typeof renderAcerto === 'function') renderAcerto();
   const days = getAllDailyData().filter(d=>d.ret!==null);
   if (!days.length) {
     document.getElementById('kpi-top').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:16px">Sem dados suficientes.</div>';
@@ -3945,9 +4316,13 @@ function renderStatus() {
   const fV = v => fmtNum(v)+' €';
   const fC = v => v>=0?'pos':'neg';
 
+  // Valor médio diário em euros: média dos ganhos/perdas diários (os juros de cada dia).
+  // É o par em euros do "Avg Daily Return" (que está em percentagem).
+  const avgInt = ints.reduce((s,v)=>s+v,0)/ints.length;
+
   // KPI TOP ROW
   document.getElementById('kpi-top').innerHTML = [
-    {k:'Avg Daily Return', v:fP(avgRet), v2:'', cls:fC(avgRet)},
+    {k:'Avg Daily Return', v:fP(avgRet), v2:fV(avgInt), cls:fC(avgRet)},
     {k:'Max Daily Return', v:fP(maxRet), v2:fV(days[maxIntIdx].ints), cls:'pos'},
     {k:'Max Daily Loss',   v:fP(minRet), v2:fV(days[minIntIdx].ints), cls:'neg'},
     {k:'Cumulative Return',v:fP(cumRet), v2:'', cls:fC(cumRet)},
@@ -3974,11 +4349,11 @@ function renderStatus() {
       <thead><tr><th></th><th>Gross</th><th>Fee (10%)</th><th>PT Tax (28%)</th><th>All taxes</th><th>Net result</th></tr></thead>
       <tbody>${qdata.map(q=>`<tr>
         <td>${q.q}</td>
-        <td class="${q.gross>=0?'pos':'neg'}">${fI(q.gross)}</td>
-        <td>${fI(q.fee)}</td>
-        <td>${fI(q.ptTax)}</td>
-        <td>${fI(q.allTax)}</td>
-        <td class="${q.net>=0?'pos':'neg'}">${fI(q.net)}</td>
+        <td class="${q.gross>=0?'pos':'neg'}">${fmtNum(q.gross)} €</td>
+        <td>${fmtNum(q.fee)} €</td>
+        <td>${fmtNum(q.ptTax)} €</td>
+        <td>${fmtNum(q.allTax)} €</td>
+        <td class="${q.net>=0?'pos':'neg'}">${fmtNum(q.net)} €</td>
       </tr>`).join('')}</tbody>
     </table></div></div>`;
 
@@ -5550,13 +5925,14 @@ function onPmInput(el) {
 function recalcularSinal(key) {
   syncFieldsToPmValues();
   if (typeof renderAdvisorPanelDeep === 'function') renderAdvisorPanelDeep(key);
+  congelarSinalSeAntesCutoff(key); // guarda o sinal do dia se ainda antes do cutoff
   toast('Sinal '+key+' recalculado.','ok');
 }
 
 // Recalcula TODOS os sinais do Advisor (botão do topo) e avisa se faltam dados
 function recalcularAdvisor() {
   syncFieldsToPmValues();
-  const keys = ['gold','oil']; // Finance retirada do programa
+  const keys = ['gold','oil','finance','saude','energia'];
   const semDados = [];
   keys.forEach(key => {
     const r = calcAdvisorSignal(key);
@@ -5564,6 +5940,7 @@ function recalcularAdvisor() {
       semDados.push(key);
     }
     if (typeof renderAdvisorPanelDeep === 'function') renderAdvisorPanelDeep(key);
+    congelarSinalSeAntesCutoff(key); // guarda o sinal do dia se ainda antes do cutoff
   });
   if (semDados.length === keys.length) {
     toast('Sem dados suficientes para calcular. Preenche as variações no Advisor.','warn');
@@ -8668,6 +9045,8 @@ function schedReadUI() {
     time2: document.getElementById('sched-time2')?.value || '10:45',
     t1: { gold: document.getElementById('sched-t1-gold')?.checked || false, oil: document.getElementById('sched-t1-oil')?.checked || false, finance: document.getElementById('sched-t1-finance')?.checked || false, saude: document.getElementById('sched-t1-saude')?.checked || false, energia: document.getElementById('sched-t1-energia')?.checked || false },
     t2: { gold: document.getElementById('sched-t2-gold')?.checked || false, oil: document.getElementById('sched-t2-oil')?.checked || false, finance: document.getElementById('sched-t2-finance')?.checked || false, saude: document.getElementById('sched-t2-saude')?.checked || false, energia: document.getElementById('sched-t2-energia')?.checked || false },
+    time3: document.getElementById('sched-time3')?.value || '23:00',
+    t3on: document.getElementById('sched-t3-on')?.checked || false,
     weekdaysOnly: document.getElementById('sched-weekdays')?.checked || false,
     whatsapp: document.getElementById('sched-whatsapp')?.checked || false
   };
@@ -8680,6 +9059,8 @@ function schedApplyToUI(cfg) {
   val('sched-source', cfg.source);
   val('sched-time1', cfg.time1);
   val('sched-time2', cfg.time2);
+  val('sched-time3', cfg.time3 || '23:00');
+  set('sched-t3-on', cfg.t3on || false);
   set('sched-t1-gold', cfg.t1.gold); set('sched-t1-oil', cfg.t1.oil); set('sched-t1-finance', cfg.t1.finance !== false); set('sched-t1-saude', cfg.t1.saude !== false); set('sched-t1-energia', cfg.t1.energia !== false);
   set('sched-t2-gold', cfg.t2.gold); set('sched-t2-oil', cfg.t2.oil); set('sched-t2-finance', cfg.t2.finance !== false); set('sched-t2-saude', cfg.t2.saude !== false); set('sched-t2-energia', cfg.t2.energia !== false);
   set('sched-weekdays', cfg.weekdaysOnly);
@@ -8726,6 +9107,15 @@ function schedTick() {
 
   if (cur === cfg.time1) schedFire(dayKey+' '+cfg.time1, cfg.source, cfg.t1);
   if (cur === cfg.time2) schedFire(dayKey+' '+cfg.time2, cfg.source, cfg.t2);
+  // 3.º horário: análise de acerto (cotação dos fundos vs ordens do dia útil anterior).
+  if (cfg.t3on && cfg.time3 && cur === cfg.time3) {
+    const stamp3 = dayKey+' '+cfg.time3+' acerto';
+    if (!_schedLastFired[stamp3]) {
+      _schedLastFired[stamp3] = true;
+      const base = (cfg.source === 'remote' && typeof REMOTE_URL !== 'undefined') ? REMOTE_URL : 'http://localhost:3004';
+      analisarAcertoOrdens(base).catch(e => appLog('Erro na análise de acerto agendada: '+e.message,'err'));
+    }
+  }
 
   // Heartbeat: se passou o horário + margem e não houve disparo registado, avisa uma vez.
   checkSchedHeartbeat(dayKey, cfg.time1, now);
@@ -8812,11 +9202,18 @@ async function agendadorPosFetch(want) {
 
       // 3. Recalcular o sinal com tudo atualizado
       if (typeof recalcularSinal === 'function') { try { recalcularSinal(key); } catch(e) {} }
+      // Congela o sinal do dia se ainda antes do cutoff (para a análise de concordância).
+      if (typeof congelarSinalSeAntesCutoff === 'function') { try { congelarSinalSeAntesCutoff(key); } catch(e) {} }
 
-      // 4. Enviar a mensagem DESTE fundo, assim que está pronto
-      if (schedEl) { schedEl.textContent = nome+': a enviar WhatsApp...'; }
-      appLog('Pós-fetch '+nome+' concluído — a enviar WhatsApp.','ok');
-      await enviarAdvisorWhatsApp([key]);
+      // (Não envia por fundo — envia UMA mensagem no fim, com todos, para não encher o
+      //  WhatsApp de mensagens separadas.)
+      if (schedEl) { schedEl.textContent = nome+': pronto.'; }
+      appLog('Pós-fetch '+nome+' concluído.','ok');
+    }
+    // UMA só mensagem do Advisor, com todos os fundos processados.
+    if (funds.length) {
+      if (schedEl) { schedEl.textContent = 'A enviar resumo por WhatsApp...'; }
+      await enviarAdvisorWhatsApp(funds);
     }
     if (schedEl) { schedEl.style.color = 'var(--accent)'; schedEl.textContent = 'Pós-fetch concluído ('+funds.join('+')+') · WhatsApp enviado.'; }
   } catch(e) {
@@ -8920,37 +9317,42 @@ async function enviarAdvisorWhatsApp(fundsArg) {
   const CAP   = { gold:'Gold', oil:'Oil', finance:'Finance', saude:'Saúde', energia:'Energia' };
   const TODOS = ['gold','oil','finance','saude','energia'];
   const funds = Array.isArray(fundsArg) && fundsArg.length ? fundsArg : TODOS;
-  const cab = funds.length === 1
-    ? '🔔 Advisor ' + (NOMES[funds[0]] || funds[0].toUpperCase()) + ' — '
-    : '🔔 Advisor Fundos — ';
+  // Ordena pela ordem de visualização do pipeline, para consistência.
+  const ordenados = (typeof fundOrder === 'function')
+    ? fundOrder().map(f=>f.toLowerCase()).filter(k=>funds.includes(k))
+    : funds;
+  const cab = '🔔 Advisor — ';
   const linhas = [cab + new Date().toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})];
-  funds.forEach(key => {
+  linhas.push('');
+  // Ações resumidas por tipo de sinal.
+  const ACAO = { COMPRA:'comprar 10%', VENDA:'resgate', NEUTRO:'aguardar' };
+  ordenados.forEach(key => {
     const r = calcAdvisorSignal(key);
-    const nome = NOMES[key] || key.toUpperCase();
+    const nome = CAP[key] || key;
     const emoji = r.signal === 'COMPRA' ? '🟢' : r.signal === 'VENDA' ? '🔴' : '🟡';
     const scoreTxt = (r.score !== null && r.score !== undefined) ? Math.round(r.score) : '—';
-    linhas.push('');
-    linhas.push(emoji + ' ' + nome + ': ' + r.signal + ' (score ' + scoreTxt + ')');
-    if (r.action && r.action !== '—') linhas.push('→ ' + r.action);
-    // Se é VENDA (resgate), inclui o valor disponível para resgate desse fundo.
+    let linha = emoji + ' ' + nome + ': ' + r.signal + ' (' + scoreTxt + ') — ' + (ACAO[r.signal] || '');
+    // Numa VENDA, junta o valor disponível para resgate na mesma linha.
     if (r.signal === 'VENDA') {
       const rowKey = CAP[key] || key;
       const disp = (state.rows && state.rows[rowKey]) ? (state.rows[rowKey][availSlot(rowKey)] || 0) : 0;
-      linhas.push('💰 Disponível p/ resgate: ' + fmtNum(disp) + ' €');
+      linha += ' ' + fmtNum(disp) + ' €';
     }
-
-    // Alerta FOMC: próxima reunião a menos de 2 dias.
-    if (r.fedProx && !r.fedProx.inWindow && r.fedProx.daysTo !== null && r.fedProx.daysTo <= 2) {
-      linhas.push('🏛 FOMC em ' + r.fedProx.daysTo + 'd (' + r.fedProx.eventDate + ')');
-    }
-    // Alertas de notícias Fed/Trump: só a CONTAGEM (sem títulos nem URLs, que são longos e
-    // estouram o limite do CallMeBot com 5 fundos). O detalhe vê-se no painel de notícias.
-    const alerts = _newsAlertCounts[key] || {fed:0, trump:0};
-    const na = [];
-    if (alerts.fed > 0)   na.push('🏛 ' + alerts.fed + ' Fed');
-    if (alerts.trump > 0) na.push('🇺🇸 ' + alerts.trump + ' Trump');
-    if (na.length) linhas.push(na.join(' · '));
+    linhas.push(linha);
   });
+  // Alertas globais (FOMC, Fed, Trump) resumidos numa única linha no fim, se existirem.
+  let fedTotal = 0, trumpTotal = 0, fomc = null;
+  ordenados.forEach(key => {
+    const a = _newsAlertCounts[key] || {fed:0, trump:0};
+    fedTotal += a.fed || 0; trumpTotal += a.trump || 0;
+    const r = calcAdvisorSignal(key);
+    if (r.fedProx && !r.fedProx.inWindow && r.fedProx.daysTo !== null && r.fedProx.daysTo <= 2) fomc = r.fedProx;
+  });
+  const alertas = [];
+  if (fomc) alertas.push('🏛 FOMC em ' + fomc.daysTo + 'd');
+  if (fedTotal > 0) alertas.push('🏛 ' + fedTotal + ' Fed');
+  if (trumpTotal > 0) alertas.push('🇺🇸 ' + trumpTotal + ' Trump');
+  if (alertas.length) { linhas.push(''); linhas.push(alertas.join(' · ')); }
   let texto = linhas.join('\n');
   // Salvaguarda de tamanho: o CallMeBot corta mensagens muito longas (limite do URL).
   // Se passar de ~1400 caracteres, corta de forma limpa com aviso, em vez de o serviço
