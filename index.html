@@ -47,6 +47,18 @@
   header h1{font-family:var(--mono);font-size:15px;font-weight:500;letter-spacing:.04em}
   header span{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.08em}
   .grid{display:grid;grid-template-columns:320px 1fr;gap:1rem;align-items:start}
+  /* Controlo de ajuste segmentado, embutido em cada linha do pipeline. */
+  .seg{display:inline-flex;align-items:stretch;border:1px solid var(--border2);border-radius:6px;overflow:hidden;background:var(--bg);vertical-align:middle}
+  .seg button{border:0;background:transparent;font-family:var(--mono);cursor:pointer;padding:0 8px;font-size:14px;line-height:1;color:var(--text2)}
+  .seg button.mi{color:var(--danger);border-right:1px solid var(--border2)}
+  .seg button.pl{color:var(--accent);border-left:1px solid var(--border2)}
+  .seg button:hover{background:var(--surface2)}
+  .seg input.ai2{border:0;background:transparent;color:var(--text);font-family:var(--mono);font-size:12px;padding:4px 6px;text-align:right;outline:none;width:64px}
+  .allout{border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--mono);font-size:10px;padding:4px 7px;border-radius:6px;cursor:pointer;margin-left:5px;vertical-align:middle}
+  .allout:hover{border-color:var(--danger);color:var(--danger)}
+  .okc{border-radius:6px;background:transparent;cursor:pointer;font-family:var(--mono);font-size:13px;padding:4px 10px;line-height:1}
+  td.aj-cell,th.aj-cell{text-align:left;white-space:nowrap}
+  #avail-table td:first-child{white-space:nowrap}
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1rem}
   /* Em grids com align-items:stretch, a margem do painel quebra a igualdade de alturas
      (o stretch distribui altura+margem). Remover a margem nestes grids. */
@@ -356,96 +368,10 @@
           <span id="capital-restante" style="display: none; color: var(--accent);">1&nbsp;000&nbsp;000,00</span>
         </div>
         <div class="divider"></div>
-        <div class="slabel" style="margin-top:14px">Ajustes por fundo</div>
-        <div class="fblock" id="faj-Gold">
-      <div style="border:1px solid rgba(245,197,66,0.35);border-radius:6px;background:rgba(245,197,66,0.08);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#f5c542">●</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f5c542;letter-spacing:.06em">Gold</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f5c542">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Gold',1)">+2,5%</button>
-          <button class="bs mi" onclick="applyPct('Gold',-1)">-2,5%</button>
-          <button class="bs re" onclick="applyResgate('Gold')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Gold" value="0" placeholder="0.00" style="border-color:rgba(245,197,66,0.35);color:#f5c542" oninput="updRestante()">
-        </div>
-        <button class="btn" onclick="confirmarOrdemFundo('Gold')" id="btn-confirm-Gold" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(245,197,66,0.5);color:#f5c542;background:rgba(245,197,66,0.06)">✓ Confirmar Ouro (hoje)</button>
-      </div></div>
-        <div class="fblock" id="faj-Oil">
-      <div style="border:1px solid rgba(100,100,120,0.4);border-radius:6px;background:rgba(30,30,35,0.6);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#94a3b8">◆</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#94a3b8;letter-spacing:.06em">Oil</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#94a3b8">100&nbsp;000,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Oil',1)">+2,5%</button>
-          <button class="bs mi" onclick="applyPct('Oil',-1)">-2,5%</button>
-          <button class="bs re" onclick="applyResgate('Oil')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Oil" value="0" placeholder="0.00" style="border-color:rgba(100,100,120,0.4);color:#94a3b8" oninput="updRestante()">
-        </div>
-        <button class="btn" onclick="confirmarOrdemFundo('Oil')" id="btn-confirm-Oil" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(148,163,184,0.5);color:#94a3b8;background:rgba(148,163,184,0.06)">✓ Confirmar Petróleo (hoje)</button>
-      </div></div>
-        <div class="fblock" id="faj-Finance">
-      <div style="border:1px solid rgba(74,222,128,0.3);border-radius:6px;background:rgba(74,222,128,0.07);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#4ade80">▲</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#4ade80;letter-spacing:.06em">Finance</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#4ade80">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Finance',1)">+2,5%</button>
-          <button class="bs mi" onclick="applyPct('Finance',-1)">-2,5%</button>
-          <button class="bs re" onclick="applyResgate('Finance')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Finance" value="0" placeholder="0.00" style="border-color:rgba(74,222,128,0.3);color:#4ade80" oninput="updRestante()">
-        </div>
-        <button class="btn" onclick="confirmarOrdemFundo('Finance')" id="btn-confirm-Finance" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(74,222,128,0.5);color:#4ade80;background:rgba(74,222,128,0.06)">✓ Confirmar Finance (hoje)</button>
-      </div></div>
-        <div class="fblock" id="faj-Saude">
-      <div style="border:1px solid rgba(244,114,182,0.3);border-radius:6px;background:rgba(244,114,182,0.07);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#f472b6">✚</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#f472b6;letter-spacing:.06em">Saúde</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#f472b6">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Saude',1)">+2,5%</button>
-          <button class="bs mi" onclick="applyPct('Saude',-1)">-2,5%</button>
-          <button class="bs re" onclick="applyResgate('Saude')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Saude" value="0" placeholder="0.00" style="border-color:rgba(244,114,182,0.3);color:#f472b6" oninput="updRestante()">
-        </div>
-        <button class="btn" onclick="confirmarOrdemFundo('Saude')" id="btn-confirm-Saude" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(244,114,182,0.5);color:#f472b6;background:rgba(244,114,182,0.06)">✓ Confirmar Saúde (hoje)</button>
-      </div></div>
-        <div class="fblock" id="faj-Energia">
-      <div style="border:1px solid rgba(45,212,191,0.3);border-radius:6px;background:rgba(45,212,191,0.07);padding:10px 12px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:14px;color:#2dd4bf">⚡</span>
-            <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:#2dd4bf;letter-spacing:.06em">Energia</span>
-          </div>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--text3)">disp: <span style="color:#2dd4bf">0,00</span></span>
-        </div>
-        <div class="fbtns">
-          <button class="bs pl" onclick="applyPct('Energia',1)">+2,5%</button>
-          <button class="bs mi" onclick="applyPct('Energia',-1)">-2,5%</button>
-          <button class="bs re" onclick="applyResgate('Energia')">All-out</button>
-          <input type="number" step="0.01" class="ai" id="adj-Energia" value="0" placeholder="0.00" style="border-color:rgba(45,212,191,0.3);color:#2dd4bf" oninput="updRestante()">
-        </div>
-        <button class="btn" onclick="confirmarOrdemFundo('Energia')" id="btn-confirm-Energia" style="width:100%;margin-top:8px;font-size:10px;padding:7px;border-color:rgba(45,212,191,0.5);color:#2dd4bf;background:rgba(45,212,191,0.06)">✓ Confirmar Energia (hoje)</button>
-      </div></div>
-      <!-- 5 fundos ativos: Gold, Oil, Finance, Saude, Energia -->
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;line-height:1.5">+10%/-10% do total global. Resgate total retira tudo.<br>Limpos após execução.</div>
+        <!-- Ajustes movidos para dentro do pipeline (uma linha por fundo, mesma ordem). -->
+        <!-- 5 fundos ativos: Gold, Oil, Finance, Saude, Energia -->
         <button class="btn" id="btn-run" onclick="avancarUmDia()">▶ Avançar TODOS os fundos</button>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px;line-height:1.4">⚠ Avança Ouro e Petróleo ao mesmo tempo. Para confirmar só um, usa os botões "✓ Confirmar" acima.</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--warn);margin-top:4px;line-height:1.4">⚠ Avança os 5 fundos ao mesmo tempo. Para confirmar só um, usa o ✓ da linha desse fundo no pipeline.</div>
         <button class="btn" id="btn-gh-save" onclick="saveToGitHub()" style="border-color:#1e3a5f;color:#60a5fa;margin-top:8px">☁ Guardar no GitHub</button>
         <div id="gh-deploy-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:8px;line-height:1.5;min-height:14px"></div>
         <div class="divider" style="margin-top:14px"></div>
@@ -475,7 +401,9 @@
       <table id="avail-table">
         <thead><tr>
           <th></th>
-          <th>Subscrito<span class="sub">D</span></th>
+          <th class="aj-cell">Ajuste<span class="sub">passo 2,5%</span></th>
+          <th></th>
+          <th style="border-left:1px solid var(--border2)">Subscrito<span class="sub">D</span></th>
           <th>Cativo<span class="sub">D+1</span></th>
           <th>Cativo+1<span class="sub">D+2</span></th>
           <th>Disponível<span class="sub">D+3</span></th>
@@ -934,7 +862,14 @@
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t3-on" onchange="onSchedChange()" style="accent-color:var(--accent)">ativar</label>
             <button class="btn" onclick="analisarAcertoOrdens()" style="margin-top:0;font-size:10px;padding:5px 10px;border-color:var(--border2);color:var(--text2)">▶ correr agora</button>
           </div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:12px">Busca a cotação dos 5 fundos e avalia as ordens da manhã do dia útil anterior (a cotação de hoje reflete a sessão anterior).</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:6px">Busca a cotação dos 5 fundos e avalia as ordens da manhã do dia útil anterior (a cotação de hoje reflete a sessão anterior).</div>
+          <div id="acerto-exec-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.4;margin-bottom:8px"></div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">forçar ordens de</span>
+            <input type="date" id="acerto-forcar-dia" style="background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);font-family:var(--mono);font-size:10px;padding:4px 6px;outline:none">
+            <button class="btn" onclick="forcarAnaliseDia()" style="margin-top:0;font-size:10px;padding:5px 10px;border-color:var(--warn-dim);color:var(--warn)">avaliar</button>
+          </div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:12px">Recupera um dia falhado. A cotação vem do momento em que corres: se o fundo já publicou NAV novo, o valor não é o que se perdeu. Confirma pela Data NAV que aparece no log.</div>
 
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
             <input type="checkbox" id="sched-weekdays" checked onchange="onSchedChange()" style="width:16px;height:16px;accent-color:var(--accent)">
@@ -2283,7 +2218,25 @@ const state = {
 
 // ── Helpers ─────────────────────────────────────────────────────
 const pad2 = v => String(v).padStart(2,'0');
-const fmtNum = v => v.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2});
+// O locale pt-PT omite o separador de milhares em números de 4 dígitos (5666,30) mas
+// aplica-o a partir de 5 (14 279,08), o que fica visualmente inconsistente numa coluna.
+// useGrouping:'always' força o separador em todos; a salvaguarda cobre browsers antigos
+// que ignoram a opção, inserindo o espaço não separável (U+00A0) à mão.
+const _agrupaSempre = (() => {
+  try {
+    const s = (1234.5).toLocaleString('pt-PT',{useGrouping:'always',minimumFractionDigits:2});
+    return /\d[\s\u00A0\u202F]\d/.test(s); // "1 234,50" tem separador; "1234,50" não
+  } catch(e) { return false; }
+})();
+function fmtNum(v) {
+  const n = Number(v) || 0;
+  if (_agrupaSempre) return n.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:'always'});
+  const s = n.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const [int, dec] = s.split(',');
+  const sinal = int.startsWith('-') ? '-' : '';
+  const digitos = int.replace('-','').replace(/\u00A0/g,'');
+  return sinal + digitos.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0') + ',' + dec;
+}
 // Formato compacto: 100k€, 1.5M€, 250€. Remove .0 desnecessário.
 const fmtCompact = v => {
   const n = Number(v) || 0;
@@ -2296,7 +2249,7 @@ const fmtCompact = v => {
 };
 const fmtDate = iso => { if(!iso) return '—'; const [y,m,d]=iso.split('-'); return d+'/'+m+'/'+y; };
 const fmtPct = v => v===null ? '—' : (v*100).toFixed(4).replace('.',',')+' %';
-const fmtInt = v => Math.round(v).toLocaleString('pt-PT')+' €';
+const fmtInt = v => fmtNum(Math.round(v)) + ' €';
 const fI = fmtInt;
 const clrNum = v => v===null||v===0 ? 'var(--text3)' : v>0 ? 'var(--accent)' : 'var(--danger)';
 
@@ -2400,19 +2353,42 @@ function cv(v,avail) {
 function renderPipeline() {
   const testMode = document.getElementById('flag-test')?.checked;
   const ordem = fundOrder();
+  // Preserva os ajustes já introduzidos antes de recriar as linhas.
+  const ajGuardados = {};
+  FUNDS.forEach(f => { const el = document.getElementById('adj-'+f); if (el) ajGuardados[f] = lerAjuste(f); });
   document.getElementById('avail-body').innerHTML = ordem.map(f => {
     const r = state.rows[f];
-    // Puxador de arrasto (⠿) na primeira coluna — arrastar a linha reordena os fundos.
-    const nome = `<td draggable="true" ondragstart="pipeDragStart(event,'${f}')" ondragover="pipeDragOver(event)" ondrop="pipeDrop(event,'${f}')" ondragend="pipeDragEnd(event)" style="cursor:grab;user-select:none"><span style="color:var(--text3);margin-right:8px">⠿</span>${f}</td>`;
-    // O disponível está sempre na coluna Disponível (D3). Num fundo de 2 dias, a coluna
-    // Cativo+1 (D2) fica vazia porque o dinheiro salta-a — mas o valor cai sempre em Disponível.
+    const t = (typeof FUND_THEME !== 'undefined') ? FUND_THEME[f] : null;
+    const cor = t ? t.color : 'var(--text)';
+    const disp = r[availSlot(f)] || 0;
+    // Puxador de arrasto (⠿) + nome + disponível em pequeno.
+    const nome = `<td draggable="true" ondragstart="pipeDragStart(event,'${f}')" ondragover="pipeDragOver(event)" ondrop="pipeDrop(event,'${f}')" ondragend="pipeDragEnd(event)" style="cursor:grab;user-select:none">`+
+      `<span style="color:var(--text3);margin-right:8px">⠿</span>`+
+      `<span style="color:${cor};letter-spacing:.04em">${t?t.icon+' ':''}${f}</span>`+
+      `<span style="display:block;font-size:9px;color:var(--text3);margin-top:1px">disp. ${fmtNum(disp)} €</span></td>`;
+    // Controlo de ajuste (segmentado −[campo]+) + All-out.
+    const ajCell = `<td class="aj-cell">`+
+      `<span class="seg">`+
+        `<button class="mi" onclick="applyPct('${f}',-1)" title="−2,5%">−</button>`+
+        `<input class="ai2" id="adj-${f}" value="0" data-raw="0" inputmode="decimal" `+
+          `onfocus="ajFocus('${f}')" onblur="ajBlur('${f}')" oninput="ajInput('${f}')">`+
+        `<button class="pl" onclick="applyPct('${f}',1)" title="+2,5%">+</button>`+
+      `</span>`+
+      `<button class="allout" onclick="applyResgate('${f}')">All-out</button></td>`;
+    // Botão de confirmar (✓) com a cor do fundo.
+    const okCell = t ? `<td><button class="okc" id="btn-confirm-${f}" onclick="confirmarOrdemFundo('${f}')" title="Confirmar ${t.label} (hoje)" style="border:1px solid ${t.border};color:${t.color};background:${t.bg}">✓</button></td>`
+                     : `<td><button class="okc" onclick="confirmarOrdemFundo('${f}')">✓</button></td>`;
+    let dados;
     if (testMode) {
-      // Modo teste: células editáveis, para corrigir o pipeline à mão sem avançar dias.
-      const cell = (col) => `<td><input type="number" step="any" value="${r[col]||0}" onchange="setPipelineCell('${f}','${col}',this.value)" style="width:72px;text-align:right;font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);padding:3px 5px;outline:none"></td>`;
-      return `<tr data-fund="${f}">${nome}${cell('D')}${cell('D1')}${cell('D2')}${cell('D3')}${cell('resgate')}</tr>`;
+      const cell = (col, borda) => `<td${borda?' style="border-left:1px solid var(--border2)"':''}><input type="number" step="any" value="${r[col]||0}" onchange="setPipelineCell('${f}','${col}',this.value)" style="width:72px;text-align:right;font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);padding:3px 5px;outline:none"></td>`;
+      dados = cell('D',true)+cell('D1')+cell('D2')+cell('D3')+cell('resgate');
+    } else {
+      dados = `<td style="border-left:1px solid var(--border2)">${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td>`;
     }
-    return `<tr data-fund="${f}">${nome}<td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td></tr>`;
+    return `<tr data-fund="${f}">${nome}${ajCell}${okCell}${dados}</tr>`;
   }).join('');
+  // Repõe os ajustes preservados nos campos recriados.
+  FUNDS.forEach(f => { if (ajGuardados[f]) escreverAjuste(f, ajGuardados[f]); });
   // Garante as etiquetas de valor+% por fundo e atualiza-as.
   if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
   // Atualiza o resumo de capital (cativo total, resgate total, valor efetivo).
@@ -2533,6 +2509,67 @@ const FUND_THEME = {
   Saude:   { color:'#f472b6', bg:'rgba(244,114,182,0.07)', border:'rgba(244,114,182,0.3)', icon:'✚', label:'Saúde' },
   Energia: { color:'#2dd4bf', bg:'rgba(45,212,191,0.07)', border:'rgba(45,212,191,0.3)', icon:'⚡', label:'Energia' }
 };
+
+// ── Campo de ajuste: valor real vs texto compacto ───────────────
+// O campo mostra "20k" quando não está a ser editado, mas o valor verdadeiro fica sempre
+// em dataset.raw. Ler o texto diretamente com parseFloat daria 20 em vez de 20000, por
+// isso TODAS as leituras passam por lerAjuste().
+function ajCompacto(v) {
+  const n = Number(v) || 0;
+  if (n === 0) return '0';
+  const abs = Math.abs(n), sinal = n < 0 ? '-' : '';
+  const corta = x => x.toFixed(1).replace(/\.0$/,'').replace('.',',');
+  if (abs >= 1e6) return sinal + corta(abs/1e6) + 'M';
+  if (abs >= 1e3) return sinal + corta(abs/1e3) + 'k';
+  return sinal + (Number.isInteger(abs) ? abs : abs.toFixed(2).replace('.',','));
+}
+// Aceita "20k", "1,5M", "20 000,00", "-2500".
+function ajParse(txt) {
+  if (txt === null || txt === undefined) return 0;
+  let s = String(txt).trim().replace(/[\s\u00A0\u202F€]/g,'').replace(',','.');
+  if (!s) return 0;
+  let mult = 1;
+  const m = s.match(/^(-?[\d.]+)\s*([kKmM])$/);
+  if (m) { s = m[1]; mult = (m[2].toLowerCase() === 'k') ? 1e3 : 1e6; }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n * mult;
+}
+function lerAjuste(f) {
+  const el = document.getElementById('adj-'+f);
+  if (!el) return 0;
+  if (el === document.activeElement) return ajParse(el.value); // a editar: manda o texto
+  const raw = el.dataset ? el.dataset.raw : null;
+  return (raw !== undefined && raw !== null && raw !== '') ? (parseFloat(raw) || 0) : ajParse(el.value);
+}
+function escreverAjuste(f, valor) {
+  const el = document.getElementById('adj-'+f);
+  if (!el) return;
+  const n = Number(valor) || 0;
+  el.dataset.raw = String(n);
+  el.value = (el === document.activeElement) ? (n === 0 ? '' : String(n)) : ajCompacto(n);
+  if (typeof updRestante === 'function') updRestante();
+  if (typeof updFundInfo === 'function') { try { updFundInfo(f); } catch(e){} }
+}
+// Ao focar mostra o número por extenso (editável); ao sair volta ao compacto.
+function ajFocus(f) {
+  const el = document.getElementById('adj-'+f);
+  if (!el) return;
+  const n = lerAjuste(f);
+  el.value = n === 0 ? '' : String(n);
+  el.select();
+}
+function ajBlur(f) {
+  const el = document.getElementById('adj-'+f);
+  if (!el) return;
+  escreverAjuste(f, ajParse(el.value));
+}
+function ajInput(f) {
+  const el = document.getElementById('adj-'+f);
+  if (!el) return;
+  el.dataset.raw = String(ajParse(el.value));
+  if (typeof updRestante === 'function') updRestante();
+  if (typeof updFundInfo === 'function') { try { updFundInfo(f); } catch(e){} }
+}
 
 function renderAdj() {
   FUNDS.forEach(f => {
@@ -2658,7 +2695,7 @@ function renderDailyTable() {
 // ── Capital / ajustes ───────────────────────────────────────────
 function updRestante() {
   const g = parseFloat(document.getElementById('capital-global').value)||0;
-  const inv = FUNDS.reduce((s,f)=>{ const v=parseFloat(document.getElementById('adj-'+f)?.value)||0; return s+(v>0?v:0); },0);
+  const inv = FUNDS.reduce((s,f)=>{ const v=lerAjuste(f); return s+(v>0?v:0); },0);
   const r = g-inv;
   const el = document.getElementById('capital-restante');
   el.textContent = fmtNum(r);
@@ -2689,7 +2726,7 @@ function updFundInfo(f) {
   if (!span) { ensureFundInfoSpans(); span = document.getElementById('fundinfo-'+f); }
   if (!span) return;
   const g   = parseFloat(document.getElementById('capital-global').value)||0;
-  const val = parseFloat(document.getElementById('adj-'+f)?.value)||0;
+  const val = lerAjuste(f);
   if (!val) { span.textContent = ''; return; }
   const pct = g>0 ? (Math.abs(val)/g*100) : 0;
   const pctTxt = pct.toFixed(1).replace('.', ',') + '%';
@@ -2708,25 +2745,23 @@ function applyPct(f,dir) {
 }
 
 function doPct(f,pct) {
-  const inp = document.getElementById('adj-'+f);
   const g   = parseFloat(document.getElementById('capital-global').value)||0;
   if (g<=0) return;
   const step = parseFloat((g*Math.abs(pct)).toFixed(2));
-  const cur  = parseFloat(inp.value)||0;
+  const cur  = lerAjuste(f);
   if (pct>0) {
-    inp.value = parseFloat((cur+step).toFixed(2));
+    escreverAjuste(f, parseFloat((cur+step).toFixed(2)));
   } else {
     const disp = state.rows[f][availSlot(f)];
     if (Math.abs(cur)>=disp) { setStatus('Resgate máximo atingido — '+f,'err'); return; }
-    inp.value = Math.max(parseFloat((cur-step).toFixed(2)),-disp);
+    escreverAjuste(f, Math.max(parseFloat((cur-step).toFixed(2)),-disp));
   }
-  updRestante();
 }
 
 function applyResgate(f) {
   const d = state.rows[f][availSlot(f)];
   if (d<=0) return;
-  document.getElementById('adj-'+f).value = -d.toFixed(2);
+  escreverAjuste(f, -d);
   updRestante();
 }
 
@@ -3816,7 +3851,7 @@ function dumpAnalise() {
 // dada antes do cutoff é executada ao NAV que só incorpora a sessão seguinte.
 // Regra de acerto: comprou + fundo valorizou → acertou; vendeu + fundo desvalorizou →
 // acertou; o inverso → errou. Sem ordem nesse dia, não há nada a avaliar.
-async function analisarAcertoOrdens(serverUrlBase) {
+async function analisarAcertoOrdens(serverUrlBase, diaOrdemForcado) {
   const statusEl = document.getElementById('sched-status');
   try {
     const base = serverUrlBase || (localStorage.getItem('server-url') || 'http://localhost:3004');
@@ -3832,6 +3867,7 @@ async function analisarAcertoOrdens(serverUrlBase) {
     const diaCaptura = todayStr();
     let avaliadas = 0;
     const resumo = [];
+    const datasNav = [];
 
     items.forEach(it => {
       // key do server: gold/oil/bank/health/energy → chave do dashboard
@@ -3840,29 +3876,85 @@ async function analisarAcertoOrdens(serverUrlBase) {
       if (!fundo) return;
       const varPct = parseServerPct(it.variation);
       if (varPct === null) return; // sem cotação, não avalia
+      if (it.quoteDate) datasNav.push(it.quoteDate);
 
-      // Ordem da manhã do dia útil ANTERIOR ao da captura.
-      const diaOrdem = isoOf(prevBusinessDay(new Date(diaCaptura + 'T12:00:00'), fundo.toLowerCase()));
+      // Ordem da manhã do dia útil ANTERIOR ao da captura, ou o dia forçado à mão.
+      const diaOrdem = diaOrdemForcado || isoOf(prevBusinessDay(new Date(diaCaptura + 'T12:00:00'), fundo.toLowerCase()));
       const ordem = getOrdemDoDia(fundo, diaOrdem);
       if (!ordem || ordem.aj === 0) return; // sem ordem (ou não mexeu) → nada a avaliar
 
       const comprou = ordem.aj > 0;
       const acertou = comprou ? (varPct > 0) : (varPct < 0);
-      registarAcerto(fundo, diaOrdem, diaCaptura, ordem.aj, varPct, acertou);
+      registarAcerto(fundo, diaOrdem, diaCaptura, ordem.aj, varPct, acertou, !!diaOrdemForcado);
       avaliadas++;
       resumo.push(fundo + ' ' + (comprou?'compra':'venda') + ' ' + (varPct>=0?'+':'') + varPct.toFixed(2) + '% → ' + (acertou?'acertou':'errou'));
     });
 
-    appLog('Análise de acerto (' + diaCaptura + '): ' + avaliadas + ' ordem(ns) avaliada(s).' +
-           (resumo.length ? ' ' + resumo.join(' · ') : ''), 'ok');
-    if (statusEl) { statusEl.style.color = 'var(--accent)'; statusEl.textContent = 'Análise de acerto concluída: ' + avaliadas + ' ordem(ns).'; }
+    const navUnicas = [...new Set(datasNav)];
+    appLog('Análise de acerto (' + diaCaptura + (diaOrdemForcado ? ', ordens de ' + diaOrdemForcado + ' FORÇADO' : '') + '): ' +
+           avaliadas + ' ordem(ns) avaliada(s). Data NAV do site: ' + (navUnicas.join(', ') || 'n/d') +
+           (resumo.length ? ' · ' + resumo.join(' · ') : ''), 'ok');
+    if (statusEl) { statusEl.style.color = 'var(--accent)'; statusEl.textContent = 'Análise concluída: ' + avaliadas + ' ordem(ns). Data NAV: ' + (navUnicas.join(', ') || 'n/d'); }
+    registarExecAcerto({ ok:true, ts:new Date().toISOString(), dia:diaCaptura, avaliadas,
+                         origem: diaOrdemForcado ? 'forçado ('+diaOrdemForcado+')' : (serverUrlBase ? 'agendador' : 'manual'),
+                         navSite: navUnicas.join(', ') });
     if (typeof renderAcerto === 'function') renderAcerto();
     return avaliadas;
   } catch(e) {
     appLog('Erro na análise de acerto: ' + e.message, 'err');
     if (statusEl) { statusEl.style.color = 'var(--danger)'; statusEl.textContent = 'Erro na análise de acerto: ' + e.message; }
+    registarExecAcerto({ ok:false, ts:new Date().toISOString(), dia:todayStr(), erro:e.message, origem: serverUrlBase ? 'agendador' : 'manual' });
+    if (typeof renderAcerto === 'function') renderAcerto();
     return 0;
   }
+}
+
+// Corre a análise para um dia de ordens escolhido à mão. Serve para recuperar um dia em
+// que a execução das 23h falhou. AVISO: a cotação vem do momento em que se corre; se o
+// fundo já publicou um NAV novo entretanto, o valor não é o que se perdeu. A Data NAV que
+// o site devolve fica registada no log para se poder confirmar.
+async function forcarAnaliseDia() {
+  const inp = document.getElementById('acerto-forcar-dia');
+  const dia = inp && inp.value ? inp.value : null;
+  if (!dia) { toast('Escolhe o dia das ordens a avaliar.','err'); return; }
+  const n = await analisarAcertoOrdens(null, dia);
+  const st = document.getElementById('acerto-exec-status');
+  if (st) {
+    let exec = null;
+    try { exec = JSON.parse(localStorage.getItem('acerto-ultima-exec') || 'null'); } catch(e) {}
+    st.style.color = 'var(--warn)';
+    st.textContent = 'Forçado para ordens de ' + dia + ': ' + n + ' avaliada(s). Data NAV do site: ' +
+                     ((exec && exec.navSite) || 'n/d') + '. Confirma que corresponde ao dia que perdeste.';
+  }
+}
+
+// Guarda o resultado da última execução da análise (e um histórico curto), para se poder
+// confirmar mais tarde se correu às 23h, mesmo com a app fechada entretanto.
+function registarExecAcerto(info) {
+  try {
+    localStorage.setItem('acerto-ultima-exec', JSON.stringify(info));
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem('acerto-exec-hist') || '[]'); } catch(e) { hist = []; }
+    hist.push(info);
+    if (hist.length > 30) hist = hist.slice(-30);
+    localStorage.setItem('acerto-exec-hist', JSON.stringify(hist));
+  } catch(e) {}
+}
+
+// Descreve o estado da última execução, incluindo o caso de não ter corrido de todo.
+function estadoUltimaExecAcerto() {
+  let info = null;
+  try { info = JSON.parse(localStorage.getItem('acerto-ultima-exec') || 'null'); } catch(e) {}
+  const cfgT3 = (function(){ try { return JSON.parse(localStorage.getItem('sched-config')||'{}'); } catch(e){ return {}; } })();
+  if (!info) return { cor:'var(--text3)', txt: cfgT3.t3on ? 'Ainda não correu nenhuma vez.' : 'Análise automática desligada (ativa-a na Config).' };
+  const d = new Date(info.ts);
+  const quando = d.toLocaleString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  if (!info.ok) return { cor:'var(--danger)', txt:'Última tentativa ' + quando + ' falhou: ' + (info.erro||'erro') + '.' };
+  // Correu, mas há quanto tempo? Se já passaram mais de ~26h, provavelmente falhou uma execução.
+  const horas = (Date.now() - d.getTime())/3600000;
+  const base = 'Última execução ' + quando + ' (' + info.avaliadas + ' ordem(ns), ' + (info.origem||'') + ').';
+  if (cfgT3.t3on && horas > 26) return { cor:'var(--warn)', txt: base + ' Há ' + Math.floor(horas/24) + ' dia(s) que não corre: a app tem de estar aberta à hora marcada.' };
+  return { cor:'var(--accent)', txt: base };
 }
 
 // Converte "+2,03%" / "-0,42%" em número. Devolve null se não houver valor.
@@ -3882,12 +3974,12 @@ function getOrdemDoDia(fundo, dia) {
 }
 
 // Guarda o resultado da avaliação de uma ordem.
-function registarAcerto(fundo, diaOrdem, diaCotacao, aj, varPct, acertou) {
+function registarAcerto(fundo, diaOrdem, diaCotacao, aj, varPct, acertou, forcado) {
   try {
     let reg = [];
     try { reg = JSON.parse(localStorage.getItem('advisor-acerto') || '[]'); } catch(e) { reg = []; }
     reg = reg.filter(r => !(r.fundo === fundo && r.diaOrdem === diaOrdem)); // substitui
-    reg.push({ fundo, diaOrdem, diaCotacao, aj, varPct, acertou });
+    reg.push({ fundo, diaOrdem, diaCotacao, aj, varPct, acertou, forcado: !!forcado });
     localStorage.setItem('advisor-acerto', JSON.stringify(reg));
   } catch(e) {}
 }
@@ -3896,10 +3988,13 @@ function registarAcerto(fundo, diaOrdem, diaCotacao, aj, varPct, acertou) {
 function renderAcerto() {
   const body = document.getElementById('acerto-body');
   if (!body) return;
+  // Barra de estado da última execução (sempre visível, com ou sem dados).
+  const est = estadoUltimaExecAcerto();
+  const barra = '<div style="font-family:var(--mono);font-size:9px;color:'+est.cor+';padding:6px 8px;margin-bottom:12px;border:1px solid var(--border2);border-radius:6px;line-height:1.4">'+est.txt+'</div>';
   let reg = [];
   try { reg = JSON.parse(localStorage.getItem('advisor-acerto') || '[]'); } catch(e) { reg = []; }
   if (!reg.length) {
-    body.innerHTML = '<div style="font-family:var(--mono);font-size:11px;color:var(--text3)">Ainda sem dados. Corre às 23h: compara a cotação do fundo com a ordem que deste na manhã do dia útil anterior.</div>';
+    body.innerHTML = barra + '<div style="font-family:var(--mono);font-size:11px;color:var(--text3)">Ainda sem dados. Corre às 23h: compara a cotação do fundo com a ordem que deste na manhã do dia útil anterior.</div>';
     return;
   }
   const total = reg.length;
@@ -3919,7 +4014,7 @@ function renderAcerto() {
   const cor = p => p >= 60 ? 'var(--accent)' : p >= 40 ? '#e0a848' : 'var(--danger)';
   const ordem = (typeof fundOrder === 'function') ? fundOrder() : Object.keys(porFundo);
 
-  let html = '<div style="font-family:var(--mono);margin-bottom:14px">' +
+  let html = barra + '<div style="font-family:var(--mono);margin-bottom:14px">' +
     '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
     '<span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Taxa de acerto</span>' +
     '<span style="font-size:22px;font-weight:600;color:'+cor(pct)+'">'+pct.toFixed(0)+'%</span></div>' +
@@ -4046,7 +4141,7 @@ function avancarFundoDia(fundo, targetDateIso, forcar) {
     addLog(fundo + ': bloqueado — já confirmado em ' + fmtDate(dia) + '.', '');
     return false;
   }
-  const aj = parseFloat(document.getElementById('adj-'+fundo)?.value) || 0;
+  const aj = lerAjuste(fundo);
   if (aj < 0 && Math.abs(aj) > state.rows[fundo][availSlot(fundo)]) {
     toast(fundo + ': resgate excede o disponível (' + fmtNum(state.rows[fundo][availSlot(fundo)]) + '€).', 'err');
     addLog(fundo + ': resgate excede disponível — cancelado.', 'da');
@@ -4059,7 +4154,7 @@ function avancarFundoDia(fundo, targetDateIso, forcar) {
   // SÓ a ordem — o shift do pipeline já correu automaticamente à meia-noite.
   // A ordem atua sobre o disponível (D3) já maturado.
   aplicarOrdem(fundo, aj).forEach(l => addLog(l.msg, l.type));
-  const el = document.getElementById('adj-'+fundo); if (el) el.value = '0';
+  escreverAjuste(fundo, 0);
 
   state.fundLastRun[fundo] = dia;
   // Mantém o global sincronizado (usado pelo painel de saúde e pelo export) com a
@@ -4105,14 +4200,14 @@ function avancarUmDia() {
     return;
   }
   const ajs={};
-  FUNDS.forEach(f=>{ ajs[f]=parseFloat(document.getElementById('adj-'+f)?.value)||0; });
+  FUNDS.forEach(f=>{ ajs[f]=lerAjuste(f); });
   const erros=[];
   FUNDS.forEach(f=>{ if(ajs[f]<0&&Math.abs(ajs[f])>state.rows[f][availSlot(f)]) erros.push(`${f}: resgate excede disponível`); });
   if (erros.length) { erros.forEach(e=>addLog(e,'da')); setStatus('Erro — commit cancelado','err'); toast('Avançar dia cancelado: '+erros.join('; '),'err'); return; }
 
   addLog('─── execução: '+fmtDate(today)+' ───','');
   FUNDS.forEach(f=>processLinha(f,ajs[f]).forEach(l=>addLog(l.msg,l.type)));
-  FUNDS.forEach(f=>{ const el=document.getElementById('adj-'+f); if(el) el.value='0'; });
+  FUNDS.forEach(f=>escreverAjuste(f,0));
 
   state.lastRun=today;
   document.getElementById('last-run').value=fmtDate(today);
@@ -4178,7 +4273,7 @@ function exportPDF() {
     aggSum=p-1;
   }
   const fV=v=>v===null?'—':fmtNum(v)+' €';
-  const fP=v=>v===null?'—':(v*100).toFixed(4)+' %';
+  const fP=v=>v===null?'—':(v*100).toFixed(4).replace('.',',')+' %';
   const cl=v=>v===null?'':v>=0?'color:#16a34a':'color:#dc2626';
   const pipe=FUNDS.map(f=>{const r=state.rows[f];return`<tr><td>${f}</td><td>${r.D>0?fmtNum(r.D)+' €':'—'}</td><td>${r.D1>0?fmtNum(r.D1)+' €':'—'}</td><td>${r.D2>0?fmtNum(r.D2)+' €':'—'}</td><td style="color:#16a34a;font-weight:500">${r.D3>0?fmtNum(r.D3)+' €':'—'}</td><td style="color:#dc2626">${r.resgate>0?fmtNum(r.resgate)+' €':'—'}</td></tr>`;}).join('');
   document.getElementById('print-report').innerHTML=`
@@ -4433,7 +4528,7 @@ function renderAggChart(days) {
     ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
     ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='9px IBM Plex Mono,monospace';
     ctx.textAlign='right';
-    ctx.fillText((v*100).toFixed(2)+'%', pad.l-4, y+3);
+    ctx.fillText((v*100).toFixed(2).replace('.',',')+' %', pad.l-4, y+3);
   }
 
   // Zero line
@@ -4950,7 +5045,7 @@ async function loadWatchlist(key) {
       return `<tr style="${rowBg}">
         <td style="text-align:left;font-size:11px;${nameStyle}">${item.name}${tag}</td>
         <td style="font-size:11px">${p ? p.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:3}) : '—'}</td>
-        <td class="${cls}" style="font-size:11px">${pct!=null ? arrow+(pct>0?'+':'')+pct.toFixed(2)+'%' : '—'}</td>
+        <td class="${cls}" style="font-size:11px">${pct!=null ? arrow+(pct>0?'+':'')+pct.toFixed(2).replace('.',',')+' %' : '—'}</td>
       </tr>`;
     }).join('');
     // wl-last-update removed with Análise tab
@@ -6862,7 +6957,7 @@ function renderAdvisorPanel(key) {
       ${(() => { const acc = getAccuracyStats(key, 30); return acc ? `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">📊 Precisão (30d): ${acc.acc}% · ${acc.yes}✓ ${acc.no}✗ ${acc.par}≈ de ${acc.total}</div>` : ''; })()}
     </div>
     <div>
-      ${fmtFactor('Commodity/Benchmark', commScore, r.commodity!==null?(r.commodity>=0?'+':'')+parseFloat(r.commodity).toFixed(2)+'%':null, cfg.wCommodity)}
+      ${fmtFactor('Commodity/Benchmark', commScore, r.commodity!==null?(r.commodity>=0?'+':'')+parseFloat(r.commodity).toFixed(2).replace('.',',')+' %':null, cfg.wCommodity)}
       ${fmtFactor('Holdings ponderadas', r.holdings.score, hDetail, cfg.wHoldings)}
       ${fmtFactor('Notícias', r.news, null, cfg.wNews)}
     </div>
@@ -7447,7 +7542,7 @@ function renderLogTab() {
           <td style="padding:6px 10px;font-family:var(--mono);font-size:10px" class="${sCls}">${e.signal||'—'}</td>
           <td style="padding:6px 10px;font-family:var(--mono);font-size:10px">${e.score??'—'}</td>
           <td style="padding:6px 10px;font-family:var(--mono);font-size:10px" class="${vCls}">${vLabel}</td>
-          <td style="padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3)">${e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2)+'%':'—'}</td>
+          <td style="padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3)">${e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2).replace('.',',')+' %':'—'}</td>
           <td style="padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3)">${e.wCommodity||'—'}/${e.wHoldings||'—'}/${e.wNews||'—'}</td>
           <td style="padding:6px 10px;font-family:var(--mono);font-size:10px;color:var(--text3);max-width:200px">${e.reason||'—'}</td>
         </tr>`;
@@ -7529,7 +7624,7 @@ function exportFeedback() {
     md += `| Data | Fundo | Sinal | Score | Resultado | Commodity | Observação |\n|---|---|---|---|---|---|---|\n`;
     fb.forEach(e => {
       const v = e.verdict==='yes'?'✓':e.verdict==='no'?'✗':'≈';
-      const comm = e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2)+'%':'—';
+      const comm = e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2).replace('.',',')+' %':'—';
       md += `| ${e.ts||'—'} | ${(e.key||'').toUpperCase()} | ${e.signal||'—'} | ${e.score??'—'} | ${v} | ${comm} | ${e.reason||'—'} |\n`;
     });
 
@@ -7547,7 +7642,7 @@ function exportFeedback() {
     md += `\n## Log de sinais (últimos ${Math.min(log.length,20)})\n`;
     md += `| Data | Hora | Fundo | Sinal | Score | Commodity |\n|---|---|---|---|---|---|\n`;
     log.slice(0,20).forEach(e => {
-      const comm = e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2)+'%':'—';
+      const comm = e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2).replace('.',',')+' %':'—';
       md += `| ${e.date||'—'} | ${e.time||'—'} | ${(e.key||'').toUpperCase()} | ${e.signal||'—'} | ${e.score??'—'} | ${comm} |\n`;
     });
 
@@ -7573,7 +7668,7 @@ function renderSignalLog() {
       <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${e.key.toUpperCase()}</td>
       <td class="${sigCls}" style="font-family:var(--mono);font-size:10px;font-weight:500">${sigArrow}${e.signal}</td>
       <td style="font-family:var(--mono);font-size:10px">${e.score ?? '—'}</td>
-      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2)+'%':'—'}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${e.commodity!=null?(e.commodity>=0?'+':'')+parseFloat(e.commodity).toFixed(2).replace('.',',')+' %':'—'}</td>
       <td style="font-family:var(--mono);font-size:10px;color:var(--text3);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.action||'—'}</td>
     </tr>`;
   }).join('');
@@ -8638,11 +8733,11 @@ let _capMonth = '2026-01';
 // Formatação
 function capEur(v) {
   if (v===null || v===undefined || isNaN(v)) return '—';
-  return new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+  return fmtNum(v) + ' €'; // mesmo agrupamento do resto do dashboard
 }
 function capPct(v) {
   if (v===null || v===undefined || isNaN(v)) return '—';
-  return (v*100).toFixed(2)+'%';
+  return (v*100).toFixed(2).replace('.',',')+' %';
 }
 function capColor(v) { return (v<0) ? 'var(--danger)' : 'var(--text)'; }
 function capCell(v, fmt) {
@@ -9061,6 +9156,14 @@ function schedApplyToUI(cfg) {
   val('sched-time2', cfg.time2);
   val('sched-time3', cfg.time3 || '23:00');
   set('sched-t3-on', cfg.t3on || false);
+  // Estado da última execução da análise de acerto (na Config).
+  try {
+    const el = document.getElementById('acerto-exec-status');
+    if (el && typeof estadoUltimaExecAcerto === 'function') {
+      const e2 = estadoUltimaExecAcerto();
+      el.textContent = e2.txt; el.style.color = e2.cor;
+    }
+  } catch(e) {}
   set('sched-t1-gold', cfg.t1.gold); set('sched-t1-oil', cfg.t1.oil); set('sched-t1-finance', cfg.t1.finance !== false); set('sched-t1-saude', cfg.t1.saude !== false); set('sched-t1-energia', cfg.t1.energia !== false);
   set('sched-t2-gold', cfg.t2.gold); set('sched-t2-oil', cfg.t2.oil); set('sched-t2-finance', cfg.t2.finance !== false); set('sched-t2-saude', cfg.t2.saude !== false); set('sched-t2-energia', cfg.t2.energia !== false);
   set('sched-weekdays', cfg.weekdaysOnly);
@@ -9108,12 +9211,36 @@ function schedTick() {
   if (cur === cfg.time1) schedFire(dayKey+' '+cfg.time1, cfg.source, cfg.t1);
   if (cur === cfg.time2) schedFire(dayKey+' '+cfg.time2, cfg.source, cfg.t2);
   // 3.º horário: análise de acerto (cotação dos fundos vs ordens do dia útil anterior).
-  if (cfg.t3on && cfg.time3 && cur === cfg.time3) {
-    const stamp3 = dayKey+' '+cfg.time3+' acerto';
-    if (!_schedLastFired[stamp3]) {
-      _schedLastFired[stamp3] = true;
+  // Não exige coincidência exata do minuto: os temporizadores do browser são travados em
+  // separadores em segundo plano e uma verificação atrasada perderia o dia inteiro. Corre
+  // se já passou a hora marcada e ainda não correu hoje. A marca fica em disco, para
+  // sobreviver a recargas da página.
+  if (cfg.t3on && cfg.time3) {
+    const [h3, m3] = cfg.time3.split(':').map(Number);
+    const jaPassou = (now.getHours() > h3) || (now.getHours() === h3 && now.getMinutes() >= m3);
+    let marca = null;
+    try { marca = JSON.parse(localStorage.getItem('acerto-ultimo-dia') || 'null'); } catch(e) {}
+    // Repete no mesmo dia se a tentativa anterior falhou (servidor em baixo, por exemplo),
+    // até três vezes. Sem recuperação depois da meia-noite: a cotação capturada noutro dia
+    // não serve para avaliar as ordens deste, portanto um dia perdido fica perdido.
+    const jaFeito = marca && marca.dia === dayKey && (marca.ok || (marca.tentativas||0) >= 3);
+    if (jaPassou && !jaFeito) {
+      const tentativas = (marca && marca.dia === dayKey ? (marca.tentativas||0) : 0) + 1;
+      try { localStorage.setItem('acerto-ultimo-dia', JSON.stringify({dia:dayKey, ok:false, tentativas})); } catch(e) {}
       const base = (cfg.source === 'remote' && typeof REMOTE_URL !== 'undefined') ? REMOTE_URL : 'http://localhost:3004';
-      analisarAcertoOrdens(base).catch(e => appLog('Erro na análise de acerto agendada: '+e.message,'err'));
+      const atraso = (now.getHours()*60 + now.getMinutes()) - (h3*60 + m3);
+      if (atraso > 2) appLog('Análise de acerto disparada com ' + atraso + ' min de atraso (temporizador travado pelo browser).', 'warn');
+      analisarAcertoOrdens(base)
+        .then(() => {
+          // A função apanha os próprios erros e devolve 0, por isso confirma-se pelo
+          // registo da execução se correu mesmo bem.
+          let exec = null;
+          try { exec = JSON.parse(localStorage.getItem('acerto-ultima-exec') || 'null'); } catch(e) {}
+          const correu = !!(exec && exec.ok);
+          try { localStorage.setItem('acerto-ultimo-dia', JSON.stringify({dia:dayKey, ok:correu, tentativas})); } catch(e) {}
+          if (!correu && tentativas < 3) appLog('Análise de acerto falhou (tentativa '+tentativas+'/3); nova tentativa dentro de instantes.','warn');
+        })
+        .catch(e => appLog('Erro na análise de acerto agendada (tentativa '+tentativas+'/3): '+e.message,'err'));
     }
   }
 
