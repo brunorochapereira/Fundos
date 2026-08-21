@@ -1,6 +1,6 @@
 {
   "_comment": "Referência de holdings (top 10) dos 4 fundos. O dashboard lê daqui e atualiza aqui quando aceitares uma alteração detetada.",
-  "_updated": "2026-08-05",
+  "_updated": "2026-08-21",
   "gold": [
     {
       "name": "Discovery Silver",
@@ -15,6 +15,7 @@
       "weight": 7.12,
       "aliases": [
         "Coeur Mining",
+        "Coeur",
         "CDE"
       ]
     },
@@ -31,6 +32,7 @@
       "weight": 5.85,
       "aliases": [
         "Sprott Physical Gold and Silver Trust",
+        "Sprott Physical Gold and Silver",
         "Sprott Gold Silver",
         "CEF"
       ]
@@ -40,8 +42,8 @@
       "weight": 5.2,
       "aliases": [
         "Lundin Gold",
-        "LUG",
-        "Lundin Gold Inc"
+        "Lundin Gold Inc",
+        "LUG"
       ]
     },
     {
@@ -49,6 +51,7 @@
       "weight": 4.94,
       "aliases": [
         "First Majestic Silver",
+        "First Majestic",
         "AG"
       ]
     },
@@ -89,32 +92,25 @@
   ],
   "oil": [
     {
-      "name": "Exxon Mobil",
-      "weight": 9.68,
-      "aliases": [
-        "Exxon Mobil",
-        "XOM"
-      ]
-    },
-    {
       "name": "Chevron",
-      "weight": 9.62,
+      "weight": 9.37,
       "aliases": [
         "Chevron",
         "CVX"
       ]
     },
     {
-      "name": "Targa Resources",
-      "weight": 5.43,
+      "name": "Exxon Mobil",
+      "weight": 9.23,
       "aliases": [
-        "Targa Resources",
-        "TRGP"
+        "Exxon Mobil",
+        "Exxon",
+        "XOM"
       ]
     },
     {
       "name": "Williams Companies",
-      "weight": 5.36,
+      "weight": 5.55,
       "aliases": [
         "Williams",
         "Williams Companies",
@@ -123,16 +119,26 @@
     },
     {
       "name": "Alerian MLP Index ETN",
-      "weight": 4.88,
+      "weight": 5.43,
       "aliases": [
         "Alerian MLP",
         "Alerian MLP Ind",
+        "Alerian MLP Index ETN",
         "AMLP"
       ]
     },
     {
+      "name": "Targa Resources",
+      "weight": 5.38,
+      "aliases": [
+        "Targa Resources",
+        "Targa",
+        "TRGP"
+      ]
+    },
+    {
       "name": "Enbridge",
-      "weight": 4.72,
+      "weight": 4.85,
       "aliases": [
         "Enbridge",
         "ENB"
@@ -140,33 +146,35 @@
     },
     {
       "name": "ONEOK",
-      "weight": 4.69,
+      "weight": 4.56,
       "aliases": [
         "ONEOK",
         "OKE"
       ]
     },
     {
-      "name": "ConocoPhillips",
-      "weight": 4.63,
-      "aliases": [
-        "ConocoPhillips",
-        "COP"
-      ]
-    },
-    {
       "name": "DT Midstream",
-      "weight": 3.81,
+      "weight": 4.2,
       "aliases": [
         "DT Midstream",
         "DTM"
       ]
     },
     {
+      "name": "ConocoPhillips",
+      "weight": 4.19,
+      "aliases": [
+        "ConocoPhillips",
+        "Conoco",
+        "COP"
+      ]
+    },
+    {
       "name": "Plains GP Holdings",
-      "weight": 3.47,
+      "weight": 3.5,
       "aliases": [
         "Plains GP Holdings",
+        "Plains GP",
         "PAGP"
       ]
     }
@@ -174,41 +182,49 @@
   "finance": [
     {
       "name": "SK Hynix",
-      "weight": 5.95,
+      "weight": 5.45,
       "aliases": [
         "SK Hynix",
         "000660"
       ]
     },
     {
-      "name": "Samsung Electronics DR",
-      "weight": 5.3,
+      "name": "Barclays",
+      "weight": 4.86,
       "aliases": [
-        "Samsung",
-        "Samsung Electronics",
-        "Samsung Electronics DR"
+        "Barclays",
+        "BARC",
+        "BCS"
+      ]
+    },
+    {
+      "name": "Citigroup",
+      "weight": 4.76,
+      "aliases": [
+        "Citigroup",
+        "Citi"
+      ]
+    },
+    {
+      "name": "Santander",
+      "weight": 4.75,
+      "aliases": [
+        "Santander",
+        "Banco Santander",
+        "SAN"
       ]
     },
     {
       "name": "HSBC",
-      "weight": 5.02,
+      "weight": 4.58,
       "aliases": [
         "HSBC",
         "HSBA"
       ]
     },
     {
-      "name": "Santander",
-      "weight": 4.85,
-      "aliases": [
-        "Santander",
-        "SAN",
-        "Banco Santander"
-      ]
-    },
-    {
       "name": "UniCredit",
-      "weight": 4.77,
+      "weight": 4.53,
       "aliases": [
         "UniCredit",
         "UCG",
@@ -216,35 +232,29 @@
       ]
     },
     {
-      "name": "Citigroup",
-      "weight": 4.62,
+      "name": "Samsung Electronics DR",
+      "weight": 4.39,
       "aliases": [
-        "Citigroup",
-        "Citi",
-        "C"
+        "Samsung",
+        "Samsung Electronics",
+        "Samsung Electronics DR",
+        "Samsung Electronics Co Ltd DR"
       ]
     },
     {
-      "name": "Bank of Cyprus Holdings",
-      "weight": 4.59,
+      "name": "Taiwan Semiconductor Manufacturing",
+      "weight": 4.35,
       "aliases": [
-        "Bank of Cyprus",
-        "BOCHGRr",
-        "BOCH"
-      ]
-    },
-    {
-      "name": "Barclays",
-      "weight": 4.56,
-      "aliases": [
-        "Barclays",
-        "BCS",
-        "BARC"
+        "Taiwan Semiconductor Manufacturing",
+        "Taiwan Semiconductor Manufacturi",
+        "Taiwan Semiconductor",
+        "TSMC",
+        "2330"
       ]
     },
     {
       "name": "Erste Group Bank",
-      "weight": 4.33,
+      "weight": 4.32,
       "aliases": [
         "Erste",
         "Erste Bank",
@@ -253,18 +263,18 @@
       ]
     },
     {
-      "name": "NVIDIA",
-      "weight": 4.23,
+      "name": "BAWAG",
+      "weight": 4.25,
       "aliases": [
-        "NVIDIA",
-        "NVDA"
+        "BAWAG",
+        "BAWAG Group"
       ]
     }
   ],
   "saude": [
     {
       "name": "Johnson & Johnson",
-      "weight": 9.22,
+      "weight": 8.9,
       "aliases": [
         "Johnson & Johnson",
         "J&J",
@@ -273,7 +283,7 @@
     },
     {
       "name": "Eli Lilly",
-      "weight": 7.43,
+      "weight": 6.56,
       "aliases": [
         "Eli Lilly",
         "LLY"
@@ -281,7 +291,7 @@
     },
     {
       "name": "UnitedHealth Group",
-      "weight": 6.5,
+      "weight": 6.2,
       "aliases": [
         "UnitedHealth",
         "UnitedHealth Group",
@@ -289,16 +299,18 @@
       ]
     },
     {
-      "name": "AstraZeneca",
-      "weight": 5.06,
+      "name": "US Treasury Bills 0%",
+      "weight": 5.01,
       "aliases": [
-        "AstraZeneca",
-        "AZN"
+        "US Treasury Bills 0%",
+        "United States Treasury Bills 0%",
+        "Treasury Bills",
+        "US T-Bills"
       ]
     },
     {
       "name": "Thermo Fisher Scientific",
-      "weight": 3.35,
+      "weight": 4.07,
       "aliases": [
         "Thermo Fisher",
         "Thermo Fisher Scientific",
@@ -306,25 +318,16 @@
       ]
     },
     {
-      "name": "CVS Health",
-      "weight": 3.32,
+      "name": "AstraZeneca",
+      "weight": 4.03,
       "aliases": [
-        "CVS",
-        "CVS Health",
-        "CVS Health Corp"
-      ]
-    },
-    {
-      "name": "AbbVie",
-      "weight": 3.3,
-      "aliases": [
-        "AbbVie",
-        "ABBV"
+        "AstraZeneca",
+        "AZN"
       ]
     },
     {
       "name": "Merck & Co",
-      "weight": 3.24,
+      "weight": 3.29,
       "aliases": [
         "Merck",
         "Merck & Co",
@@ -333,60 +336,121 @@
       ]
     },
     {
-      "name": "GSK",
-      "weight": 2.66,
+      "name": "CVS Health",
+      "weight": 3.09,
       "aliases": [
-        "GSK",
-        "GSK plc",
-        "GlaxoSmithKline"
+        "CVS",
+        "CVS Health",
+        "CVS Health Corp"
       ]
     },
     {
-      "name": "Teva Pharmaceutical",
-      "weight": 2.44,
+      "name": "Stryker",
+      "weight": 3.07,
       "aliases": [
-        "Teva",
-        "Teva Pharmaceutical",
-        "TEVA"
+        "Stryker",
+        "SYK"
+      ]
+    },
+    {
+      "name": "AbbVie",
+      "weight": 3.06,
+      "aliases": [
+        "AbbVie",
+        "ABBV"
       ]
     }
   ],
   "energia": [
     {
+      "name": "US Treasury Bills 0%",
+      "weight": 6.0,
+      "aliases": [
+        "US Treasury Bills 0%",
+        "United States Treasury Bills 0%",
+        "Treasury Bills",
+        "US T-Bills"
+      ]
+    },
+    {
       "name": "Vestas Wind",
-      "weight": 5.7
+      "weight": 5.75,
+      "aliases": [
+        "Vestas Wind",
+        "Vestas",
+        "VWS"
+      ]
+    },
+    {
+      "name": "Nextpower",
+      "weight": 4.66,
+      "aliases": [
+        "Nextpower",
+        "NextPower"
+      ]
     },
     {
       "name": "EDP Renováveis",
-      "weight": 4.29
+      "weight": 4.48,
+      "aliases": [
+        "EDP Renováveis",
+        "EDP Renovaveis",
+        "EDPR"
+      ]
     },
     {
       "name": "First Solar",
-      "weight": 4.05
-    },
-    {
-      "name": "NexTracker",
-      "weight": 3.62
-    },
-    {
-      "name": "Itron",
-      "weight": 3.38
+      "weight": 4.33,
+      "aliases": [
+        "First Solar",
+        "FSLR"
+      ]
     },
     {
       "name": "Redeia Corporación",
-      "weight": 3.37
-    },
-    {
-      "name": "Enphase Energy",
-      "weight": 2.99
-    },
-    {
-      "name": "Elia System Operator",
-      "weight": 2.82
+      "weight": 3.91,
+      "aliases": [
+        "Redeia Corporación",
+        "Redeia Corporacion",
+        "Redeia",
+        "RED"
+      ]
     },
     {
       "name": "Landis+Gyr",
-      "weight": 2.69
+      "weight": 3.16,
+      "aliases": [
+        "Landis+Gyr",
+        "Landis Gyr",
+        "LAND"
+      ]
+    },
+    {
+      "name": "Itron",
+      "weight": 3.15,
+      "aliases": [
+        "Itron",
+        "ITRI"
+      ]
+    },
+    {
+      "name": "Enphase Energy",
+      "weight": 2.86,
+      "aliases": [
+        "Enphase Energy",
+        "Enphase",
+        "ENPH"
+      ]
+    },
+    {
+      "name": "Elia System Operator",
+      "weight": 2.67,
+      "aliases": [
+        "Elia System Operator",
+        "Elia System Op.",
+        "Elia",
+        "ELI"
+      ]
     }
   ]
 }
