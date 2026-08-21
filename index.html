@@ -63,11 +63,12 @@
   .seg button.pl{color:var(--accent);border-left:1px solid var(--border2)}
   .seg button:hover{background:var(--surface2)}
   .seg input.ai2{border:0;background:transparent;color:var(--text);font-family:var(--mono);font-size:12px;padding:4px 6px;text-align:right;outline:none;width:64px}
-  .allout{border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--mono);font-size:10px;padding:4px 7px;border-radius:6px;cursor:pointer;margin-left:5px;vertical-align:middle}
+  .allout{border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--mono);font-size:10px;padding:4px 7px;border-radius:6px;cursor:pointer;margin-left:8px;vertical-align:middle}
+  .aj-pct{display:inline-block;min-width:52px;text-align:left;font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:10px;vertical-align:middle}
   .allout:hover{border-color:var(--danger);color:var(--danger)}
   .okc{border-radius:6px;background:transparent;cursor:pointer;font-family:var(--mono);font-size:13px;padding:4px 10px;line-height:1}
-  td.aj-cell,th.aj-cell{text-align:left;white-space:nowrap}
-  #avail-table td:first-child{white-space:nowrap}
+  td.aj-cell,th.aj-cell{text-align:left;white-space:nowrap;width:1px}
+  #avail-table td:first-child,#avail-table th:first-child{white-space:nowrap;width:1px}
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1rem}
   /* Em grids com align-items:stretch, a margem do painel quebra a igualdade de alturas
      (o stretch distribui altura+margem). Remover a margem nestes grids. */
@@ -360,17 +361,17 @@
             <input type="text" id="last-run" readonly="" placeholder="—" style="color:var(--text3)">
           </div>
           <div class="fld">
-            <label style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <label style="display:flex;align-items:center;gap:8px">
               <span>Capital Próprio</span>
-              <span style="display:flex;align-items:center;gap:5px;cursor:pointer;color:var(--text3);text-transform:none;letter-spacing:0" title="Ligado: escreves o valor à mão. Desligado: é copiado do último balanço do registo diário.">
-                <input type="checkbox" id="cap-proprio-forcar" onchange="toggleForcarProprio()" style="accent-color:var(--warn)"><span>forçar</span>
+              <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--text3);text-transform:none;letter-spacing:0" title="Ligado: escreves o valor à mão. Desligado: é copiado do último balanço do registo diário.">
+                <input type="checkbox" id="cap-proprio-forcar" onchange="toggleForcarProprio()" style="accent-color:var(--warn);margin:0"><span>forçar</span>
               </span>
             </label>
             <input type="number" step="0.01" id="capital-proprio" value="0" placeholder="0.00" oninput="updCapitalEfetivo()">
           </div>
           <div class="fld">
             <label>Capital Alavancado</label>
-            <input type="number" step="0.01" id="capital-global" value="0" placeholder="0.00">
+            <input type="number" step="0.01" id="capital-global" value="0" placeholder="0.00" oninput="if(typeof FUNDS!=='undefined')FUNDS.forEach(updAjPct)">
             <span id="capital-restante" style="display:none;color:var(--accent)">1&nbsp;000&nbsp;000,00</span>
           </div>
         </div>
@@ -2380,7 +2381,8 @@ function renderPipeline() {
           `onfocus="ajFocus('${f}')" onblur="ajBlur('${f}')" oninput="ajInput('${f}')">`+
         `<button class="pl" onclick="applyPct('${f}',1)" title="Subir 2,5% do capital">+2,5%</button>`+
       `</span>`+
-      `<button class="allout" onclick="applyResgate('${f}')">All-out</button></td>`;
+      `<button class="allout" onclick="applyResgate('${f}')">All-out</button>`+
+      `<span class="aj-pct" id="ajpct-${f}">0&nbsp;%</span></td>`;
     // Botão de confirmar (✓) com a cor do fundo.
     const okCell = t ? `<td><button class="okc" id="btn-confirm-${f}" onclick="confirmarOrdemFundo('${f}')" title="Confirmar ${t.label} (hoje)" style="border:1px solid ${t.border};color:${t.color};background:${t.bg}">✓</button></td>`
                      : `<td><button class="okc" onclick="confirmarOrdemFundo('${f}')">✓</button></td>`;
@@ -2395,6 +2397,7 @@ function renderPipeline() {
   }).join('');
   // Repõe os ajustes preservados nos campos recriados.
   FUNDS.forEach(f => { if (ajGuardados[f]) escreverAjuste(f, ajGuardados[f]); });
+  FUNDS.forEach(f => updAjPct(f));
   // Garante as etiquetas de valor+% por fundo e atualiza-as.
   if (typeof ensureFundInfoSpans === 'function') { ensureFundInfoSpans(); FUNDS.forEach(f => { try { updFundInfo(f); } catch(e){} }); }
   // Atualiza o resumo de capital (cativo total, resgate total, valor efetivo).
@@ -2547,6 +2550,19 @@ function lerAjuste(f) {
   const raw = el.dataset ? el.dataset.raw : null;
   return (raw !== undefined && raw !== null && raw !== '') ? (parseFloat(raw) || 0) : ajParse(el.value);
 }
+// Percentagem do capital global que o ajuste representa (soma dos cliques ou valor escrito).
+function updAjPct(f) {
+  const el = document.getElementById('ajpct-'+f);
+  if (!el) return;
+  const g = parseFloat(document.getElementById('capital-global')?.value) || 0;
+  const v = lerAjuste(f);
+  if (g <= 0 || v === 0) { el.textContent = '0\u00A0%'; el.style.color = 'var(--text3)'; return; }
+  const pct = (v / g) * 100;
+  const txt = (Math.round(pct * 10) / 10).toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+  el.textContent = (pct > 0 ? '+' : '') + txt + '\u00A0%';
+  el.style.color = pct > 0 ? 'var(--accent)' : 'var(--danger)';
+}
+
 function escreverAjuste(f, valor) {
   const el = document.getElementById('adj-'+f);
   if (!el) return;
@@ -2555,6 +2571,7 @@ function escreverAjuste(f, valor) {
   el.value = (el === document.activeElement) ? (n === 0 ? '' : String(n)) : ajCompacto(n);
   if (typeof updRestante === 'function') updRestante();
   if (typeof updFundInfo === 'function') { try { updFundInfo(f); } catch(e){} }
+  updAjPct(f);
 }
 // Ao focar mostra o número por extenso (editável); ao sair volta ao compacto.
 function ajFocus(f) {
@@ -2575,6 +2592,7 @@ function ajInput(f) {
   el.dataset.raw = String(ajParse(el.value));
   if (typeof updRestante === 'function') updRestante();
   if (typeof updFundInfo === 'function') { try { updFundInfo(f); } catch(e){} }
+  updAjPct(f);
 }
 
 function renderAdj() {
