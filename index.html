@@ -436,7 +436,7 @@
         </div>
         <div style="display:flex;justify-content:space-between;padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--border2)">
           <span style="color:var(--accent);font-weight:600">Valor efetivo p/ investimento</span>
-          <span id="pipe-efetivo" style="color:var(--accent);font-weight:600">—</span>
+          <span style="text-align:right"><span id="pipe-efetivo" style="color:var(--accent);font-weight:600">—</span><span id="pipe-uso-pct" style="display:block;font-size:9px;color:var(--text3);font-weight:400;margin-top:1px">—</span></span>
         </div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">(Capital Próprio + em resgate) − cativo total</div>
       </div>
@@ -2503,6 +2503,20 @@ function updCapitalEfetivo() {
   setTxt('pipe-proprio', proprio);
   // Efetivo: verde se positivo, vermelho se negativo (comprometeste mais do que tens).
   setTxt('pipe-efetivo', efetivo, efetivo < 0 ? 'var(--danger)' : 'var(--accent)');
+  // Percentagem do capital próprio em uso: quanto do próprio está cativo (investido/preso).
+  // Acima de 100% = comprometeste mais do que tens (alavancagem).
+  const usoEl = document.getElementById('pipe-uso-pct');
+  if (usoEl) {
+    if (proprio > 0) {
+      const usoPct = (cativo / proprio) * 100;
+      const t = (Math.round(usoPct * 10) / 10).toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+      usoEl.textContent = t + '\u00A0% do capital próprio em uso';
+      usoEl.style.color = usoPct > 100 ? 'var(--danger)' : 'var(--text3)';
+    } else {
+      usoEl.textContent = '—';
+      usoEl.style.color = 'var(--text3)';
+    }
+  }
   return { cativo, resgate, proprio, efetivo };
 }
 // re-renderiza a tabela toda (para não perder o foco enquanto se editam vários campos).
@@ -9289,24 +9303,42 @@ function schedTick() {
 
 // Margem de tolerância antes de considerar um disparo "em falta".
 const SCHED_HEARTBEAT_GRACE_MIN = 15;
-let _heartbeatWarned = {}; // evita avisar mais que uma vez por dia/horário
 
 function checkSchedHeartbeat(dayKey, horaAlvo, now) {
   if (!horaAlvo) return;
   const stamp = dayKey + ' ' + horaAlvo;
-  if (_schedLastFired[stamp]) return; // disparou normalmente, tudo bem
-  if (_heartbeatWarned[stamp]) return; // já avisou para este horário
+  if (_schedLastFired[stamp]) return; // disparou normalmente nesta sessão, tudo bem
+
+  // O aviso e o facto de já ter avisado ficam em DISCO (não só em memória): senão, cada
+  // recarga da página com a variável em memória vazia geraria um novo Heartbeat de aviso
+  // — era o "lixo" que aparecia no registo sempre que se reabria o dashboard.
+  let hb = {};
+  try { hb = JSON.parse(localStorage.getItem('sched-heartbeat-avisado') || '{}'); } catch(e) {}
+  if (hb[stamp]) return; // já avisou para este horário/dia
+
+  // Se um disparo real ficou marcado em disco para hoje (schedFire grava-o), não avisa.
+  let fired = {};
+  try { fired = JSON.parse(localStorage.getItem('sched-fired') || '{}'); } catch(e) {}
+  if (fired[stamp]) return;
+
+  // Sem CallMeBot configurado não há Heartbeat para enviar (evita registar falhas inúteis).
+  const temCMB = (localStorage.getItem('cmb-phone') || '').trim() && (localStorage.getItem('cmb-apikey') || '').trim();
 
   const [hh, mm] = horaAlvo.split(':').map(Number);
   const alvo = new Date(now); alvo.setHours(hh, mm, 0, 0);
   const minutosPassados = (now - alvo) / 60000;
 
   if (minutosPassados >= SCHED_HEARTBEAT_GRACE_MIN && minutosPassados < 24*60) {
-    _heartbeatWarned[stamp] = true;
+    hb[stamp] = true;
+    // guarda só o dia de hoje (limpa marcas de dias anteriores)
+    const limpo = {}; Object.keys(hb).forEach(k => { if (k.startsWith(dayKey)) limpo[k] = hb[k]; });
+    try { localStorage.setItem('sched-heartbeat-avisado', JSON.stringify(limpo)); } catch(e) {}
     appLog('Heartbeat: o disparo das '+horaAlvo+' não correu ('+Math.round(minutosPassados)+' min de atraso).','warn');
-    try {
-      enviarWhatsApp('⚠️ Heartbeat Fundos\n\nO agendador das ' + horaAlvo + ' não correu (' + Math.round(minutosPassados) + ' min de atraso).\nVerifica se a app/PC estão ligados e se o Node está a correr.', 'Heartbeat');
-    } catch(e) {}
+    if (temCMB) {
+      try {
+        enviarWhatsApp('⚠️ Heartbeat Fundos\n\nO agendador das ' + horaAlvo + ' não correu (' + Math.round(minutosPassados) + ' min de atraso).\nVerifica se a app/PC estão ligados e se o Node está a correr.', 'Heartbeat');
+      } catch(e) {}
+    }
   }
 }
 
@@ -9316,6 +9348,14 @@ function schedFire(stamp, source, funds) {
   // limpa marcas antigas (mantém só hoje)
   const today = stamp.slice(0,10);
   Object.keys(_schedLastFired).forEach(k => { if (!k.startsWith(today)) delete _schedLastFired[k]; });
+  // Marca em disco que este disparo aconteceu hoje, para o heartbeat não o dar como falhado
+  // após uma recarga da página (só mantém as marcas de hoje).
+  try {
+    let fired = {}; try { fired = JSON.parse(localStorage.getItem('sched-fired') || '{}'); } catch(e) {}
+    const limpo = {}; Object.keys(fired).forEach(k => { if (k.startsWith(today)) limpo[k] = fired[k]; });
+    limpo[stamp] = true;
+    localStorage.setItem('sched-fired', JSON.stringify(limpo));
+  } catch(e) {}
 
   appLog('Agendador disparou ('+stamp+', '+source+').','ok');
   const el = document.getElementById('sched-status');
