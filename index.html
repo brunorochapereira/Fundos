@@ -434,11 +434,22 @@
           <span style="color:var(--text2)">Capital Próprio</span>
           <span id="pipe-proprio" style="color:var(--text)">—</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--border2)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--border2)">
           <span style="color:var(--accent);font-weight:600">Valor efetivo p/ investimento</span>
-          <span style="text-align:right"><span id="pipe-efetivo" style="color:var(--accent);font-weight:600">—</span><span id="pipe-uso-pct" style="display:block;font-size:9px;color:var(--text3);font-weight:400;margin-top:1px">—</span></span>
+          <span id="pipe-efetivo" style="color:var(--accent);font-weight:600;font-size:14px">—</span>
         </div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">(Capital Próprio + em resgate) − cativo total</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:10px">(Capital Próprio + em resgate) − cativo total</div>
+        <!-- Barra de uso do capital próprio -->
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="color:var(--text2);font-size:10px;letter-spacing:.04em;text-transform:uppercase">Capital próprio em uso</span>
+          <span id="pipe-uso-pct" style="color:var(--text2);font-weight:600">—</span>
+        </div>
+        <div style="position:relative;height:6px;background:var(--bg);border:1px solid var(--border2);border-radius:4px;overflow:hidden">
+          <div id="pipe-uso-bar" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--accent);border-radius:3px;transition:width .25s ease,background .25s ease"></div>
+          <!-- marca dos 100% -->
+          <div style="position:absolute;left:100%;top:-2px;bottom:-2px;width:1px;background:var(--border2)"></div>
+        </div>
+        <div id="pipe-uso-nota" style="font-size:9px;color:var(--text3);margin-top:4px;min-height:12px"></div>
       </div>
     </div>
 
@@ -866,8 +877,7 @@
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t2-energia" checked onchange="onSchedChange()" style="accent-color:#2dd4bf">Energia</label>
           </div>
 
-          <div class="slabel">Análise de acerto (fim do dia)</div>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+          <div class="slabel">Análise de acerto (fim do dia)</div>          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
             <input type="time" id="sched-time3" value="23:00" onchange="onSchedChange()" style="background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none">
             <label style="display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text2);cursor:pointer"><input type="checkbox" id="sched-t3-on" onchange="onSchedChange()" style="accent-color:var(--accent)">ativar</label>
             <button class="btn" onclick="analisarAcertoOrdens()" style="margin-top:0;font-size:10px;padding:5px 10px;border-color:var(--border2);color:var(--text2)">▶ correr agora</button>
@@ -890,6 +900,12 @@
             <input type="checkbox" id="sched-whatsapp" onchange="onSchedChange()" style="width:16px;height:16px;accent-color:var(--accent)">
             <span style="font-family:var(--mono);font-size:11px;color:var(--text)">Enviar Advisor por WhatsApp após fetch</span>
           </label>
+
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:4px">
+            <input type="checkbox" id="sched-heartbeat" onchange="onSchedChange()" style="width:16px;height:16px;accent-color:var(--warn)">
+            <span style="font-family:var(--mono);font-size:11px;color:var(--text)">Avisar por WhatsApp se um horário falhar (heartbeat)</span>
+          </label>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:12px">Manda um aviso se um fetch agendado não correr (app fechada, PC desligado). Deixa desligado se abres o dashboard a horas variadas, senão recebes avisos sempre que reabres depois da hora.</div>
 
           <button class="btn" onclick="schedRunNow()" style="border-color:rgba(74,222,128,0.3);color:var(--accent);margin-top:0;font-size:10px;padding:7px;width:100%">▶ Correr agora (teste)</button>
           <div id="sched-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:8px;line-height:1.5"></div>
@@ -2506,15 +2522,35 @@ function updCapitalEfetivo() {
   // Percentagem do capital próprio em uso: quanto do próprio está cativo (investido/preso).
   // Acima de 100% = comprometeste mais do que tens (alavancagem).
   const usoEl = document.getElementById('pipe-uso-pct');
+  const usoBar = document.getElementById('pipe-uso-bar');
+  const usoNota = document.getElementById('pipe-uso-nota');
   if (usoEl) {
     if (proprio > 0) {
       const usoPct = (cativo / proprio) * 100;
       const t = (Math.round(usoPct * 10) / 10).toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
-      usoEl.textContent = t + '\u00A0% do capital próprio em uso';
-      usoEl.style.color = usoPct > 100 ? 'var(--danger)' : 'var(--text3)';
+      // cor: verde até 90%, amarelo 90-100%, vermelho acima de 100% (alavancado).
+      const cor = usoPct > 100 ? 'var(--danger)' : (usoPct >= 90 ? 'var(--warn)' : 'var(--accent)');
+      usoEl.textContent = t + '\u00A0%';
+      usoEl.style.color = cor;
+      if (usoBar) {
+        usoBar.style.width = Math.min(usoPct, 100) + '%';
+        usoBar.style.background = cor;
+      }
+      if (usoNota) {
+        const livre = proprio - cativo;
+        if (usoPct > 100) {
+          usoNota.textContent = 'Alavancado: ' + fmtNum(cativo - proprio) + ' € acima do capital próprio.';
+          usoNota.style.color = 'var(--danger)';
+        } else {
+          usoNota.textContent = fmtNum(livre) + ' € do capital próprio ainda por investir.';
+          usoNota.style.color = 'var(--text3)';
+        }
+      }
     } else {
       usoEl.textContent = '—';
-      usoEl.style.color = 'var(--text3)';
+      usoEl.style.color = 'var(--text2)';
+      if (usoBar) usoBar.style.width = '0%';
+      if (usoNota) usoNota.textContent = '';
     }
   }
   return { cativo, resgate, proprio, efetivo };
@@ -9172,7 +9208,7 @@ let _schedLastFired = {}; // { 'YYYY-MM-DD HH:MM': true } evita duplo disparo
 
 function schedDefaults() {
   return { enabled:false, source:'local', time1:'08:45', time2:'10:45',
-           t1:{gold:true,oil:true,finance:true,saude:true,energia:true}, t2:{gold:true,oil:true,finance:true,saude:true,energia:true}, weekdaysOnly:true, whatsapp:false };
+           t1:{gold:true,oil:true,finance:true,saude:true,energia:true}, t2:{gold:true,oil:true,finance:true,saude:true,energia:true}, weekdaysOnly:true, whatsapp:false, heartbeat:false };
 }
 
 function schedLoad() {
@@ -9195,7 +9231,8 @@ function schedReadUI() {
     time3: document.getElementById('sched-time3')?.value || '23:00',
     t3on: document.getElementById('sched-t3-on')?.checked || false,
     weekdaysOnly: document.getElementById('sched-weekdays')?.checked || false,
-    whatsapp: document.getElementById('sched-whatsapp')?.checked || false
+    whatsapp: document.getElementById('sched-whatsapp')?.checked || false,
+    heartbeat: document.getElementById('sched-heartbeat')?.checked || false
   };
 }
 
@@ -9220,6 +9257,7 @@ function schedApplyToUI(cfg) {
   set('sched-t2-gold', cfg.t2.gold); set('sched-t2-oil', cfg.t2.oil); set('sched-t2-finance', cfg.t2.finance !== false); set('sched-t2-saude', cfg.t2.saude !== false); set('sched-t2-energia', cfg.t2.energia !== false);
   set('sched-weekdays', cfg.weekdaysOnly);
   set('sched-whatsapp', cfg.whatsapp);
+  set('sched-heartbeat', cfg.heartbeat || false);
 }
 
 function onSchedChange() {
@@ -9296,9 +9334,11 @@ function schedTick() {
     }
   }
 
-  // Heartbeat: se passou o horário + margem e não houve disparo registado, avisa uma vez.
-  checkSchedHeartbeat(dayKey, cfg.time1, now);
-  checkSchedHeartbeat(dayKey, cfg.time2, now);
+  // Heartbeat: só se o utilizador o ativou (senão gera avisos sempre que se reabre a app).
+  if (cfg.heartbeat) {
+    checkSchedHeartbeat(dayKey, cfg.time1, now);
+    checkSchedHeartbeat(dayKey, cfg.time2, now);
+  }
 }
 
 // Margem de tolerância antes de considerar um disparo "em falta".
