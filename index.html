@@ -406,14 +406,14 @@
       <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Pipeline de disponibilidade</span></div>
       <div class="ph-row">
         <span>FUNDO</span>
-        <span>D — Subscrito › D+1 — Cativo › D+2 — Cativo+1 › D+3 — Disponível › Em resgate</span>
+        <span>D — Em subscrição › D+1 — Cativo › D+2 — Cativo+1 › D+3 — Disponível › Em resgate</span>
       </div>
       <table id="avail-table">
         <thead><tr>
           <th></th>
           <th class="aj-cell">Ajuste</th>
           <th></th>
-          <th style="border-left:1px solid var(--border2)">Subscrito<span class="sub">D</span></th>
+          <th style="border-left:1px solid var(--border2)">Em subscrição<span class="sub">D</span></th>
           <th>Cativo<span class="sub">D+1</span></th>
           <th>Cativo+1<span class="sub">D+2</span></th>
           <th>Disponível<span class="sub">D+3</span></th>
@@ -438,7 +438,7 @@
           <span style="color:var(--accent);font-weight:600">Valor efetivo p/ investimento</span>
           <span id="pipe-efetivo" style="color:var(--accent);font-weight:600">—</span>
         </div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">Capital Próprio − (cativo total + resgate total)</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px">(Capital Próprio + em resgate) − cativo total</div>
       </div>
     </div>
 
@@ -2487,7 +2487,9 @@ function updCapitalEfetivo() {
     resgate += (r.resgate||0);
   });
   const proprio = parseFloat(document.getElementById('capital-proprio')?.value) || 0;
-  const efetivo = proprio - (cativo + resgate);
+  // O que está em resgate fica disponível no imediato para reinvestir no próprio dia;
+  // o cativo é o que está preso. Efetivo = (próprio + em resgate) − cativo total.
+  const efetivo = (proprio + resgate) - cativo;
 
   const setTxt = (id, val, color) => {
     const el = document.getElementById(id);
