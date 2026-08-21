@@ -53,7 +53,8 @@
   .ctrl-row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
   .ctrl-row .fld{display:flex;flex-direction:column;gap:4px}
   .ctrl-row .fld>label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
-  .ctrl-row .fld input{background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 8px;outline:none;width:180px}
+  .ctrl-row .fld input:not([type=checkbox]){background:var(--bg);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 8px;outline:none;width:180px}
+  .ctrl-row .fld input[type=checkbox]{width:auto;margin:0}
   .ctrl-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
   .ctrl-actions .btn{margin-top:0;width:auto;flex:0 0 auto}
   /* Controlo de ajuste segmentado, embutido em cada linha do pipeline. */
@@ -69,6 +70,8 @@
   .okc{border-radius:6px;background:transparent;cursor:pointer;font-family:var(--mono);font-size:13px;padding:4px 10px;line-height:1}
   td.aj-cell,th.aj-cell{text-align:left;white-space:nowrap;width:1px}
   #avail-table td:first-child,#avail-table th:first-child{white-space:nowrap;width:1px}
+  /* Coluna do botão de confirmar (3ª): encolhe ao botão para não empurrar a borda. */
+  #avail-table thead th:nth-child(3),#avail-table tbody td:nth-child(3){width:1px;white-space:nowrap}
   .panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1rem}
   /* Em grids com align-items:stretch, a margem do painel quebra a igualdade de alturas
      (o stretch distribui altura+margem). Remover a margem nestes grids. */
