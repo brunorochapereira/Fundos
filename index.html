@@ -2413,7 +2413,12 @@ function renderPipeline() {
     } else {
       dados = `<td style="border-left:1px solid var(--border2)">${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td>`;
     }
-    return `<tr data-fund="${f}">${nome}${ajCell}${okCell}${dados}</tr>`;
+    // Cor da linha conforme o sinal do Advisor (verde compra / amarelo neutro / vermelho venda).
+    const sig = sinalDoFundo(f);
+    const cs = corSinal(sig);
+    const trStyle = cs ? ` style="background:${cs.bg};box-shadow:inset 3px 0 0 ${cs.border}"` : '';
+    const trTip = sig ? ` title="Advisor: ${sig}"` : '';
+    return `<tr data-fund="${f}"${trStyle}${trTip}>${nome}${ajCell}${okCell}${dados}</tr>`;
   }).join('');
   // Repõe os ajustes preservados nos campos recriados.
   FUNDS.forEach(f => { if (ajGuardados[f]) escreverAjuste(f, ajGuardados[f]); });
@@ -2582,6 +2587,30 @@ const FUND_NOME = {
   Saude:   'Schroder Healthcare Innovation',
   Energia: 'Schroder ISF Global Alternative Energy'
 };
+// Chave do pipeline (Gold/Oil/...) → chave do Advisor (gold/oil/...).
+const FUND_ADV_KEY = { Gold:'gold', Oil:'oil', Finance:'finance', Saude:'saude', Energia:'energia' };
+// Sinal do Advisor para um fundo do pipeline. Usa o sinal congelado do dia se existir
+// (o oficial, decidido ao cutoff), senão calcula na hora. Devolve 'COMPRA'|'VENDA'|'NEUTRO'|null.
+function sinalDoFundo(f) {
+  const key = FUND_ADV_KEY[f];
+  if (!key) return null;
+  try {
+    const dia = (typeof todayStr === 'function') ? todayStr() : new Date().toISOString().slice(0,10);
+    const cong = (typeof getSinalCongelado === 'function') ? getSinalCongelado(key, dia) : null;
+    if (cong && cong.signal) return cong.signal;
+  } catch(e) {}
+  try {
+    const r = (typeof calcAdvisorSignal === 'function') ? calcAdvisorSignal(key) : null;
+    return r && r.signal && r.signal !== '—' ? r.signal : null;
+  } catch(e) { return null; }
+}
+// Cor de fundo/borda subtis para a linha, conforme o sinal.
+function corSinal(sig) {
+  if (sig === 'COMPRA') return { bg:'rgba(74,222,128,0.09)', border:'#4ade80' };
+  if (sig === 'VENDA')  return { bg:'rgba(224,108,108,0.10)', border:'#e06c6c' };
+  if (sig === 'NEUTRO') return { bg:'rgba(224,168,72,0.09)', border:'#e0a848' };
+  return null;
+}
 
 // ── Campo de ajuste: valor real vs texto compacto ───────────────
 // O campo mostra "20k" quando não está a ser editado, mas o valor verdadeiro fica sempre
@@ -6109,6 +6138,7 @@ function recalcularSinal(key) {
   syncFieldsToPmValues();
   if (typeof renderAdvisorPanelDeep === 'function') renderAdvisorPanelDeep(key);
   congelarSinalSeAntesCutoff(key); // guarda o sinal do dia se ainda antes do cutoff
+  if (typeof renderPipeline === 'function') { try { renderPipeline(); } catch(e){} }
   toast('Sinal '+key+' recalculado.','ok');
 }
 
@@ -6135,6 +6165,7 @@ function recalcularAdvisor() {
     toast('Advisor recalculado ✓ (todos os sinais).','ok');
     appLog('Advisor recalculado — todos os sinais atualizados.','ok');
   }
+  if (typeof renderPipeline === 'function') { try { renderPipeline(); } catch(e){} }
 }
 
 function loadPmValues() {
