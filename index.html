@@ -374,7 +374,7 @@
           </div>
           <div class="fld">
             <label>Capital Alavancado</label>
-            <input type="number" step="0.01" id="capital-global" value="0" placeholder="0.00" oninput="if(typeof FUNDS!=='undefined')FUNDS.forEach(updAjPct)">
+            <input type="number" step="0.01" id="capital-global" value="0" placeholder="0.00" oninput="if(typeof FUNDS!=='undefined'){FUNDS.forEach(updAjPct);} if(typeof renderPipeline==='function'){renderPipeline();}">
             <span id="capital-restante" style="display:none;color:var(--accent)">1&nbsp;000&nbsp;000,00</span>
           </div>
         </div>
@@ -413,6 +413,7 @@
           <th></th>
           <th class="aj-cell">Ajuste</th>
           <th></th>
+          <th style="border-left:1px solid var(--border2)">Peso<span class="sub">no total</span></th>
           <th style="border-left:1px solid var(--border2)">Em subscrição<span class="sub">D</span></th>
           <th>Cativo<span class="sub">D+1</span></th>
           <th>Cativo+1<span class="sub">D+2</span></th>
@@ -2406,19 +2407,33 @@ function renderPipeline() {
     // Botão de confirmar (✓) com a cor do fundo.
     const okCell = t ? `<td><button class="okc" id="btn-confirm-${f}" onclick="confirmarOrdemFundo('${f}')" title="Confirmar ${t.label} (hoje)" style="border:1px solid ${t.border};color:${t.color};background:${t.bg}">✓</button></td>`
                      : `<td><button class="okc" onclick="confirmarOrdemFundo('${f}')">✓</button></td>`;
+    // Peso do fundo: (em subscrição + cativos + disponível) sobre o capital alavancado total.
+    // O que já está em resgate NÃO entra (deixou de estar colocado no fundo).
+    const ativoFundo = (r.D||0) + (r.D1||0) + (r.D2||0) + (r.D3||0);
+    const capTotal = parseFloat(document.getElementById('capital-global')?.value) || 0;
+    let pesoCell;
+    if (capTotal > 0) {
+      const peso = (ativoFundo / capTotal) * 100;
+      const pt = (Math.round(peso*10)/10).toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:1});
+      const cor = ativoFundo > 0 ? (t ? t.color : 'var(--accent)') : 'var(--text3)';
+      pesoCell = `<td style="border-left:1px solid var(--border2)" title="${fmtNum(ativoFundo)} € ativos de ${fmtNum(capTotal)} € totais">`+
+        `<span style="color:${cor};font-weight:600">${pt}&nbsp;%</span></td>`;
+    } else {
+      pesoCell = `<td style="border-left:1px solid var(--border2)"><span class="v0">—</span></td>`;
+    }
     let dados;
     if (testMode) {
       const cell = (col, borda) => `<td${borda?' style="border-left:1px solid var(--border2)"':''}><input type="number" step="any" value="${r[col]||0}" onchange="setPipelineCell('${f}','${col}',this.value)" style="width:72px;text-align:right;font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--warn-dim);border-radius:4px;color:var(--warn);padding:3px 5px;outline:none"></td>`;
-      dados = cell('D',true)+cell('D1')+cell('D2')+cell('D3')+cell('resgate');
+      dados = cell('D')+cell('D1')+cell('D2')+cell('D3')+cell('resgate');
     } else {
-      dados = `<td style="border-left:1px solid var(--border2)">${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td>`;
+      dados = `<td>${cv(r.D,0)}</td><td>${cv(r.D1,0)}</td><td>${cv(r.D2,0)}</td><td>${cv(r.D3,1)}</td><td>${cv(r.resgate,0)}</td>`;
     }
     // Cor da linha conforme o sinal do Advisor (verde compra / amarelo neutro / vermelho venda).
     const sig = sinalDoFundo(f);
     const cs = corSinal(sig);
     const trStyle = cs ? ` style="background:${cs.bg};box-shadow:inset 3px 0 0 ${cs.border}"` : '';
     const trTip = sig ? ` title="Advisor: ${sig}"` : '';
-    return `<tr data-fund="${f}"${trStyle}${trTip}>${nome}${ajCell}${okCell}${dados}</tr>`;
+    return `<tr data-fund="${f}"${trStyle}${trTip}>${nome}${ajCell}${okCell}${pesoCell}${dados}</tr>`;
   }).join('');
   // Repõe os ajustes preservados nos campos recriados.
   FUNDS.forEach(f => { if (ajGuardados[f]) escreverAjuste(f, ajGuardados[f]); });
