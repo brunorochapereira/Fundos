@@ -4204,12 +4204,32 @@ function registarConcordancia(fundo, aj, dia) {
     if (!sig || !sig.signal) return; // sem sinal do Advisor, não há o que comparar
     const acao = classificarAcao(aj);
     const concorda = (acao === sig.signal);
+    // Retrato dos INPUTS do Advisor neste dia — matéria-prima para, no futuro, ajustar o
+    // Advisor a replicar as decisões do utilizador (situação do dia → decisão tomada).
+    // Guardar o score sozinho não chega: é preciso as parcelas cruas (commodity, holdings,
+    // notícias, momentum, vol) para poder re-aprender a regra que as transforma na decisão.
+    let inputs = null;
+    try {
+      const snap = (typeof calcAdvisorSignal === 'function') ? calcAdvisorSignal(key) : null;
+      if (snap) {
+        inputs = {
+          commodity: (snap.commodity != null ? snap.commodity : null),
+          commodityScore: (snap.commodityScore != null ? snap.commodityScore : null),
+          holdings: (snap.holdings && snap.holdings.score != null ? snap.holdings.score : null),
+          holdingsCoverage: (snap.holdings && snap.holdings.coverage != null ? snap.holdings.coverage : null),
+          news: (snap.news != null ? (typeof snap.news==='object' ? snap.news.score : snap.news) : null),
+          momentum: (snap.momentum != null ? snap.momentum : null),
+          vol: (snap.vol != null ? snap.vol : null),
+          scoreVivo: (snap.score != null ? Math.round(snap.score) : null)
+        };
+      }
+    } catch(e) {}
     let reg = [];
     try { reg = JSON.parse(localStorage.getItem('advisor-concordancia') || '[]'); } catch(e) { reg = []; }
     // Substitui se já houver registo deste fundo neste dia (só conta a decisão final).
     reg = reg.filter(r => !(r.dia === dia && r.fundo === fundo));
     reg.push({ dia, fundo, sinal: sig.signal, acao, concorda,
-               score: (sig.score!=null?sig.score:null), aj });
+               score: (sig.score!=null?sig.score:null), aj, inputs });
     localStorage.setItem('advisor-concordancia', JSON.stringify(reg));
     appLog('Concordância ' + fundo + ': Advisor=' + sig.signal + ' · ação=' + acao +
            ' → ' + (concorda ? 'concorda' : 'discorda'), concorda ? 'ok' : 'warn');
