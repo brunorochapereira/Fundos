@@ -732,6 +732,11 @@
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Acerto das ordens (cotação 23h)</span></div>
     <div id="acerto-body" style="padding:14px 18px"></div>
   </div>
+
+  <div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Tendência (histórico de cotações)</span></div>
+    <div id="tendencia-body" style="padding:14px 18px"></div>
+  </div>
 </div>
 <!-- /grid -->
 
@@ -4117,6 +4122,105 @@ function registarAcerto(fundo, diaOrdem, diaCotacao, aj, varPct, acertou, forcad
 }
 
 // Painel na aba Status: taxa de acerto das ordens (global e por fundo).
+// ── Fase 1: fator TENDÊNCIA (a recolher, NÃO pesa no sinal do Advisor) ────────
+// Lê o histórico de cotações do servidor (/historico) e calcula, por fundo, a
+// média móvel e a posição face a ela — a "maré" que a variação de um só dia esconde.
+// Fica só a informar; o cálculo do sinal do Advisor não é tocado. Quando houver
+// semanas de dados, compara-se com as decisões e decide-se se passa a fator com peso.
+let _histCache = null, _histCacheTs = 0;
+async function carregarHistorico(force) {
+  const agora = Date.now();
+  if (!force && _histCache && (agora - _histCacheTs) < 60000) return _histCache;
+  const base = (localStorage.getItem('server-url') || 'http://localhost:3004/all').replace(/\/all$/, '');
+  try {
+    const r = await fetch(base + '/historico', { cache: 'no-store' });
+    const j = await r.json();
+    if (j && j.ok && j.historico) { _histCache = j.historico; _histCacheTs = agora; return j.historico; }
+  } catch(e) {}
+  return null;
+}
+
+// Chave do fundo do dashboard → chave usada no histórico do servidor
+// (o servidor usa gold/oil/bank/health/energy; o dashboard usa gold/oil/finance/saude/energia).
+const FUND_HIST_KEY = { Gold:'gold', Oil:'oil', Finance:'bank', Saude:'health', Energia:'energy' };
+
+// Série diária de um fundo (preço nav, ou variação acumulada se não houver nav),
+// ordenada por data. Devolve [{dia, nav}] — nav é o preço quando existe.
+function serieDoFundo(hist, advKey) {
+  if (!hist) return [];
+  const dias = Object.keys(hist).sort();
+  const out = [];
+  for (const d of dias) {
+    const reg = hist[d] && hist[d][advKey];
+    if (!reg) continue;
+    if (reg.nav != null) out.push({ dia: d, nav: reg.nav });
+  }
+  return out;
+}
+
+// Calcula os indicadores de tendência a partir da série de preços de um fundo.
+function calcTendencia(serie) {
+  if (!serie || serie.length < 2) return null;
+  const navs = serie.map(s => s.nav);
+  const ultimo = navs[navs.length - 1];
+  const mediaN = n => { const s = navs.slice(-n); return s.reduce((a,b)=>a+b,0)/s.length; };
+  const mm5 = mediaN(5), mm10 = mediaN(10);
+  const max = Math.max(...navs), min = Math.min(...navs);
+  const nav5 = navs.length > 5 ? navs[navs.length - 6] : navs[0];
+  const mom5 = ((ultimo - nav5) / nav5) * 100;
+  const vsMM5 = ((ultimo - mm5) / mm5) * 100;
+  const vsMM10 = ((ultimo - mm10) / mm10) * 100;
+  const vsMax = ((ultimo - max) / max) * 100;
+  const vsMin = ((ultimo - min) / min) * 100;
+  // Tendência: subida se acima das duas médias e mm5>mm10; descida se o inverso; senão lateral.
+  let dir = 'lateral';
+  if (ultimo > mm5 && mm5 >= mm10) dir = 'subida';
+  else if (ultimo < mm5 && mm5 <= mm10) dir = 'descida';
+  return { ultimo, mm5, mm10, mom5, vsMM5, vsMM10, vsMax, vsMin, dir, n: navs.length };
+}
+
+async function renderTendencia(force) {
+  const el = document.getElementById('tendencia-body');
+  if (!el) return;
+  el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar histórico…</span>';
+  const hist = await carregarHistorico(force);
+  if (!hist) {
+    el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Sem histórico disponível. O servidor tem de estar a correr (endpoint /historico) e já ter cotações guardadas.</span>';
+    return;
+  }
+  const seta = { subida: '▲', descida: '▼', lateral: '→' };
+  const corDir = { subida: '#4ade80', descida: '#e06c6c', lateral: 'var(--text3)' };
+  const rotulo = { subida: 'Subida', descida: 'Descida', lateral: 'Lateral' };
+  let linhas = '';
+  let comDados = 0;
+  for (const f of FUNDS) {
+    const advKey = FUND_HIST_KEY[f];
+    const t = FUND_THEME[f] || {};
+    const serie = serieDoFundo(hist, advKey);
+    const tend = calcTendencia(serie);
+    if (!tend) {
+      linhas += `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2)">
+        <span style="width:70px;color:${t.color||'var(--text)'};font-weight:600">${f}</span>
+        <span style="color:var(--text3);font-size:11px">sem dados suficientes</span></div>`;
+      continue;
+    }
+    comDados++;
+    const fmtP = v => (v>=0?'+':'') + (Math.round(v*10)/10).toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:1}) + '\u00A0%';
+    const corP = v => v>0?'#4ade80':(v<0?'#e06c6c':'var(--text3)');
+    linhas += `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2);font-family:var(--mono);font-size:11px">
+      <span style="width:70px;color:${t.color||'var(--text)'};font-weight:600">${f}</span>
+      <span style="width:80px;color:${corDir[tend.dir]};font-weight:600">${seta[tend.dir]} ${rotulo[tend.dir]}</span>
+      <span style="width:90px;color:var(--text2)" title="Momento dos últimos 5 dias">5d: <span style="color:${corP(tend.mom5)}">${fmtP(tend.mom5)}</span></span>
+      <span style="width:110px;color:var(--text2)" title="Face à média de 5 sessões">vs MM5: <span style="color:${corP(tend.vsMM5)}">${fmtP(tend.vsMM5)}</span></span>
+      <span style="width:120px;color:var(--text2)" title="Face à média de 10 sessões">vs MM10: <span style="color:${corP(tend.vsMM10)}">${fmtP(tend.vsMM10)}</span></span>
+      <span style="color:var(--text3)" title="Distância ao máximo do período">máx: ${fmtP(tend.vsMax)}</span>
+    </div>`;
+  }
+  const nota = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5">
+    Indicador informativo, não entra no sinal do Advisor. Média móvel do próprio fundo: mostra a tendência que a variação de um dia esconde. Passará a fator com peso só depois de semanas de dados e análise.</div>`;
+  el.innerHTML = (comDados ? linhas : '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Histórico ainda sem preços (nav). Se só tens variações diárias, a tendência precisa dos preços — o histórico manual do mês já os tem.</span>') + nota;
+}
+
 function renderAcerto() {
   const body = document.getElementById('acerto-body');
   if (!body) return;
@@ -4537,6 +4641,7 @@ function getWeekdayStats(days) {
 function renderStatus() {
   if (typeof renderConcordancia === 'function') renderConcordancia();
   if (typeof renderAcerto === 'function') renderAcerto();
+  if (typeof renderTendencia === 'function') renderTendencia();
   const days = getAllDailyData().filter(d=>d.ret!==null);
   if (!days.length) {
     document.getElementById('kpi-top').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:16px">Sem dados suficientes.</div>';
