@@ -737,6 +737,11 @@
     <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Tendência (histórico de cotações)</span></div>
     <div id="tendencia-body" style="padding:14px 18px"></div>
   </div>
+
+  <div class="panel">
+    <div class="ph"><div class="dot" style="background:var(--accent)"></div><span class="label">Comprar e manter (referência)</span></div>
+    <div id="buyhold-body" style="padding:14px 18px"></div>
+  </div>
 </div>
 <!-- /grid -->
 
@@ -3210,29 +3215,26 @@ async function enviarFimDeDiaWhatsApp(resumoPorFundo) {
   fundOrder().forEach(f => {
     const avancou = resumoPorFundo && resumoPorFundo[f] && resumoPorFundo[f].avancos > 0;
     const disp = (state.rows && state.rows[f]) ? (state.rows[f][availSlot(f)] || 0) : 0;
-    const marca = avancou ? 'pipeline avançou' : 'sem alteração';
-    linhas.push((ICON[f]||'•') + ' ' + (NOME[f]||f) + ': ' + marca + ' · disponível p/ resgate ' + fmtNum(disp) + ' €');
+    const marca = avancou ? 'pipeline' : 'sem alteração';
+    linhas.push((ICON[f]||'•') + ' ' + (NOME[f]||f) + ': ' + marca + ' · disp. p/ resgate ' + fmtCompact(disp));
   });
   // Valor efetivo para investimento = Capital Próprio − (cativo total + resgate total).
   try {
     const cap = updCapitalEfetivo();
     linhas.push('');
-    linhas.push('💰 Valor efetivo p/ investimento: ' + fmtNum(cap.efetivo) + ' €');
-    linhas.push('(cativo ' + fmtNum(cap.cativo) + ' € + resgate ' + fmtNum(cap.resgate) + ' €)');
-    // Percentagem investida sobre o Capital Alavancado. Investido = tudo o que está aplicado
-    // MENOS o que está em resgate (o resgate já não conta como investido, está a sair).
+    linhas.push('💰 Valor efetivo p/ investimento: ' + fmtCompact(cap.efetivo));
+    // Percentagem investida sobre o CAPITAL PRÓPRIO + RESGATE (não o alavancado).
     let investido = 0, emResgate = 0;
     FUNDS.forEach(f => {
       const r = state.rows[f] || {};
       investido += (r.D||0) + (r.D1||0) + (r.D2||0) + (r.D3||0);
       emResgate += (r.resgate||0);
     });
-    const alavancado = parseFloat(document.getElementById('capital-global')?.value) || 0;
-    if (alavancado > 0) {
-      const pct = (investido / alavancado) * 100;
+    const base = (cap.proprio || 0) + emResgate;
+    if (base > 0) {
+      const pct = (investido / base) * 100;
       linhas.push('');
-      linhas.push('📊 Investido: ' + pct.toFixed(1).replace('.', ',') + '% do capital alavancado');
-      linhas.push('(' + fmtNum(investido) + ' € de ' + fmtNum(alavancado) + ' €)');
+      linhas.push('📊 Investido: ' + pct.toFixed(1).replace('.', ',') + '% do capital próprio');
     }
   } catch(e){}
   await enviarWhatsApp(linhas.join('\n'), 'Fim de dia');
@@ -4218,7 +4220,86 @@ async function renderTendencia(force) {
   }
   const nota = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5">
     Indicador informativo, não entra no sinal do Advisor. Média móvel do próprio fundo: mostra a tendência que a variação de um dia esconde. Passará a fator com peso só depois de semanas de dados e análise.</div>`;
-  el.innerHTML = (comDados ? linhas : '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Histórico ainda sem preços (nav). Se só tens variações diárias, a tendência precisa dos preços — o histórico manual do mês já os tem.</span>') + nota;
+  // Linha do yield a 10 anos (fator macro da Fase 2, também só a recolher).
+  let macroLinha = '';
+  const diasMacro = Object.keys(hist).filter(d => hist[d]._macro && hist[d]._macro.yield10y != null).sort();
+  if (diasMacro.length) {
+    const ult = hist[diasMacro[diasMacro.length-1]]._macro.yield10y;
+    const penult = diasMacro.length > 1 ? hist[diasMacro[diasMacro.length-2]]._macro.yield10y : null;
+    let delta = '';
+    if (penult != null) {
+      const d = ult - penult;
+      const cor = d>0?'#e06c6c':(d<0?'#4ade80':'var(--text3)'); // yield a subir é adverso p/ ouro/renováveis
+      delta = ` <span style="color:${cor}">(${d>=0?'+':''}${(Math.round(d*1000)/1000).toLocaleString('pt-PT')} pp)</span>`;
+    }
+    macroLinha = `<div style="font-family:var(--mono);font-size:11px;color:var(--text2);padding:7px 0;margin-bottom:6px;border-bottom:1px solid var(--border2)">
+      Yield EUA 10 anos: <span style="color:var(--text);font-weight:600">${ult.toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:3})}\u00A0%</span>${delta}
+      <span style="color:var(--text3);font-size:9px;margin-left:8px">macro a recolher — sobe→adverso p/ ouro e renováveis, favorável p/ banca</span></div>`;
+  }
+  el.innerHTML = macroLinha + (comDados ? linhas : '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Histórico ainda sem preços (nav). Se só tens variações diárias, a tendência precisa dos preços — o histórico manual do mês já os tem.</span>') + nota;
+}
+
+// ── Carteira "comprar e manter" (referência buy-and-hold) ────────────────────
+// Responde à pergunta que importa: as decisões batem o simplesmente não fazer nada?
+// Pega no histórico de NAV e calcula o retorno de comprar uma fatia igual de cada
+// fundo no primeiro dia com preço e nunca mais mexer. É retorno PERCENTUAL puro dos
+// preços (sem fluxos de capital), a única base de comparação honesta. Não mexe em nada.
+function calcBuyHold(hist) {
+  if (!hist) return null;
+  const dias = Object.keys(hist).sort();
+  if (dias.length < 2) return null;
+  const porFundo = {};
+  let inicioComum = null, fimComum = null;
+  for (const f of FUNDS) {
+    const serie = serieDoFundo(hist, FUND_HIST_KEY[f]);
+    if (serie.length < 2) { porFundo[f] = null; continue; }
+    const ini = serie[0], fim = serie[serie.length - 1];
+    const retPct = ((fim.nav - ini.nav) / ini.nav) * 100;
+    porFundo[f] = { retPct, diaIni: ini.dia, diaFim: fim.dia, navIni: ini.nav, navFim: fim.nav };
+    if (!inicioComum || ini.dia > inicioComum) inicioComum = ini.dia; // arranque comum = o mais tardio
+    if (!fimComum || fim.dia < fimComum) fimComum = fim.dia;
+  }
+  // Carteira de partes iguais: retorno = média dos retornos de cada fundo desde o seu início.
+  const validos = FUNDS.map(f => porFundo[f]).filter(Boolean);
+  const carteiraPct = validos.length ? validos.reduce((a, b) => a + b.retPct, 0) / validos.length : null;
+  return { porFundo, carteiraPct, inicioComum, fimComum, nFundos: validos.length };
+}
+
+async function renderBuyHold(force) {
+  const el = document.getElementById('buyhold-body');
+  if (!el) return;
+  el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar…</span>';
+  const hist = await carregarHistorico(force);
+  const bh = calcBuyHold(hist);
+  if (!bh || bh.carteiraPct === null) {
+    el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Sem preços suficientes no histórico para calcular a referência. Precisa de nav (preço) em pelo menos dois dias por fundo.</span>';
+    return;
+  }
+  const fmtP = v => (v>=0?'+':'') + (Math.round(v*10)/10).toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:1}) + '\u00A0%';
+  const corP = v => v>0?'#4ade80':(v<0?'#e06c6c':'var(--text3)');
+  let linhas = '';
+  for (const f of FUNDS) {
+    const d = bh.porFundo[f];
+    const t = FUND_THEME[f] || {};
+    if (!d) {
+      linhas += `<div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border2);font-family:var(--mono);font-size:11px">
+        <span style="width:70px;color:${t.color||'var(--text)'};font-weight:600">${f}</span>
+        <span style="color:var(--text3)">sem dados</span></div>`;
+      continue;
+    }
+    linhas += `<div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border2);font-family:var(--mono);font-size:11px" title="De ${d.diaIni} (${d.navIni}) a ${d.diaFim} (${d.navFim})">
+      <span style="width:70px;color:${t.color||'var(--text)'};font-weight:600">${f}</span>
+      <span style="width:90px;color:${corP(d.retPct)};font-weight:600">${fmtP(d.retPct)}</span>
+      <span style="color:var(--text3)">se comprado a ${d.diaIni} e mantido</span>
+    </div>`;
+  }
+  const carteira = `<div style="display:flex;gap:10px;padding:9px 0;margin-top:4px;border-top:1px solid var(--border);font-family:var(--mono);font-size:12px">
+    <span style="width:70px;color:var(--text);font-weight:700">Carteira</span>
+    <span style="width:90px;color:${corP(bh.carteiraPct)};font-weight:700">${fmtP(bh.carteiraPct)}</span>
+    <span style="color:var(--text2)">partes iguais nos ${bh.nFundos} fundos, comprar e manter</span></div>`;
+  const nota = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5">
+    Referência: retorno de comprar uma fatia igual de cada fundo no início e nunca mexer, em % pura dos preços (sem entradas/saídas de capital). Compara com o teu retorno % no mesmo período: se a tua gestão ativa não bater esta linha depois de comissões e impostos, não está a acrescentar valor. Precisa de semanas para significar algo.</div>`;
+  el.innerHTML = linhas + carteira + nota;
 }
 
 function renderAcerto() {
@@ -4642,6 +4723,7 @@ function renderStatus() {
   if (typeof renderConcordancia === 'function') renderConcordancia();
   if (typeof renderAcerto === 'function') renderAcerto();
   if (typeof renderTendencia === 'function') renderTendencia();
+  if (typeof renderBuyHold === 'function') renderBuyHold();
   const days = getAllDailyData().filter(d=>d.ret!==null);
   if (!days.length) {
     document.getElementById('kpi-top').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:16px">Sem dados suficientes.</div>';
@@ -9752,7 +9834,7 @@ async function enviarAdvisorWhatsApp(fundsArg) {
     if (r.signal === 'VENDA') {
       const rowKey = CAP[key] || key;
       const disp = (state.rows && state.rows[rowKey]) ? (state.rows[rowKey][availSlot(rowKey)] || 0) : 0;
-      linha += ' ' + fmtNum(disp) + ' €';
+      linha += ' ' + fmtCompact(disp);
     }
     linhas.push(linha);
   });
