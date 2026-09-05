@@ -4376,14 +4376,25 @@ async function renderTendencia(force) {
 // Pega no histórico de NAV e calcula o retorno de comprar uma fatia igual de cada
 // fundo no primeiro dia com preço e nunca mais mexer. É retorno PERCENTUAL puro dos
 // preços (sem fluxos de capital), a única base de comparação honesta. Não mexe em nada.
-function calcBuyHold(hist) {
+// janelaDias: nº de dias a olhar para trás a partir do último dia do histórico.
+// null ou 0 = desde o início (todo o histórico). O retorno de cada fundo é medido do
+// primeiro nav DENTRO da janela até ao último nav disponível.
+function calcBuyHold(hist, janelaDias) {
   if (!hist) return null;
   const dias = Object.keys(hist).sort();
   if (dias.length < 2) return null;
+  // Limite inferior da janela: último dia menos janelaDias.
+  let corte = null;
+  if (janelaDias && janelaDias > 0) {
+    const ultimo = new Date(dias[dias.length - 1] + 'T00:00:00');
+    ultimo.setDate(ultimo.getDate() - janelaDias);
+    corte = ultimo.toISOString().slice(0, 10);
+  }
   const porFundo = {};
   let inicioComum = null, fimComum = null;
   for (const f of FUNDS) {
-    const serie = serieDoFundo(hist, FUND_HIST_KEY[f]);
+    let serie = serieDoFundo(hist, FUND_HIST_KEY[f]);
+    if (corte) serie = serie.filter(p => p.dia >= corte);
     if (serie.length < 2) { porFundo[f] = null; continue; }
     const ini = serie[0], fim = serie[serie.length - 1];
     const retPct = ((fim.nav - ini.nav) / ini.nav) * 100;
@@ -4397,14 +4408,41 @@ function calcBuyHold(hist) {
   return { porFundo, carteiraPct, inicioComum, fimComum, nFundos: validos.length };
 }
 
+// Janelas disponíveis para a referência buy-and-hold.
+const BH_JANELAS = [
+  { id:'inicio', label:'Desde o início', dias:null },
+  { id:'1m',  label:'1 mês',     dias:30 },
+  { id:'2m',  label:'2 meses',   dias:61 },
+  { id:'3m',  label:'Trimestre', dias:91 },
+  { id:'6m',  label:'Semestre',  dias:182 },
+  { id:'1a',  label:'1 ano',     dias:365 },
+];
+function bhJanelaAtual() {
+  const id = localStorage.getItem('bh-janela') || 'inicio';
+  return BH_JANELAS.find(j => j.id === id) || BH_JANELAS[0];
+}
+function mudarBhJanela(id) {
+  localStorage.setItem('bh-janela', id);
+  renderBuyHold(false);
+}
+
 async function renderBuyHold(force) {
   const el = document.getElementById('buyhold-body');
   if (!el) return;
   el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">A carregar…</span>';
   const hist = await carregarHistorico(force);
-  const bh = calcBuyHold(hist);
+  const jan = bhJanelaAtual();
+  const bh = calcBuyHold(hist, jan.dias);
+  // Seletor de janela (sempre visível, mesmo sem dados suficientes).
+  const seletor = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">' +
+    BH_JANELAS.map(j => {
+      const on = j.id === jan.id;
+      return '<button onclick="mudarBhJanela(\'' + j.id + '\')" style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:5px;cursor:pointer;border:1px solid ' +
+        (on ? 'var(--accent,#60a5fa)' : 'var(--border2)') + ';background:' + (on ? 'rgba(96,165,250,.12)' : 'transparent') +
+        ';color:' + (on ? 'var(--accent,#60a5fa)' : 'var(--text3)') + '">' + j.label + '</button>';
+    }).join('') + '</div>';
   if (!bh || bh.carteiraPct === null) {
-    el.innerHTML = '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Sem preços suficientes no histórico para calcular a referência. Precisa de nav (preço) em pelo menos dois dias por fundo.</span>';
+    el.innerHTML = seletor + '<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">Sem preços suficientes nesta janela para calcular a referência. Precisa de nav (preço) em pelo menos dois dias por fundo dentro do período.</span>';
     return;
   }
   const fmtP = v => (v>=0?'+':'') + (Math.round(v*10)/10).toLocaleString('pt-PT',{minimumFractionDigits:0,maximumFractionDigits:1}) + '\u00A0%';
@@ -4429,9 +4467,10 @@ async function renderBuyHold(force) {
     <span style="width:70px;color:var(--text);font-weight:700">Carteira</span>
     <span style="width:90px;color:${corP(bh.carteiraPct)};font-weight:700">${fmtP(bh.carteiraPct)}</span>
     <span style="color:var(--text2)">partes iguais nos ${bh.nFundos} fundos, comprar e manter</span></div>`;
+  const notaJanela = jan.dias ? ('últimos ' + (jan.label.toLowerCase())) : 'desde o início do histórico';
   const nota = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5">
-    Referência: retorno de comprar uma fatia igual de cada fundo no início e nunca mexer, em % pura dos preços (sem entradas/saídas de capital). Compara com o teu retorno % no mesmo período: se a tua gestão ativa não bater esta linha depois de comissões e impostos, não está a acrescentar valor. Precisa de semanas para significar algo.</div>`;
-  el.innerHTML = linhas + carteira + nota;
+    Referência (${notaJanela}): retorno de comprar uma fatia igual de cada fundo no início do período e nunca mexer, em % pura dos preços (sem entradas/saídas de capital). Compara com o teu retorno % no mesmo período: se a tua gestão ativa não bater esta linha depois de comissões e impostos, não está a acrescentar valor. Precisa de semanas para significar algo.</div>`;
+  el.innerHTML = seletor + linhas + carteira + nota;
 }
 
 function renderAcerto() {
