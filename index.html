@@ -831,6 +831,20 @@
           <button class="btn" id="btn-pdf" style="border-color:#1e3a5f;color:#60a5fa;margin-top:6px">⎙ Relatório do dia PDF</button>
 
           <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border2)">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Sincronização (GitHub)</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Liga só no PC principal (o que está sempre ligado). Ligado: grava a ordem e o pipeline no GitHub ao ligar, a cada alteração e de hora a hora. Desligado: este PC só lê o estado do GitHub (ao abrir e de hora a hora).</div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:6px">
+              <input type="checkbox" id="sync-master-chk" onchange="toggleSyncMaster(this.checked)" style="width:auto;margin:0">
+              <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Este PC é o principal (grava no GitHub)</span>
+            </label>
+            <div style="display:flex;gap:6px">
+              <button class="btn" onclick="gravarEstadoSync('manual')" style="border-color:var(--border2);color:var(--text2);margin-top:0;flex:1;font-size:10px">⬆ Guardar agora</button>
+              <button class="btn" onclick="carregarEstadoSync(true)" style="border-color:#1e3a5f;color:#60a5fa;margin-top:0;flex:1;font-size:10px">⬇ Carregar agora</button>
+            </div>
+            <div id="sync-status" style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:6px;line-height:1.4"></div>
+          </div>
+
+          <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border2)">
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Backups (GitHub)</div>
             <div style="font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.5;margin-bottom:8px">Pipeline: diário à meia-noite (últimos 5 dias). Registo diário: semanal (histórico completo). Automáticos, mas podes forçar aqui.</div>
             <div style="display:flex;gap:6px;margin-bottom:6px">
@@ -2230,6 +2244,7 @@ function saveFundOrder(ord) {
   const limpa = ord.filter(f => FUNDS.includes(f));
   FUNDS.forEach(f => { if (!limpa.includes(f)) limpa.push(f); });
   localStorage.setItem('fund-order', JSON.stringify(limpa));
+  if (typeof agendarSync === 'function') agendarSync();
 }
 
 // ── Hardcoded balances ──────────────────────────────────────────
@@ -2337,6 +2352,16 @@ function saveLS() {
       capitalProprio: document.getElementById('capital-proprio')?.value||'0'
     }));
   } catch(e){}
+  agendarSync();
+}
+
+// Grava no GitHub pouco depois de uma alteração (só se este PC for o principal).
+// Debounce: junta várias edições seguidas numa só gravação, 5s após a última.
+let _syncDebounce = null;
+function agendarSync() {
+  if (typeof syncMasterLigado !== 'function' || !syncMasterLigado()) return;
+  if (_syncDebounce) clearTimeout(_syncDebounce);
+  _syncDebounce = setTimeout(() => { gravarEstadoSync('alteração'); }, 5000);
 }
 
 function loadLS() {
@@ -3482,6 +3507,113 @@ async function ghGetJson(path) {
     const txt = decodeURIComponent(escape(atob(d.content)));
     return JSON.parse(txt);
   } catch(e) { appLog('Erro a ler '+path+': '+e.message,'err'); return null; }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SINCRONIZAÇÃO DE ESTADO (ordem dos fundos + pipeline) VIA GITHUB
+// Interruptor por PC (localStorage 'sync-master'):
+//   LIGADO  → este PC é o principal: grava o estado no GitHub ao ligar e de hora a hora.
+//   DESLIGADO → só lê: puxa o estado do GitHub ao abrir e de hora a hora, nunca escreve.
+// Ficheiro no repo: estado-sync.json = { ts, ordem:[...], rows:{fundo:{D,D1,D2,D3,resgate}} }
+// ─────────────────────────────────────────────────────────────────
+const SYNC_FILE = 'estado-sync.json';
+const SYNC_INTERVALO_MS = 60 * 60 * 1000; // 1 hora
+let _syncTimer = null;
+
+function syncMasterLigado() { return localStorage.getItem('sync-master') === '1'; }
+
+// Constrói o objeto de estado a partir do que está em memória.
+function montarEstadoSync() {
+  const rows = {};
+  FUNDS.forEach(f => {
+    const r = state.rows[f] || {D:0,D1:0,D2:0,D3:0,resgate:0};
+    rows[f] = { D:r.D||0, D1:r.D1||0, D2:r.D2||0, D3:r.D3||0, resgate:r.resgate||0 };
+  });
+  return { ts: new Date().toISOString(), ordem: fundOrder(), rows };
+}
+
+// GRAVAR (só o PC principal). Escreve ordem+pipeline no GitHub.
+async function gravarEstadoSync(motivo) {
+  if (!syncMasterLigado()) return false;
+  const est = montarEstadoSync();
+  const ok = await ghPutJson(SYNC_FILE, est, 'sync estado ' + (motivo||'') + ' ' + est.ts);
+  const badge = document.getElementById('sync-status');
+  if (ok) {
+    localStorage.setItem('sync-ultimo', est.ts);
+    if (badge) badge.textContent = 'Gravado ' + new Date(est.ts).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+    appLog('Estado sincronizado para o GitHub.','ok');
+  } else if (badge) {
+    badge.textContent = 'Falha ao gravar';
+  }
+  return ok;
+}
+
+// APLICAR um estado lido do GitHub ao dashboard em memória.
+function aplicarEstadoSync(est) {
+  if (!est || !est.rows) return false;
+  if (Array.isArray(est.ordem) && est.ordem.length) saveFundOrder(est.ordem);
+  FUNDS.forEach(f => {
+    const r = est.rows[f];
+    if (r) {
+      if (!state.rows[f]) state.rows[f] = {};
+      state.rows[f].D = r.D||0; state.rows[f].D1 = r.D1||0;
+      state.rows[f].D2 = r.D2||0; state.rows[f].D3 = r.D3||0;
+      state.rows[f].resgate = r.resgate||0;
+    }
+  });
+  saveLS();
+  if (typeof renderPipeline === 'function') { renderPipeline(); renderAdj(); updRestante(); renderTabs(); renderDailyTable(); }
+  return true;
+}
+
+// LER (os PCs secundários, e também o principal ao abrir para não começar atrasado).
+// forcar=true ignora o "sou principal" e aplica na mesma (usado no botão Carregar).
+async function carregarEstadoSync(forcar) {
+  const est = await ghGetJson(SYNC_FILE);
+  if (!est) { const b=document.getElementById('sync-status'); if(b) b.textContent='Sem estado no GitHub'; return false; }
+  // Se este PC é o principal e NÃO forçámos, não sobrepõe o que está a editar.
+  if (syncMasterLigado() && !forcar) return false;
+  aplicarEstadoSync(est);
+  localStorage.setItem('sync-ultimo', est.ts);
+  const badge = document.getElementById('sync-status');
+  if (badge) badge.textContent = 'Carregado ' + new Date(est.ts).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
+  appLog('Estado carregado do GitHub ('+new Date(est.ts).toLocaleString('pt-PT')+').','ok');
+  return true;
+}
+
+// Ciclo de hora a hora: principal grava, secundário lê.
+function tickSync() {
+  if (syncMasterLigado()) gravarEstadoSync('horário');
+  else carregarEstadoSync(false);
+}
+
+// (Re)arranca o temporizador de hora a hora.
+function arrancarSyncTimer() {
+  if (_syncTimer) clearInterval(_syncTimer);
+  _syncTimer = setInterval(tickSync, SYNC_INTERVALO_MS);
+}
+
+// Liga/desliga o interruptor de PC principal.
+function toggleSyncMaster(on) {
+  localStorage.setItem('sync-master', on ? '1' : '0');
+  const badge = document.getElementById('sync-status');
+  if (on) {
+    if (badge) badge.textContent = 'A gravar…';
+    gravarEstadoSync('ligado');   // grava já ao ligar
+  } else {
+    if (badge) badge.textContent = 'Só leitura';
+  }
+  arrancarSyncTimer();
+}
+
+// Chamado no arranque do dashboard.
+async function initSync() {
+  const chk = document.getElementById('sync-master-chk');
+  if (chk) chk.checked = syncMasterLigado();
+  // Ao abrir: o principal grava o seu estado; o secundário puxa o do GitHub.
+  if (syncMasterLigado()) { await gravarEstadoSync('arranque'); }
+  else { await carregarEstadoSync(false); }
+  arrancarSyncTimer();
 }
 
 // Snapshot do pipeline dos 5 fundos (as 5 colunas por fundo).
@@ -10214,6 +10346,7 @@ window._startApp = async function() {
   try { await applyHoldingsFromFile(); } catch(e) { appLog('applyHoldingsFromFile falhou: '+e.message,'warn'); }
   try { loadPmValues(); } catch(e) { console.warn('loadPmValues falhou:', e.message); appLog('loadPmValues falhou: '+e.message,'warn'); }
   try { init(); appLog('Aplicação iniciada.','ok'); } catch(e) { console.error('init falhou:', e.message, e.stack); appLog('init falhou: '+e.message,'err'); alert('Erro ao iniciar a app: ' + e.message); }
+  try { await initSync(); } catch(e) { console.warn('initSync falhou:', e.message); appLog('Sincronização falhou no arranque: '+e.message,'warn'); }
   try { diagnosticarChaves(); } catch(e) {}
   try { restorePmInjectTs(); } catch(e) {}
   try { schedInit(); } catch(e) {}
