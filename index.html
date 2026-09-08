@@ -3467,30 +3467,44 @@ async function ghPutJson(path, obj, commitMsg) {
   const repo  = localStorage.getItem('gh-repo');
   if (!token || !repo) { toast('Falta token/repo do GitHub na Config.','err'); return false; }
   const payload = JSON.stringify(obj, null, 2);
-  try {
-    let sha;
+  // Até 3 tentativas: um conflito de SHA (rajada de commits na mesma branch) resolve-se
+  // lendo o SHA fresco e repetindo, em vez de falhar a gravação.
+  for (let tentativa = 1; tentativa <= 3; tentativa++) {
     try {
-      const getR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      let sha;
+      try {
+        const getR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?_=${Date.now()}`, {
+          headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+        });
+        if (getR.ok) { const d = await getR.json(); sha = d.sha; }
+      } catch(e){}
+      const body = { message: commitMsg || (path+' atualizado '+new Date().toLocaleString('pt-PT')),
+                     content: btoa(unescape(encodeURIComponent(payload))) };
+      if (sha) body.sha = sha;
+      const putR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       });
-      if (getR.ok) { const d = await getR.json(); sha = d.sha; }
-    } catch(e){}
-    const body = { message: commitMsg || (path+' atualizado '+new Date().toLocaleString('pt-PT')),
-                   content: btoa(unescape(encodeURIComponent(payload))) };
-    if (sha) body.sha = sha;
-    const putR = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-      method: 'PUT',
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!putR.ok) {
+      if (putR.ok) { appLog(path+' gravado no GitHub.','ok'); return true; }
       const e = await putR.json().catch(()=>({}));
-      appLog('Erro a gravar '+path+': '+(e.message||putR.status),'err');
+      const msg = e.message || String(putR.status);
+      // Conflito de SHA/referência: espera e repete (lê SHA fresco na volta seguinte).
+      const conflito = putR.status === 409 || /is at .* but expected|does not match|sha/i.test(msg);
+      if (conflito && tentativa < 3) {
+        appLog(path+': conflito de versão, a repetir ('+tentativa+'/3)…','warn');
+        await new Promise(r => setTimeout(r, 400 * tentativa));
+        continue;
+      }
+      appLog('Erro a gravar '+path+': '+msg,'err');
+      return false;
+    } catch(e) {
+      if (tentativa < 3) { await new Promise(r => setTimeout(r, 400 * tentativa)); continue; }
+      appLog('Erro a gravar '+path+': '+e.message,'err');
       return false;
     }
-    appLog(path+' gravado no GitHub.','ok');
-    return true;
-  } catch(e) { appLog('Erro a gravar '+path+': '+e.message,'err'); return false; }
+  }
+  return false;
 }
 
 // Leitura genérica de um ficheiro JSON do GitHub. Devolve o objeto ou null.
@@ -3583,6 +3597,13 @@ async function carregarEstadoSync(forcar) {
 
 // Ciclo de hora a hora: principal grava, secundário lê.
 function tickSync() {
+  // Se o disparo calhar no minuto da meia-noite (00:00), adia 90s para não competir
+  // com os backups diário/semanal que correm nesse instante.
+  const agora = new Date();
+  if (agora.getHours() === 0 && agora.getMinutes() === 0) {
+    setTimeout(tickSync, 90000);
+    return;
+  }
   if (syncMasterLigado()) gravarEstadoSync('horário');
   else carregarEstadoSync(false);
 }
@@ -4408,6 +4429,42 @@ function calcBuyHold(hist, janelaDias) {
   return { porFundo, carteiraPct, inicioComum, fimComum, nFundos: validos.length };
 }
 
+// Retorno REAL da tua carteira na mesma janela: variação % do balanço registado (userEdits)
+// do primeiro ao último dia com valor dentro da janela. Como não há resgates, esta variação
+// é retorno — a menos que tenhas injetado capital no período (aí avisa: capMudou).
+// Alinha o início ao mesmo dia do buy-and-hold (inicioComum) para a comparação ser justa.
+function calcRetornoCarteira(janelaDias, diaInicioRef) {
+  // Todos os dias com balanço, ordenados.
+  const diasComBal = [];
+  for (const mk of CAP_MONTHS) {
+    for (const d of bizDays(mk)) {
+      const b = getBalance(d);
+      if (b !== null && !isNaN(b) && b > 0) diasComBal.push({ dia: d, bal: b });
+    }
+  }
+  if (diasComBal.length < 2) return null;
+  // Corte da janela (mesmo critério do buy-and-hold): último dia menos janelaDias.
+  const ultimoDia = diasComBal[diasComBal.length - 1].dia;
+  let corte = null;
+  if (janelaDias && janelaDias > 0) {
+    const u = new Date(ultimoDia + 'T00:00:00');
+    u.setDate(u.getDate() - janelaDias);
+    corte = u.toISOString().slice(0, 10);
+  }
+  // Se o buy-and-hold tem um início comum mais tardio, usa-o como piso (comparação justa).
+  if (diaInicioRef && (!corte || diaInicioRef > corte)) corte = diaInicioRef;
+  const naJanela = corte ? diasComBal.filter(x => x.dia >= corte) : diasComBal;
+  if (naJanela.length < 2) return null;
+  const ini = naJanela[0], fim = naJanela[naJanela.length - 1];
+  const retPct = ((fim.bal - ini.bal) / ini.bal) * 100;
+  // Deteta injeção de capital no período: se o "capital-global" mudou, avisa.
+  let capMudou = false;
+  const capIni = getBalance((ini.dia.slice(0,7)) + '-CAPITAL');
+  const capFim = getBalance((fim.dia.slice(0,7)) + '-CAPITAL');
+  if (capIni !== null && capFim !== null && capIni !== capFim) capMudou = true;
+  return { retPct, diaIni: ini.dia, diaFim: fim.dia, balIni: ini.bal, balFim: fim.bal, capMudou };
+}
+
 // Janelas disponíveis para a referência buy-and-hold.
 const BH_JANELAS = [
   { id:'inicio', label:'Desde o início', dias:null },
@@ -4467,10 +4524,26 @@ async function renderBuyHold(force) {
     <span style="width:70px;color:var(--text);font-weight:700">Carteira</span>
     <span style="width:90px;color:${corP(bh.carteiraPct)};font-weight:700">${fmtP(bh.carteiraPct)}</span>
     <span style="color:var(--text2)">partes iguais nos ${bh.nFundos} fundos, comprar e manter</span></div>`;
+  // Linha comparativa: retorno REAL da tua carteira (balanço registado) na mesma janela.
+  const rc = calcRetornoCarteira(jan.dias, bh.inicioComum);
+  let minhaLinha = '';
+  if (rc) {
+    const dif = rc.retPct - bh.carteiraPct;
+    const difTxt = (dif >= 0 ? '+' : '') + dif.toFixed(1).replace('.', ',') + ' pp';
+    const difCor = dif >= 0 ? 'var(--pos,#4ade80)' : 'var(--neg,#f87171)';
+    const veredicto = dif >= 0 ? 'a tua gestão bateu o comprar e manter' : 'o comprar e manter teria rendido mais';
+    minhaLinha = `<div style="display:flex;gap:10px;padding:9px 0;font-family:var(--mono);font-size:12px">
+      <span style="width:70px;color:var(--text);font-weight:700">A tua</span>
+      <span style="width:90px;color:${corP(rc.retPct)};font-weight:700">${fmtP(rc.retPct)}</span>
+      <span style="color:var(--text2)">balanço de ${rc.diaIni} a ${rc.diaFim} · <span style="color:${difCor};font-weight:700">${difTxt}</span> vs comprar e manter</span></div>
+      <div style="font-family:var(--mono);font-size:9px;color:${difCor};padding-left:80px;margin-top:-4px">${veredicto}${rc.capMudou ? ' · ATENÇÃO: o capital mudou no período, o número inclui dinheiro injetado' : ''}</div>`;
+  } else {
+    minhaLinha = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);padding:8px 0">A tua carteira: sem balanços suficientes nesta janela para comparar (precisa de valor registado em dois dias dentro do período).</div>`;
+  }
   const notaJanela = jan.dias ? ('últimos ' + (jan.label.toLowerCase())) : 'desde o início do histórico';
   const nota = `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;line-height:1.5">
     Referência (${notaJanela}): retorno de comprar uma fatia igual de cada fundo no início do período e nunca mexer, em % pura dos preços (sem entradas/saídas de capital). Compara com o teu retorno % no mesmo período: se a tua gestão ativa não bater esta linha depois de comissões e impostos, não está a acrescentar valor. Precisa de semanas para significar algo.</div>`;
-  el.innerHTML = seletor + linhas + carteira + nota;
+  el.innerHTML = seletor + linhas + carteira + minhaLinha + nota;
 }
 
 function renderAcerto() {
